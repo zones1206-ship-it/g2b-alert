@@ -3,24 +3,14 @@
 
 const KEYWORDS = [
   "반도체 장비",
-  "세정 설비",
   "디스플레이 장비",
-  "트롤리",
-  "자동화 설비",
-  "검사 장비",
-  "클린룸",
-  "이송 시스템",
+  "도금 장비",
 ];
 
 const KEYWORD_ICONS = {
   "반도체 장비": "M9 2h6v2h-6zM9 20h6v2h-6zM2 9h2v6H2zM20 9h2v6h-2zM6 6h12v12H6z M9.5 9.5h5v5h-5z",
-  "세정 설비": "M12 2s6 7 6 12a6 6 0 0 1-12 0c0-5 6-12 6-12z",
   "디스플레이 장비": "M3 4h18v13H3zM8 21h8M12 17v4",
-  "트롤리": "M4 5h13l2 8H6zM6 13v5M17 13v5M6 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM17 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z",
-  "자동화 설비": "M12 2a3 3 0 0 1 3 3v1h-6V5a3 3 0 0 1 3-3zM7 8h10v13H7z M10 12h4v4h-4z",
-  "검사 장비": "M11 3a8 8 0 1 0 5.3 14.1l4.3 4.3 1.4-1.4-4.3-4.3A8 8 0 0 0 11 3zM11 6v5l3 3",
-  "클린룸": "M4 4h16v16H4zM4 10h16M10 4v16",
-  "이송 시스템": "M3 12h14M13 6l4 6-4 6M5 6l-2 6 2 6",
+  "도금 장비": "M12 3l7 4v6c0 4-3 6.5-7 8-4-1.5-7-4-7-8V7z M9 12l2 2 4-4",
 };
 
 const STORAGE_KEY = "g2b-alert-selected-keywords";
@@ -35,7 +25,7 @@ function loadSelection() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return new Set(JSON.parse(raw));
   } catch (e) {}
-  return new Set(["반도체 장비", "세정 설비", "디스플레이 장비"]);
+  return new Set(KEYWORDS);
 }
 
 function saveSelection() {
