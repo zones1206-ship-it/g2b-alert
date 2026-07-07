@@ -51,8 +51,16 @@ PAGE_DELAY_SECONDS = 0.5
 
 HARD_EXCLUDE_TERMS = ["매각", "취소"]
 
+# "장비"라는 단어가 있어도 실제로는 장비 구매가 아니라 이미 설치된 장비를
+# 운영/관리할 인력·용역업체를 선정하는 공고인 경우가 있다(예: "반도체
+# 장비운용 용역업체 선정" — 첨부파일명으로 실제 운용 용역임을 확인함).
+# 이런 패턴은 EQUIPMENT_INCLUDE_TERMS 매칭보다 우선해서 제외한다.
+SERVICE_OVERRIDE_TERMS = [
+    "장비운용", "운용용역", "운영용역", "유지관리용역", "관리용역",
+]
+
 SERVICE_EXCLUDE_TERMS = [
-    "운영용역", "위탁", "교육", "행사", "컨설팅", "cctv", "유지관리용역", "관리용역", "홍보",
+    "위탁", "교육", "행사", "컨설팅", "cctv", "홍보",
 ]
 
 EQUIPMENT_INCLUDE_TERMS = [
@@ -116,6 +124,8 @@ def classify(title: str):
     t = normalize_text(title)
     if any(term in t for term in HARD_EXCLUDE_TERMS):
         return "exclude_hard"
+    if any(normalize_text(term) in t for term in SERVICE_OVERRIDE_TERMS):
+        return "exclude_service"
     if any(normalize_text(term) in t for term in EQUIPMENT_INCLUDE_TERMS):
         return "include"
     if any(normalize_text(term) in t for term in SERVICE_EXCLUDE_TERMS):
@@ -179,6 +189,42 @@ def extract_notice_no(title: str, text: str):
     return m.group(1) if m else None
 
 
+def extract_labeled_text(text: str, label: str, max_len: int = 60):
+    """"라벨 : 값" 형태의 자유 텍스트에서 값을 뽑는다. 다음 번호 항목(예: " 6) ", " 7. ")이
+    나오면 그 앞까지만 사용해 다른 항목 텍스트가 섞이는 것을 방지한다."""
+    m = re.search(re.escape(label) + r"\s*[:：]\s*(.{1,%d})" % (max_len + 20), text)
+    if not m:
+        return None
+    raw = m.group(1)
+    stop = re.search(r"\s\d{1,2}[.)]\s", raw)
+    if stop:
+        raw = raw[:stop.start()]
+    raw = raw[:max_len]
+    if len(raw) == max_len and " " in raw:
+        raw = raw[:raw.rfind(" ")]
+    raw = raw.strip()
+    return raw or None
+
+
+ATTACHMENT_PATTERN = re.compile(
+    r"getDownloadFile\('(?P<bid>\d+)',\s*'(?P<cid>\d+)',\s*'(?P<serverfile>[^']+)'\)[^>]*>\s*"
+    r"<img[^>]*>\s*(?P<name>[^<]+?)</a>",
+)
+
+
+def extract_attachments(detail_html: str):
+    attachments = []
+    for m in ATTACHMENT_PATTERN.finditer(detail_html):
+        name = html_lib.unescape(m.group("name")).strip()
+        download_url = (
+            f"{BASE_URL}/cwsboard/board.do?bid={m.group('bid')}"
+            f"&mode=download&cid={m.group('cid')}&filename={m.group('serverfile')}"
+        )
+        if name:
+            attachments.append({"name": name, "url": download_url})
+    return attachments
+
+
 def extract_registered_date(text: str):
     m = re.search(r"등록일\s*(\d{4})[.\-](\d{1,2})[.\-](\d{1,2})", text)
     if m:
@@ -197,26 +243,38 @@ def build_item(cid: str, list_title: str, list_date: str, detail_html: str):
     due_date = extract_due_date(text, registered_date=registered)
     budget = extract_budget(text)
     notice_no = extract_notice_no(title, text)
+    contract_method = extract_labeled_text(text, "계약방법")
+    delivery_condition = extract_labeled_text(text, "인도조건")
+    payment_condition = extract_labeled_text(text, "지급조건")
 
     description_parts = [f"공고유형: {notice_type(title)}"]
     if notice_no:
         description_parts.append(f"공고번호: {notice_no}")
+    if contract_method:
+        description_parts.append(f"계약방법: {contract_method}")
     description = " · ".join(description_parts)
 
     return {
         "id": f"cid{cid}",
         "title": title,
         "org": "한국나노기술원",
+        "country": "국내",
+        "countryCode": "KR",
+        "status": "진행중",
         "dueDate": due_date,
+        "postedDate": registered,
         "keywords": match_categories(title),
         "budget": budget,
+        "contractMethod": contract_method,
+        "deliveryCondition": delivery_condition,
+        "paymentCondition": payment_condition,
         "eligibility": None,
         "description": description,
+        "attachments": extract_attachments(detail_html),
         "url": DETAIL_URL_TMPL.format(page=1, cid=cid),
         "source": SOURCE_NAME,
         "sourceCode": SOURCE_CODE,
         "noticeType": notice_type(title),
-        "registeredDate": registered,
     }
 
 

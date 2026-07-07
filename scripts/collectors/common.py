@@ -9,12 +9,20 @@ scripts/fetch_announcements.py의 COLLECTORS 목록에 추가하면 된다.
 {
     "id": str,                # 소스 내에서 고유한 원본 ID (orchestrator가 sourceCode를 붙여 전역 고유화함)
     "title": str,
-    "org": str,
+    "org": str,                # 발주기관/수요기업
+    "country": str,            # "국내" / "중국" 등 사람이 읽는 국가명
+    "countryCode": str,        # "KR" / "CN" 등
     "dueDate": "YYYY-MM-DD" | None,   # 확인 불가능하면 None (프론트가 "마감일 확인 필요"로 표시)
-    "keywords": [str, ...],           # 매칭된 최상위 카테고리 (반도체 장비 / 디스플레이 장비 / 도금 장비)
+    "postedDate": "YYYY-MM-DD" | None,
+    "status": str | None,      # 예: "진행중" (원문에서 확인 가능한 경우만)
+    "keywords": [str, ...],    # 매칭된 최상위 카테고리 (반도체 장비 / 디스플레이 장비 / 도금 장비)
     "budget": str | None,
+    "contractMethod": str | None,   # 계약방법 (원문에서 확인된 경우만)
+    "deliveryCondition": str | None,  # 인도조건/납품장소 (원문에서 확인된 경우만)
+    "paymentCondition": str | None,   # 지급조건 (원문에서 확인된 경우만)
     "eligibility": str | None,
-    "description": str | None,
+    "description": str | None,  # 핵심 요약 (원문 요약, 지어내지 않음)
+    "attachments": [{"name": str, "url": str}, ...],
     "url": str,
     "source": str,             # 사람이 읽는 출처명, 예: "한국나노기술원"
     "sourceCode": str,         # 짧은 코드, 예: "KANC"
@@ -27,7 +35,6 @@ CATEGORIES = ["반도체 장비", "디스플레이 장비", "도금 장비"]
 
 # 화면에 "수집 출처" 배지로 표시할 소스 목록 (orchestrator/collector가 사용하는 sourceCode와 일치해야 함)
 SOURCES = [
-    {"code": "G2B", "name": "나라장터"},
     {"code": "KANC", "name": "한국나노기술원"},
 ]
 

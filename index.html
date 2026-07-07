@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>장비 입찰 공고 알리미</title>
-<meta name="description" content="반도체·디스플레이·도금 장비 전문 입찰 공고를 키워드로 필터링해 보여주는 개인용 알림 대시보드">
+<title>장비 프로젝트 레이더</title>
+<meta name="description" content="반도체·디스플레이·도금/TGV 장비 입찰 및 프로젝트 정보를 모아 보여주는 개인용 알림 대시보드">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,27 +20,24 @@
         </svg>
       </span>
       <div class="brand-text">
-        <h1>장비 입찰 공고 알리미</h1>
-        <p class="brand-sub">반도체 · 디스플레이 · 도금 장비 전문 공고</p>
+        <h1>장비 프로젝트 레이더</h1>
+        <p class="brand-sub">반도체 · 디스플레이 · 도금/TGV 장비 입찰 및 프로젝트 정보</p>
       </div>
     </div>
     <div class="source-chips" aria-label="공고 수집 출처">
       <span class="source-chip">한국나노기술원 <b>KANC</b></span>
-      <span class="source-chip">나라장터 <b>G2B</b></span>
     </div>
   </header>
 
   <nav class="filter-bar" id="filterBar" hidden>
-    <button class="filter-summary" id="editKeywordsBtn">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-      <span>선택 키워드: <strong id="selectedKeywordsText"></strong></span>
-    </button>
+    <div class="filter-row" id="categoryChipRow"></div>
+    <div class="filter-row" id="typeChipRow"></div>
   </nav>
 
-  <!-- Screen 1: keyword selection -->
+  <!-- Screen 1: category selection -->
   <main class="screen" id="screen-keywords">
-    <p class="lead">관심 키워드로 맞춤 공고를 받아보세요</p>
-    <h2 class="section-title">관심 키워드 선택</h2>
+    <p class="lead">관심 분야로 맞춤 프로젝트 정보를 받아보세요</p>
+    <h2 class="section-title">관심 분야 선택</h2>
 
     <div class="keyword-grid" id="keywordGrid"></div>
 
@@ -50,9 +47,9 @@
     </button>
     <p class="hint">
       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
-      선택한 키워드 기준으로 신규 공고를 알려드립니다
+      선택한 분야 기준으로 신규 프로젝트 정보를 알려드립니다
     </p>
-    <button class="ghost-btn" id="viewResultsBtn">선택한 키워드로 공고 보기 →</button>
+    <button class="ghost-btn" id="viewResultsBtn">선택한 분야로 보기 →</button>
 
     <p class="updated" id="updatedAt">마지막 업데이트 불러오는 중...</p>
   </main>
@@ -60,12 +57,12 @@
   <!-- Screen 2: results -->
   <main class="screen" id="screen-results" hidden>
     <div class="results-head">
-      <h2 class="section-title">공고 리스트</h2>
+      <h2 class="section-title">프로젝트 리스트</h2>
       <span class="total-count" id="totalCount"></span>
     </div>
     <div id="resultGroups" class="result-groups"></div>
-    <p class="empty-state" id="emptyState" hidden>선택한 키워드에 해당하는 공고가 없습니다.</p>
-    <button class="ghost-btn" id="backBtn">← 키워드 다시 선택</button>
+    <p class="empty-state" id="emptyState" hidden>선택한 조건에 해당하는 프로젝트가 없습니다.</p>
+    <button class="ghost-btn" id="backBtn">← 분야 다시 선택</button>
     <p class="updated" id="updatedAt2"></p>
   </main>
 

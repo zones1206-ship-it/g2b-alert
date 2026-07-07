@@ -1,5 +1,5 @@
-// 나라장터 공고 알리미 - 클라이언트 로직
-// data/announcements.json 을 읽어 키워드로 필터링/그룹핑해서 렌더링한다.
+// 장비 프로젝트 레이더 - 클라이언트 로직
+// data/announcements.json 을 읽어 분야/유형으로 필터링/그룹핑해서 렌더링한다.
 
 const KEYWORDS = [
   "반도체 장비",
@@ -18,7 +18,6 @@ const STORAGE_KEY = "g2b-alert-selected-keywords";
 // source 값을 기준으로 원문 버튼 문구를 결정한다. 새 수집원이 추가되면
 // 여기에 한 줄만 추가하면 되고, 없는 소스는 "{source} 원문 보기"로 자동 처리된다.
 const SOURCE_LINK_LABELS = {
-  G2B: "나라장터 원문 공고 보기",
   KANC: "한국나노기술원 원문 보기",
 };
 
@@ -27,8 +26,11 @@ const NOTICE_TYPE_LABELS = {
   "정식입찰": { label: "정식입찰", cls: "notice-type-formal" },
 };
 
+const TYPE_FILTERS = ["전체", "사전규격", "정식입찰"];
+
 const state = {
   selected: loadSelection(),
+  typeFilter: "전체",
   data: { updatedAt: null, items: [] },
 };
 
@@ -73,6 +75,42 @@ function renderKeywordGrid() {
   });
 }
 
+function renderCategoryChips() {
+  const row = document.getElementById("categoryChipRow");
+  row.innerHTML = KEYWORDS.map((kw) => {
+    const active = state.selected.has(kw);
+    return `<button type="button" class="chip${active ? " chip-active" : ""}" data-category="${kw}">${kw}</button>`;
+  }).join("");
+
+  row.querySelectorAll(".chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const kw = chip.dataset.category;
+      if (state.selected.has(kw)) state.selected.delete(kw);
+      else state.selected.add(kw);
+      saveSelection();
+      renderCategoryChips();
+      renderKeywordGrid();
+      renderResults();
+    });
+  });
+}
+
+function renderTypeChips() {
+  const row = document.getElementById("typeChipRow");
+  row.innerHTML = TYPE_FILTERS.map((type) => {
+    const active = state.typeFilter === type;
+    return `<button type="button" class="chip chip-outline${active ? " chip-active" : ""}" data-type="${type}">${type}</button>`;
+  }).join("");
+
+  row.querySelectorAll(".chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      state.typeFilter = chip.dataset.type;
+      renderTypeChips();
+      renderResults();
+    });
+  });
+}
+
 function daysUntil(dateStr) {
   if (!dateStr) return Infinity; // 마감일 미상 공고는 정렬 시 맨 뒤로
   const today = new Date();
@@ -91,8 +129,9 @@ function ddayBadge(dateStr) {
   return `<span class="dday-badge ${cls}">${label}</span>`;
 }
 
-function sourceAndTypeTags(item) {
-  const tags = [`<span class="source-badge">${escapeHtml(item.source || item.sourceCode || "출처 미상")}</span>`];
+function topTags(item) {
+  const tags = [`<span class="country-badge">${escapeHtml(item.country || "국가 미상")}</span>`];
+  tags.push(`<span class="source-badge">${escapeHtml(item.sourceCode || item.source || "출처 미상")}</span>`);
   const noticeType = NOTICE_TYPE_LABELS[item.noticeType];
   if (noticeType) {
     tags.push(`<span class="notice-type-badge ${noticeType.cls}">${noticeType.label}</span>`);
@@ -104,15 +143,85 @@ function detailLinkLabel(item) {
   return SOURCE_LINK_LABELS[item.sourceCode] || `${item.source || "원문"} 원문 보기`;
 }
 
+function detailRow(label, value) {
+  if (!value) return "";
+  return `<div class="notice-detail-row"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`;
+}
+
+function renderAttachments(item) {
+  if (!item.attachments || item.attachments.length === 0) return "";
+  const links = item.attachments.map((a) =>
+    `<li><a href="${a.url}" target="_blank" rel="noopener">${escapeHtml(a.name)}</a></li>`
+  ).join("");
+  return `
+    <div class="detail-section">
+      <h4>첨부파일</h4>
+      <ul class="attachment-list">${links}</ul>
+    </div>`;
+}
+
+function renderCard(item, kw) {
+  const businessRows = [
+    detailRow("예산", item.budget),
+    detailRow("계약방식", item.contractMethod),
+    detailRow("인도조건", item.deliveryCondition),
+    detailRow("지급조건", item.paymentCondition),
+  ].join("");
+
+  return `
+    <details class="notice-card">
+      <summary class="notice-summary">
+        <span class="notice-icon">${iconSvg(kw, 18)}</span>
+        <span class="notice-body">
+          ${topTags(item)}
+          <p class="notice-title">${escapeHtml(item.title)}</p>
+          <span class="notice-meta">
+            <span>🏛 ${escapeHtml(item.org)}</span>
+            <span>📅 마감일 ${item.dueDate || "확인 필요"}</span>
+          </span>
+        </span>
+        ${ddayBadge(item.dueDate)}
+        <span class="chevron">›</span>
+      </summary>
+      <div class="notice-detail">
+        <div class="detail-section">
+          <h4>기본 정보</h4>
+          <dl class="notice-detail-list">
+            ${detailRow("국가", item.country)}
+            ${detailRow("출처", item.source)}
+            ${detailRow("발주기관", item.org)}
+            ${detailRow("분야", kw)}
+            ${detailRow("정보 유형", item.noticeType)}
+          </dl>
+        </div>
+        <div class="detail-section">
+          <h4>일정 정보</h4>
+          <dl class="notice-detail-list">
+            ${detailRow("등록일", item.postedDate || "확인 필요")}
+            ${detailRow("마감일", item.dueDate || "마감일 확인 필요")}
+          </dl>
+        </div>
+        ${businessRows ? `<div class="detail-section"><h4>사업 정보</h4><dl class="notice-detail-list">${businessRows}</dl></div>` : ""}
+        <div class="detail-section">
+          <h4>핵심 요약</h4>
+          <p class="notice-detail-desc">${escapeHtml(item.description || "상세 설명이 제공되지 않았습니다.")}</p>
+        </div>
+        ${renderAttachments(item)}
+        <a class="notice-detail-link" href="${item.url || "#"}" target="_blank" rel="noopener">
+          ${detailLinkLabel(item)}
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </a>
+      </div>
+    </details>`;
+}
+
 function renderResults() {
   const selectedList = [...state.selected];
-  document.getElementById("selectedKeywordsText").textContent = selectedList.length
-    ? selectedList.join(" · ")
-    : "선택 없음";
 
   const groups = selectedList.map((kw) => {
     const items = state.data.items
       .filter((item) => item.keywords.includes(kw))
+      .filter((item) => state.typeFilter === "전체" || item.noticeType === state.typeFilter)
       .sort((a, b) => daysUntil(a.dueDate) - daysUntil(b.dueDate));
     return { kw, items };
   }).filter((g) => g.items.length > 0);
@@ -137,39 +246,7 @@ function renderResults() {
         <span class="group-count">총 ${items.length}건</span>
       </div>
       <div class="card-list">
-        ${items.map((item) => `
-          <details class="notice-card">
-            <summary class="notice-summary">
-              <span class="notice-icon">${iconSvg(kw, 18)}</span>
-              <span class="notice-body">
-                ${sourceAndTypeTags(item)}
-                <p class="notice-title">${escapeHtml(item.title)}</p>
-                <span class="notice-meta">
-                  <span>🏛 ${escapeHtml(item.org)}</span>
-                  <span>📅 마감일 ${item.dueDate || "확인 필요"}</span>
-                </span>
-              </span>
-              ${ddayBadge(item.dueDate)}
-              <span class="chevron">›</span>
-            </summary>
-            <div class="notice-detail">
-              <dl class="notice-detail-list">
-                <div class="notice-detail-row">
-                  <dt>예산</dt>
-                  <dd>${escapeHtml(item.budget || "정보 없음")}</dd>
-                </div>
-                <div class="notice-detail-row">
-                  <dt>참가자격</dt>
-                  <dd>${escapeHtml(item.eligibility || "정보 없음")}</dd>
-                </div>
-              </dl>
-              <p class="notice-detail-desc">${escapeHtml(item.description || "상세 설명이 제공되지 않았습니다.")}</p>
-              <a class="notice-detail-link" href="${item.url || "https://www.g2b.go.kr"}" target="_blank" rel="noopener">
-                ${detailLinkLabel(item)}
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
-              </a>
-            </div>
-          </details>`).join("")}
+        ${items.map((item) => renderCard(item, kw)).join("")}
       </div>
     </section>
   `).join("");
@@ -192,7 +269,11 @@ function showScreen(name) {
   document.getElementById("screen-keywords").hidden = name !== "keywords";
   document.getElementById("screen-results").hidden = name !== "results";
   document.getElementById("filterBar").hidden = name !== "results";
-  if (name === "results") renderResults();
+  if (name === "results") {
+    renderCategoryChips();
+    renderTypeChips();
+    renderResults();
+  }
 }
 
 async function loadData() {
@@ -214,7 +295,6 @@ function init() {
 
   document.getElementById("viewResultsBtn").addEventListener("click", () => showScreen("results"));
   document.getElementById("backBtn").addEventListener("click", () => showScreen("keywords"));
-  document.getElementById("editKeywordsBtn").addEventListener("click", () => showScreen("keywords"));
 
   document.getElementById("telegramBtn").addEventListener("click", () => {
     alert("텔레그램 알림 연동은 다음 업데이트에서 제공될 예정입니다.");

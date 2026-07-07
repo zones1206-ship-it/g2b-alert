@@ -2,8 +2,12 @@
 여러 공고 수집원(collector)을 실행해 결과를 합친 뒤 data/announcements.json으로 저장한다.
 
 현재 등록된 수집원:
-- collectors.g2b  : 나라장터(조달청) 입찰공고정보서비스
 - collectors.kanc : 한국나노기술원(KANC) 입찰공고 게시판
+
+(과거 나라장터(G2B) 오픈API 수집기가 있었으나, 전체 공고 대비 실제
+장비 구매 공고 비율이 낮고 502 오류·복잡한 필터링 문제로 제거했다.
+KDIA/KOTRA는 조사 결과 자동 수집 가능한 공개 입찰 게시판을 찾지 못해
+보류 중이다.)
 
 새 수집원을 추가하려면:
 1. scripts/collectors/<이름>.py 에 collect() -> list[dict] 함수를 구현
@@ -19,12 +23,11 @@ import json
 import os
 from datetime import date, datetime
 
-from collectors import g2b, kanc
+from collectors import kanc
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "announcements.json")
 
 COLLECTORS = [
-    ("G2B", g2b),
     ("KANC", kanc),
 ]
 
@@ -50,7 +53,6 @@ def run_collector(name, module, existing_items):
         return fallback
 
     if not items:
-        # G2B는 인증키가 없을 때 빈 리스트를 반환한다 — 이 경우도 기존 데이터를 보존한다.
         print(f"[{name}] 이번 실행에서 수집된 항목이 없어 기존 데이터를 유지합니다.")
         return fallback
 

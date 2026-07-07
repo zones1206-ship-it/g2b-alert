@@ -1,4 +1,4 @@
-name: Fetch Announcements (G2B + KANC)
+name: Fetch Announcements (KANC)
 
 on:
   schedule:
@@ -21,8 +21,6 @@ jobs:
           python-version: "3.12"
 
       - name: Fetch announcements
-        env:
-          G2B_API_KEY: ${{ secrets.G2B_API_KEY }}
         run: python scripts/fetch_announcements.py
 
       - name: Commit updated data
