@@ -173,24 +173,40 @@ def collect_items(service_key: str):
     seen_ids = set()
     items = []
     page_no = 1
+    raw_count = 0
+    matched_count = 0
+    skipped_invalid = 0
+    first_page_rows = []
+
+    print(f"조회 기간: {begin} ~ {end}")
 
     while page_no <= MAX_PAGES:
         payload = fetch_page(service_key, begin, end, page_no)
         rows, total_count = extract_rows(payload)
+        if page_no == 1:
+            print(f"API 응답 totalCount(전체 공고 수, 키워드 필터링 전): {total_count}")
+            first_page_rows = rows
         if not rows:
             break
+
+        raw_count += len(rows)
 
         for row in rows:
             title = row.get("bidNtceNm", "")
             matched = matches_keywords(title)
             if not matched:
                 continue
+            matched_count += 1
             try:
                 item = build_item(row, matched)
             except Exception as exc:  # noqa: BLE001
                 print(f"공고 파싱 중 오류(건너뜀): {exc}")
+                skipped_invalid += 1
                 continue
-            if not item or item["id"] in seen_ids:
+            if not item:
+                skipped_invalid += 1
+                continue
+            if item["id"] in seen_ids:
                 continue
             seen_ids.add(item["id"])
             items.append(item)
@@ -198,6 +214,19 @@ def collect_items(service_key: str):
         if page_no * NUM_OF_ROWS >= total_count:
             break
         page_no += 1
+
+    print(f"실제로 받아온 공고 건수(raw, 페이지 합계): {raw_count}")
+    print(f"키워드 매칭된 건수: {matched_count}")
+    print(f"제목/마감일 누락 등으로 제외된 건수: {skipped_invalid}")
+    print(f"최종 저장 대상 건수(중복 제거 후): {len(items)}")
+
+    if raw_count == 0:
+        print("API가 이 기간에 대해 공고를 0건 반환했습니다. 조회 기간, 인증키 승인 상태, inqryDiv 값을 확인하세요.")
+    elif matched_count == 0:
+        # 참고용으로 첫 페이지 공고명을 몇 개 출력해 키워드 매칭 실패 여부를 판단할 수 있게 한다.
+        sample_titles = [row.get("bidNtceNm", "(제목 없음)") for row in first_page_rows[:5]]
+        print(f"공고는 {raw_count}건 받아왔지만 키워드({', '.join(KEYWORDS)})에 매칭되는 공고가 없습니다.")
+        print(f"참고용 샘플 공고명(최대 5건): {sample_titles}")
 
     return items
 
