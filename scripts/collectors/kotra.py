@@ -48,7 +48,7 @@ import urllib.request
 import urllib.error
 from datetime import datetime, date, timedelta
 
-from .common import normalize_text
+from .common import normalize_text, TGV_STRONG_TERMS
 
 SOURCE_NAME = "대한무역투자진흥공사"
 SOURCE_CODE = "KOTRA"
@@ -83,21 +83,14 @@ DISPLAY_TERMS = [
     "micro led", "lcd", "panel", "패널", "glass", "유리기판", "세정장비",
     "식각장비", "이송장비", "물류장비", "자동화장비",
 ]
-TGV_TERMS = [
-    "tgv", "throughglassvia", "through glass via", "유리기판",
-    "glasssubstrate", "glass substrate", "glasscore", "glass core",
-    "glassinterposer", "glass interposer", "glassvia", "glass via",
-    "유리관통홀", "유리관통전극", "glassetching", "glass etching",
-    "hfetching", "hf etching", "laserdrilling", "laser drilling",
-    "viafilling", "via filling", "copperplating", "copper plating",
-    "cuplating", "cu plating", "유리세정", "glasscleaning", "glass cleaning",
-    "glasshandling", "glass handling",
-]
-
+# TGV 카테고리는 common.TGV_STRONG_TERMS(유리기판/TGV 등 명확한 신호)만 쓴다.
+# "도금"/"plating"만 있는 경우(반도체 일반 도금 공정 등)는 TGV로 보지 않는다
+# (common.TGV_WEAK_PLATING_TERMS로 정의돼 있지만 카테고리 매칭에는 쓰지 않음 —
+# 완전히 삭제한 건 아니고, 강한 신호와 함께 있을 때를 위해 남겨둔 참고 목록).
 CATEGORY_TERM_MAP = {
     "반도체 장비": SEMI_TERMS,
     "디스플레이 장비": DISPLAY_TERMS,
-    "도금 장비": TGV_TERMS,  # TGV/유리기판은 기존 "도금 장비" 카테고리에 매핑
+    "TGV 장비": TGV_STRONG_TERMS,
 }
 
 NOTICE_TYPE_RULES = [

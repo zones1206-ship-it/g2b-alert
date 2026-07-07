@@ -15,7 +15,7 @@ scripts/fetch_announcements.py의 COLLECTORS 목록에 추가하면 된다.
     "dueDate": "YYYY-MM-DD" | None,   # 확인 불가능하면 None (프론트가 "마감일 확인 필요"로 표시)
     "postedDate": "YYYY-MM-DD" | None,
     "status": str | None,      # 예: "진행중" (원문에서 확인 가능한 경우만)
-    "keywords": [str, ...],    # 매칭된 최상위 카테고리 (반도체 장비 / 디스플레이 장비 / 도금 장비)
+    "keywords": [str, ...],    # 매칭된 최상위 카테고리 (반도체 장비 / 디스플레이 장비 / TGV 장비)
     "budget": str | None,
     "contractMethod": str | None,   # 계약방법 (원문에서 확인된 경우만)
     "deliveryCondition": str | None,  # 인도조건/납품장소 (원문에서 확인된 경우만)
@@ -37,7 +37,21 @@ scripts/fetch_announcements.py의 COLLECTORS 목록에 추가하면 된다.
 """
 
 # 사용자에게 노출되는 최상위 관심 분야 (홈 화면 토글 카드 / 결과 화면 그룹)
-CATEGORIES = ["반도체 장비", "디스플레이 장비", "도금 장비"]
+CATEGORIES = ["반도체 장비", "디스플레이 장비", "TGV 장비"]
+
+# TGV(Through Glass Via) 장비 카테고리 세부 검색어. "강한 신호"(유리기판/TGV 등
+# 명확히 유리 공정 맥락)와 "약한 신호"(도금/plating처럼 반도체 일반 공정에도
+# 흔히 쓰이는 단어)를 분리해서, 약한 신호만 있는 경우(예: 반도체용 일반 도금
+# 장비)는 TGV로 분류하지 않고 다른 카테고리(기본값 반도체 장비 등)로 남긴다.
+TGV_STRONG_TERMS = [
+    "TGV", "Through Glass Via", "유리기판", "글라스 기판", "Glass Substrate",
+    "Glass Core", "Glass Interposer", "유리 관통홀", "유리 관통전극", "관통전극",
+    "Glass Via", "Glass Etching", "유리 식각", "HF Etching", "Laser Drilling",
+    "Via Filling", "유리 세정", "Glass Cleaning", "Glass Handling",
+]
+TGV_WEAK_PLATING_TERMS = [
+    "도금", "plating", "전해도금", "무전해도금", "Cu Plating", "Copper Plating",
+]
 
 # 화면에 "수집 출처" 배지로 표시할 소스 목록 (orchestrator/collector가 사용하는 sourceCode와 일치해야 함)
 SOURCES = [

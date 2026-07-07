@@ -33,7 +33,7 @@ import html as html_lib
 import urllib.request
 import urllib.error
 
-from .common import normalize_text
+from .common import normalize_text, TGV_STRONG_TERMS
 
 SOURCE_NAME = "한국나노기술원"
 SOURCE_CODE = "KANC"
@@ -70,11 +70,10 @@ EQUIPMENT_INCLUDE_TERMS = [
 ]
 
 # KANC 자체가 이미 반도체/나노 장비 전문 기관 게시판이므로, 나라장터처럼
-# 넓은 필터를 두지 않고 명확한 신호가 있을 때만 디스플레이/도금으로
+# 넓은 필터를 두지 않고 명확한 신호가 있을 때만 디스플레이/TGV로
 # 분류하고 나머지는 기본값으로 반도체 장비에 둔다.
 CATEGORY_HINTS = {
     "디스플레이 장비": ["디스플레이", "oled", "lcd", "패널", "글라스"],
-    "도금 장비": ["도금", "plating", "tgv", "유리기판", "관통전극"],
 }
 
 
@@ -136,6 +135,11 @@ def classify(title: str):
 def match_categories(title: str):
     t = normalize_text(title)
     matched = [cat for cat, terms in CATEGORY_HINTS.items() if any(normalize_text(term) in t for term in terms)]
+    # TGV는 유리기판/TGV 등 "강한 신호"가 있을 때만 인정한다. "도금"/"plating"
+    # 단어만 있는 경우(예: 반도체용 일반 도금 장비)는 TGV로 보지 않는다 —
+    # 그런 경우는 아래 매칭 결과가 비어 기본값(반도체 장비)으로 남는다.
+    if any(normalize_text(term) in t for term in TGV_STRONG_TERMS):
+        matched.append("TGV 장비")
     return matched or ["반도체 장비"]
 
 

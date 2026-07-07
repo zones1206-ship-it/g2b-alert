@@ -88,6 +88,7 @@ body {
   display: flex; flex-direction: column; gap: 8px;
 }
 .filter-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.filter-count { margin: 0; font-size: 11.5px; color: var(--text-muted); }
 .chip {
   border: 1.5px solid var(--border);
   background: var(--white);

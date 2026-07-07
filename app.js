@@ -4,13 +4,13 @@
 const KEYWORDS = [
   "반도체 장비",
   "디스플레이 장비",
-  "도금 장비",
+  "TGV 장비",
 ];
 
 const KEYWORD_ICONS = {
   "반도체 장비": "M9 2h6v2h-6zM9 20h6v2h-6zM2 9h2v6H2zM20 9h2v6h-2zM6 6h12v12H6z M9.5 9.5h5v5h-5z",
   "디스플레이 장비": "M3 4h18v13H3zM8 21h8M12 17v4",
-  "도금 장비": "M12 3l7 4v6c0 4-3 6.5-7 8-4-1.5-7-4-7-8V7z M9 12l2 2 4-4",
+  "TGV 장비": "M12 3l7 4v6c0 4-3 6.5-7 8-4-1.5-7-4-7-8V7z M9 12l2 2 4-4",
 };
 
 const STORAGE_KEY = "g2b-alert-selected-keywords";
@@ -44,7 +44,7 @@ const COUNTRY_FLAGS = {
 
 const state = {
   selected: loadSelection(),
-  typeFilter: "전체",
+  selectedNoticeTypes: new Set(), // 비어있으면 "전체"(모든 정보 유형 표시)
   data: { updatedAt: null, items: [] },
 };
 
@@ -111,14 +111,27 @@ function renderCategoryChips() {
 
 function renderTypeChips() {
   const row = document.getElementById("typeChipRow");
+  const noneSelected = state.selectedNoticeTypes.size === 0;
   row.innerHTML = TYPE_FILTERS.map((type) => {
-    const active = state.typeFilter === type;
+    const active = type === "전체" ? noneSelected : state.selectedNoticeTypes.has(type);
     return `<button type="button" class="chip chip-outline${active ? " chip-active" : ""}" data-type="${type}">${type}</button>`;
   }).join("");
 
+  const countLabel = document.getElementById("typeFilterCount");
+  if (countLabel) {
+    countLabel.textContent = noneSelected ? "" : `${state.selectedNoticeTypes.size}개 유형 선택 중`;
+  }
+
   row.querySelectorAll(".chip").forEach((chip) => {
     chip.addEventListener("click", () => {
-      state.typeFilter = chip.dataset.type;
+      const type = chip.dataset.type;
+      if (type === "전체") {
+        state.selectedNoticeTypes.clear();
+      } else if (state.selectedNoticeTypes.has(type)) {
+        state.selectedNoticeTypes.delete(type);
+      } else {
+        state.selectedNoticeTypes.add(type);
+      }
       renderTypeChips();
       renderResults();
     });
@@ -244,7 +257,7 @@ function renderResults() {
   const groups = selectedList.map((kw) => {
     const items = state.data.items
       .filter((item) => item.keywords.includes(kw))
-      .filter((item) => state.typeFilter === "전체" || item.noticeType === state.typeFilter)
+      .filter((item) => state.selectedNoticeTypes.size === 0 || state.selectedNoticeTypes.has(item.noticeType))
       .sort((a, b) => daysUntil(a.dueDate) - daysUntil(b.dueDate));
     return { kw, items };
   }).filter((g) => g.items.length > 0);
