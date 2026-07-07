@@ -26,10 +26,23 @@ scripts/fetch_announcements.py의 COLLECTORS 목록에 추가하면 된다.
     "url": str,
     "source": str,             # 사람이 읽는 출처명, 예: "한국나노기술원"
     "sourceCode": str,         # 짧은 코드, 예: "KANC"
-    "noticeType": str | None,  # "사전규격"/"정식입찰"(국내 입찰) 또는
+    "noticeType": str | None,  # "사전규격"/"정식입찰"(국내 입찰),
                                # "프로젝트 정보"/"공급사 모집"/"수출상담회"/
-                               # "구매상담회"(KOTRA류 해외 프로젝트 정보)
+                               # "구매상담회"(KOTRA류 해외 프로젝트 정보),
+                               # "낙찰·수주결과"(EBNEW류 낙찰/심사결과 공고)
 }
+
+중국 등 원문이 한국어가 아닌 출처는 위 스키마에 아래 필드를 추가로 채운다
+(common 스키마에는 없지만 프론트가 있으면 표시하고 없으면 생략한다):
+    "translatedTitle" / "originalTitle"     : 번역/원문 제목
+    "translatedSummary" / "originalSummary" : 번역/원문 요약
+    "originalUrl"      : 원문 URL(= url과 동일해도 명시적으로 보관)
+    "sourceCountry"     : 출처 사이트의 국가 코드(예: "CN") — 프로젝트 대상
+                          국가(country/countryCode)와는 다른 개념이다.
+    "sourceType"        : 예: "China Site"
+    "detectedLanguage"  : 예: "zh-CN"
+번역은 실제 번역 API가 연결돼 있지 않아 collectors/zh_translate.py의
+용어집 치환 기반 "최선 노력" 번역이며, 원문은 항상 보존한다.
 
 수집원별로 위 스키마에 없는 추가 필드를 넣어도 된다(예: KOTRA의
 `sourceSiteUrl`, `eventPeriod`). 프론트엔드는 없는 필드를 만나면
@@ -58,6 +71,7 @@ SOURCES = [
     {"code": "KANC", "name": "한국나노기술원"},
     {"code": "NNFC", "name": "나노종합기술원"},
     {"code": "KOTRA", "name": "대한무역투자진흥공사"},
+    {"code": "EBNEW", "name": "중국 비롄왕(EBNEW)"},
 ]
 
 

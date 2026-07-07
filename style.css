@@ -267,6 +267,15 @@ body {
   padding: 1px 6px;
   white-space: nowrap;
 }
+.china-site-badge {
+  font-size: 10.5px; font-weight: 800;
+  color: #b02a2a;
+  background: #fdecea;
+  border: 1px solid #f6cfc9;
+  border-radius: 5px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
 .notice-type-badge {
   font-size: 10.5px; font-weight: 800;
   border-radius: 5px;
@@ -277,6 +286,7 @@ body {
 .notice-type-formal { background: var(--blue-bg); color: var(--blue); }
 .notice-type-project { background: #eef1fb; color: var(--navy-soft); }
 .notice-type-consult { background: #e8f7f0; color: var(--green); }
+.notice-type-result { background: #f3e8fd; color: #7c3aed; }
 .notice-title {
   font-size: 14px; font-weight: 700; color: var(--text);
   margin: 0 0 5px;

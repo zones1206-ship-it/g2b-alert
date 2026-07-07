@@ -5,15 +5,18 @@
 - collectors.kanc  : 한국나노기술원(KANC) 입찰공고 게시판
 - collectors.nnfc  : 나노종합기술원(NNFC) 입찰공고 게시판
 - collectors.kotra : KOTRA 사업신청 목록 중 반도체/디스플레이/TGV 관련 프로젝트
+- collectors.ebnew : 중국 비롄왕(必联网/EBNEW) 입찰/구매/낙찰결과 공고
+                     (China Site — 용어집 기반 최선노력 한국어 번역, 원문 보존)
 
 (과거 나라장터(G2B) 오픈API 수집기가 있었으나, 전체 공고 대비 실제
 장비 구매 공고 비율이 낮고 502 오류·복잡한 필터링 문제로 제거했다.
-KDIA는 조사 결과 자동 수집 가능한 공개 입찰 게시판을 찾지 못해
-보류 중이다.)
+KDIA/중국 국제입찰망(MOFCOM)은 조사는 마쳤으나 아직 미구현이고,
+cebpubservice/CXMT SRM/중국구매입찰망(chinabidding.com.cn)은 WAF
+차단 또는 로그인 필요로 접근 자체가 불가능해 보류 중이다.)
 
-KOTRA는 다른 수집원과 달리 "마감된 프로젝트"도 삭제하지 않는다(신규
-투자/후속 프로젝트 가능성이 있는 영업 정보이기 때문). 그래서 is_still_open()
-에서 sourceCode가 KOTRA인 항목은 날짜 필터링 대상에서 제외한다.
+KOTRA/EBNEW는 다른 수집원과 달리 "마감된 프로젝트"도 삭제하지 않는다
+(신규 투자/후속 프로젝트/낙찰 동향 추적 등 영업 정보 가치가 있기 때문).
+그래서 is_still_open()에서 이 두 출처는 날짜 필터링 대상에서 제외한다.
 
 새 수집원을 추가하려면:
 1. scripts/collectors/<이름>.py 에 collect() -> list[dict] 함수를 구현
@@ -27,9 +30,17 @@ KOTRA는 다른 수집원과 달리 "마감된 프로젝트"도 삭제하지 않
 
 import json
 import os
+import sys
 from datetime import date, datetime
 
-from collectors import kanc, nnfc, kotra
+# Windows 콘솔 등 cp949 같은 비-UTF-8 코드페이지에서 실행되면 중국어/특수문자
+# print()가 UnicodeEncodeError로 죽는 걸 막는다(GitHub Actions는 기본 UTF-8
+# 이라 원래 문제 없지만, 로컬 실행 환경까지 안전하게 만든다).
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+
+from collectors import kanc, nnfc, kotra, ebnew
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "announcements.json")
 
@@ -37,10 +48,11 @@ COLLECTORS = [
     ("KANC", kanc),
     ("NNFC", nnfc),
     ("KOTRA", kotra),
+    ("EBNEW", ebnew),
 ]
 
 # 마감돼도 삭제하지 않고 계속 보여줄 출처 (영업 정보로서 가치가 있는 경우)
-KEEP_EXPIRED_SOURCES = {"KOTRA"}
+KEEP_EXPIRED_SOURCES = {"KOTRA", "EBNEW"}
 
 
 def load_existing_items():
@@ -53,7 +65,7 @@ def load_existing_items():
         return []
 
 
-def run_collector(name, module, existing_items):
+def run_collector(name, module, existing_items, log):
     """수집기를 실행한다. 실패하면 해당 소스의 기존 데이터를 그대로 반환해
     다른 수집원이나 이미 저장된 데이터에 영향을 주지 않는다."""
     fallback = [item for item in existing_items if item.get("sourceCode") == name]
@@ -61,12 +73,15 @@ def run_collector(name, module, existing_items):
         items = module.collect()
     except Exception as exc:  # noqa: BLE001
         print(f"[{name}] 수집 중 오류로 이번 실행분은 건너뜁니다(기존 데이터 유지): {exc}")
+        log[name] = {"status": "오류", "detail": str(exc)[:200], "count": len(fallback)}
         return fallback
 
     if not items:
         print(f"[{name}] 이번 실행에서 수집된 항목이 없어 기존 데이터를 유지합니다.")
+        log[name] = {"status": "결과 없음(기존 유지)", "detail": None, "count": len(fallback)}
         return fallback
 
+    log[name] = {"status": "정상", "detail": None, "count": len(items)}
     return items
 
 
@@ -92,16 +107,19 @@ def is_still_open(item):
 
 def main():
     existing_items = load_existing_items()
+    run_started = datetime.now()
 
+    log = {}
     all_items = []
     for name, module in COLLECTORS:
-        all_items.extend(run_collector(name, module, existing_items))
+        all_items.extend(run_collector(name, module, existing_items, log))
 
     all_items = [item for item in all_items if is_still_open(item)]
     all_items.sort(key=sort_key)
 
+    now = datetime.now().astimezone()
     output = {
-        "updatedAt": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "updatedAt": now.isoformat(timespec="seconds"),
         "items": all_items,
     }
 
@@ -115,6 +133,14 @@ def main():
         by_source[code] = by_source.get(code, 0) + 1
     summary = ", ".join(f"{code} {count}건" for code, count in by_source.items())
     print(f"총 {len(all_items)}건의 공고를 저장했습니다 ({summary}).")
+
+    # 실행 로그 요약 (마지막 검색 시간 / 사이트별 성공-실패 / 최종 반영 건수)
+    elapsed = (datetime.now() - run_started).total_seconds()
+    print(f"--- 실행 로그 ({now.strftime('%Y-%m-%d %H:%M:%S')}, 소요 {elapsed:.0f}초) ---")
+    for name, info in log.items():
+        detail = f" ({info['detail']})" if info["detail"] else ""
+        print(f"  [{name}] {info['status']}{detail} — 최종 반영 {by_source.get(name, 0)}건")
+    print("  다음 자동 실행: 매일 07:00(KST), .github/workflows/fetch-announcements.yml 참고")
 
 
 if __name__ == "__main__":

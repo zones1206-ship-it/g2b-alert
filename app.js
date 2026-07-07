@@ -21,6 +21,7 @@ const SOURCE_LINK_LABELS = {
   KANC: "한국나노기술원 원문 보기",
   NNFC: "나노종합기술원 원문 보기",
   KOTRA: "KOTRA 원문 보기",
+  EBNEW: "비롄왕(EBNEW) 원문 보기",
 };
 
 const NOTICE_TYPE_LABELS = {
@@ -30,9 +31,10 @@ const NOTICE_TYPE_LABELS = {
   "공급사 모집": { label: "공급사 모집", cls: "notice-type-project" },
   "수출상담회": { label: "수출상담회", cls: "notice-type-consult" },
   "구매상담회": { label: "구매상담회", cls: "notice-type-consult" },
+  "낙찰·수주결과": { label: "낙찰·수주결과", cls: "notice-type-result" },
 };
 
-const TYPE_FILTERS = ["전체", "사전규격", "정식입찰", "프로젝트 정보", "공급사 모집", "수출상담회", "구매상담회"];
+const TYPE_FILTERS = ["전체", "사전규격", "정식입찰", "프로젝트 정보", "공급사 모집", "수출상담회", "구매상담회", "낙찰·수주결과"];
 
 // 국가명 -> 국기 이모지 (없는 국가는 이모지 없이 이름만 표시)
 const COUNTRY_FLAGS = {
@@ -161,6 +163,9 @@ function topTags(item) {
   const flag = COUNTRY_FLAGS[item.country] || "";
   const countryLabel = flag ? `${flag} ${item.country}` : (item.country || "국가 미상");
   const tags = [`<span class="country-badge">${escapeHtml(countryLabel)}</span>`];
+  if (item.sourceType === "China Site") {
+    tags.push(`<span class="china-site-badge">🌐 China Site</span>`);
+  }
   tags.push(`<span class="source-badge">${escapeHtml(item.sourceCode || item.source || "출처 미상")}</span>`);
   const noticeType = NOTICE_TYPE_LABELS[item.noticeType];
   if (noticeType) {
@@ -222,10 +227,12 @@ function renderCard(item, kw) {
           <h4>기본 정보</h4>
           <dl class="notice-detail-list">
             ${detailRow("국가", item.country)}
+            ${detailRow("지역", item.region)}
             ${detailRow("출처", item.source)}
             ${detailRow("발주기관", item.org)}
             ${detailRow("분야", kw)}
             ${detailRow("정보 유형", item.noticeType)}
+            ${item.originalTitle && item.originalTitle !== item.title ? detailRow("원문 제목", item.originalTitle) : ""}
           </dl>
         </div>
         <div class="detail-section">
