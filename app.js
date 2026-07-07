@@ -233,6 +233,7 @@ function renderCard(item, kw) {
             ${detailRow("분야", kw)}
             ${detailRow("정보 유형", item.noticeType)}
             ${item.originalTitle && item.originalTitle !== item.title ? detailRow("원문 제목", item.originalTitle) : ""}
+            ${item.originalOrg && item.originalOrg !== item.org ? detailRow("원문 발주처", item.originalOrg) : ""}
           </dl>
         </div>
         <div class="detail-section">

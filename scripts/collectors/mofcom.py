@@ -140,12 +140,16 @@ def build_item(row: dict):
 
     deadline = extract_deadline(detail_text)
     org = extract_field(detail_text, "招标人") or row.get("industryName")
-    region = extract_field(detail_text, "项目实施地点") or row.get("areaName")
+    # 지역명은 짧다(예: "中国河北省") — max_len을 낮게 잡아야 한다. 바로
+    # 다음 라벨이 "招标产品列表(主要设备)"처럼 괄호가 섞인 경우 lookahead의
+    # "순수 한자 2~10자" 조건에 안 걸려 뒤 문단까지 통째로 잡혀버리는
+    # 문제가 실제로 있었다(원문이 상세보기의 "지역"에 그대로 새는 버그).
+    region = extract_field(detail_text, "项目实施地点", max_len=20) or row.get("areaName")
     project_no = extract_field(detail_text, "招标项目编号")
 
     digest = row.get("digest") or ""
-    translated_summary, summary_ok = zh_translate.translate(digest) if digest else (None, False)
-    translated_org, _ = zh_translate.translate(org) if org else (None, False)
+    translated_summary, summary_ok = zh_translate.translate(digest) if digest else (None, True)
+    translated_org, org_ok = zh_translate.translate(org) if org else (None, True)
     translated_region = zh_translate.translate_region(region) if region else None
 
     # 3차(실제 장비구매 성격) 판정은 목록 단계 제목/요약이 아니라 상세
@@ -158,6 +162,12 @@ def build_item(row: dict):
 
     categories = match_categories(combined_relevance_text)
 
+    # 카드 화면 기본 표시(title/org)에는 한자가 남지 않는다 — zh_translate가
+    # 용어집 치환 후 남은 한자를 pypinyin으로 로마자 표기까지 하기 때문.
+    # 일부라도 로마자 표기 폴백을 썼으면 translationIncomplete=true로
+    # 내부 표시해 번역 품질 검토 대상임을 남긴다.
+    translation_incomplete = not (title_ok and org_ok and summary_ok)
+
     return {
         "id": f"mofcom{row['fdid']}",
         "title": translated_title,
@@ -165,7 +175,9 @@ def build_item(row: dict):
         "originalTitle": original_title,
         "translatedSummary": translated_summary,
         "originalSummary": digest or None,
-        "org": translated_org or org or "확인 필요",
+        "org": translated_org or "확인 필요",
+        "originalOrg": org,
+        "translationIncomplete": translation_incomplete,
         "country": SOURCE_COUNTRY,
         "countryCode": SOURCE_COUNTRY_CODE,
         "region": translated_region,
@@ -180,7 +192,7 @@ def build_item(row: dict):
         "deliveryCondition": None,
         "paymentCondition": None,
         "eligibility": None,
-        "description": translated_summary or (translated_title if title_ok else original_title),
+        "description": translated_summary or translated_title,
         "attachments": [],
         "url": detail_url,
         "originalUrl": detail_url,
@@ -261,7 +273,7 @@ def collect():
                 if item is None:
                     stats["excluded_after_detail"] += 1
                     continue
-                if item["translatedTitle"] == item["originalTitle"]:
+                if item["translationIncomplete"]:
                     stats["translate_failed"] += 1
                 items.append(item)
                 stats["included"] += 1
@@ -277,7 +289,7 @@ def collect():
     print(f"[MOFCOM] 같은 공고 재색인으로 중복 제거: {stats['duplicate']}건")
     print(f"[MOFCOM] 관련성 낮아 제외(1차/2차, 제목 기준): {stats['not_relevant']}건")
     print(f"[MOFCOM] 상세 확인 후 제외(3차 장비구매 성격 미확인/요청실패): {stats['excluded_after_detail']}건")
-    print(f"[MOFCOM] 최종 포함: {stats['included']}건 (번역 실패/원문 유지 {stats['translate_failed']}건)")
+    print(f"[MOFCOM] 최종 포함: {stats['included']}건 (일부 로마자표기 폴백/검토필요 {stats['translate_failed']}건)")
 
     return items
 

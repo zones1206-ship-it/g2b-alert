@@ -336,8 +336,8 @@ def build_item(row: dict):
     budget, currency = extract_budget(detail_text)
 
     summary_source = product or original_title
-    translated_summary, summary_ok = zh_translate.translate(summary_source) if summary_source else (None, False)
-    translated_org, _ = zh_translate.translate(org) if org else (None, False)
+    translated_summary, summary_ok = zh_translate.translate(summary_source) if summary_source else (None, True)
+    translated_org, org_ok = zh_translate.translate(org) if org else (None, True)
     translated_region = zh_translate.translate_region(region) if region else None
 
     combined_relevance_text = " ".join(filter(None, [original_title, product, detail_text]))
@@ -347,6 +347,13 @@ def build_item(row: dict):
 
     categories = match_categories(combined_relevance_text)
 
+    # 카드 화면 기본 표시(title/org)에는 한자가 남지 않는다(용어집 치환 +
+    # pypinyin 로마자 표기 폴백으로 항상 한자를 제거한다 — zh_translate 참고).
+    # title_ok/org_ok가 하나라도 False면 일부가 로마자 표기(발음 표기)
+    # 폴백을 썼다는 뜻이라 translationIncomplete=true로 내부 표시해
+    # 번역 품질 검토 대상임을 남긴다.
+    translation_incomplete = not (title_ok and org_ok and summary_ok)
+
     return {
         "id": f"ebnew{re.search(r'(\d+)', row['url']).group(1)}",
         "title": translated_title,
@@ -354,7 +361,9 @@ def build_item(row: dict):
         "originalTitle": original_title,
         "translatedSummary": translated_summary,
         "originalSummary": summary_source,
-        "org": translated_org or org or "확인 필요",
+        "org": translated_org or "확인 필요",
+        "originalOrg": org,
+        "translationIncomplete": translation_incomplete,
         "country": SOURCE_COUNTRY,
         "countryCode": SOURCE_COUNTRY_CODE,
         "region": translated_region,
@@ -372,7 +381,7 @@ def build_item(row: dict):
         "deliveryCondition": None,
         "paymentCondition": None,
         "eligibility": None,
-        "description": translated_summary or (translated_title if title_ok else original_title),
+        "description": translated_summary or translated_title,
         "attachments": [],
         "url": row["url"],
         "originalUrl": row["url"],
@@ -445,7 +454,7 @@ def collect():
                     # 반환하는 경우라 여기서 합산 카운트한다.
                     stats["excluded_after_detail"] += 1
                     continue
-                if item["translatedTitle"] == item["originalTitle"]:
+                if item["translationIncomplete"]:
                     stats["translate_failed"] += 1
                 items.append(item)
                 stats["included"] += 1
@@ -459,7 +468,7 @@ def collect():
     print(f"[EBNEW] 같은 공고 재색인으로 중복 제거: {stats['duplicate']}건")
     print(f"[EBNEW] 관련성 낮아 제외(1차/2차, 제목 기준): {stats['not_relevant']}건")
     print(f"[EBNEW] 상세 확인 후 제외(3차 장비구매 성격 미확인/요청실패): {stats['excluded_after_detail']}건")
-    print(f"[EBNEW] 최종 포함: {stats['included']}건 (번역 실패/원문 유지 {stats['translate_failed']}건)")
+    print(f"[EBNEW] 최종 포함: {stats['included']}건 (일부 로마자표기 폴백/검토필요 {stats['translate_failed']}건)")
 
     return items
 
