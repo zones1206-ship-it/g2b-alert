@@ -89,12 +89,16 @@ def collect_items(service_key: str):
             due = normalize_date(row.get("bidClseDt") or row.get("opengDt"))
             if not due:
                 continue
+            budget = row.get("asignBdgtAmt") or row.get("presmptPrce")
             items.append({
                 "id": row.get("bidNtceNo") or f"{row.get('bidNtceOrd', '')}-{title}",
                 "title": title,
                 "org": row.get("ntceInsttNm", "발주기관 미상"),
                 "dueDate": due,
                 "keywords": matched,
+                "budget": f"{int(budget):,}원" if budget else None,
+                "eligibility": row.get("bidprcPsblIndstrytyNm") or row.get("prtcptLmtRgnNm"),
+                "description": row.get("ntceSpecDocUrl1") and f"규격서: {row.get('ntceSpecDocUrl1')}",
                 "url": row.get("bidNtceDtlUrl") or "https://www.g2b.go.kr",
             })
 

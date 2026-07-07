@@ -121,18 +121,37 @@ function renderResults() {
       </div>
       <div class="card-list">
         ${items.map((item) => `
-          <a class="notice-card" href="${item.url || "#"}" target="_blank" rel="noopener">
-            <span class="notice-icon">${iconSvg(kw, 18)}</span>
-            <span class="notice-body">
-              <p class="notice-title">${escapeHtml(item.title)}</p>
-              <span class="notice-meta">
-                <span>🏛 ${escapeHtml(item.org)}</span>
-                <span>📅 마감일 ${item.dueDate}</span>
+          <details class="notice-card">
+            <summary class="notice-summary">
+              <span class="notice-icon">${iconSvg(kw, 18)}</span>
+              <span class="notice-body">
+                <p class="notice-title">${escapeHtml(item.title)}</p>
+                <span class="notice-meta">
+                  <span>🏛 ${escapeHtml(item.org)}</span>
+                  <span>📅 마감일 ${item.dueDate}</span>
+                </span>
               </span>
-            </span>
-            ${ddayBadge(item.dueDate)}
-            <span class="chevron">›</span>
-          </a>`).join("")}
+              ${ddayBadge(item.dueDate)}
+              <span class="chevron">›</span>
+            </summary>
+            <div class="notice-detail">
+              <dl class="notice-detail-list">
+                <div class="notice-detail-row">
+                  <dt>예산</dt>
+                  <dd>${escapeHtml(item.budget || "정보 없음")}</dd>
+                </div>
+                <div class="notice-detail-row">
+                  <dt>참가자격</dt>
+                  <dd>${escapeHtml(item.eligibility || "정보 없음")}</dd>
+                </div>
+              </dl>
+              <p class="notice-detail-desc">${escapeHtml(item.description || "상세 설명이 제공되지 않았습니다.")}</p>
+              <a class="notice-detail-link" href="${item.url || "https://www.g2b.go.kr"}" target="_blank" rel="noopener">
+                나라장터 원본 공고 보기
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </details>`).join("")}
       </div>
     </section>
   `).join("");
