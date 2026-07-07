@@ -5,14 +5,17 @@
 - collectors.kanc  : 한국나노기술원(KANC) 입찰공고 게시판
 - collectors.nnfc  : 나노종합기술원(NNFC) 입찰공고 게시판
 - collectors.kotra : KOTRA 사업신청 목록 중 반도체/디스플레이/TGV 관련 프로젝트
-- collectors.ebnew : 중국 비롄왕(必联网/EBNEW) 입찰/구매/낙찰결과 공고
+- collectors.ebnew  : 중국 비롄왕(必联网/EBNEW) 입찰/구매/낙찰결과 공고
                      (China Site — 용어집 기반 최선노력 한국어 번역, 원문 보존)
+- collectors.mofcom : 중국국제초표망(chinabidding.mofcom.gov.cn, 상무부) 입찰공고
+                     (China Site — EBNEW와 동일한 번역/관련성 판정 로직 재사용)
 
 (과거 나라장터(G2B) 오픈API 수집기가 있었으나, 전체 공고 대비 실제
 장비 구매 공고 비율이 낮고 502 오류·복잡한 필터링 문제로 제거했다.
-KDIA/중국 국제입찰망(MOFCOM)은 조사는 마쳤으나 아직 미구현이고,
-cebpubservice/CXMT SRM/중국구매입찰망(chinabidding.com.cn)은 WAF
-차단 또는 로그인 필요로 접근 자체가 불가능해 보류 중이다.)
+cebpubservice(중국 입찰투찰 공공서비스 플랫폼)/CXMT SRM(공급사·소싱
+플랫폼)/중국구매입찰망(chinabidding.com.cn)은 WAF 차단 또는 로그인
+필요로 접근 자체가 불가능해 보류 중이다 — collectors/common.py의
+BLOCKED_SOURCES에 "추후 연동 후보"로 남겨두었다(완전 삭제하지 않음).)
 
 KOTRA/EBNEW는 다른 수집원과 달리 "마감된 프로젝트"도 삭제하지 않는다
 (신규 투자/후속 프로젝트/낙찰 동향 추적 등 영업 정보 가치가 있기 때문).
@@ -40,7 +43,7 @@ for _stream in (sys.stdout, sys.stderr):
     if hasattr(_stream, "reconfigure"):
         _stream.reconfigure(encoding="utf-8", errors="replace")
 
-from collectors import kanc, nnfc, kotra, ebnew
+from collectors import kanc, nnfc, kotra, ebnew, mofcom
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "announcements.json")
 
@@ -49,10 +52,11 @@ COLLECTORS = [
     ("NNFC", nnfc),
     ("KOTRA", kotra),
     ("EBNEW", ebnew),
+    ("MOFCOM", mofcom),
 ]
 
 # 마감돼도 삭제하지 않고 계속 보여줄 출처 (영업 정보로서 가치가 있는 경우)
-KEEP_EXPIRED_SOURCES = {"KOTRA", "EBNEW"}
+KEEP_EXPIRED_SOURCES = {"KOTRA", "EBNEW", "MOFCOM"}
 
 
 def load_existing_items():

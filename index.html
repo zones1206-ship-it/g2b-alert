@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>장비 프로젝트 레이더</title>
-<meta name="description" content="반도체·디스플레이·도금/TGV 장비 입찰 및 프로젝트 정보를 모아 보여주는 개인용 알림 대시보드">
+<meta name="description" content="반도체·디스플레이·TGV 장비 입찰 및 프로젝트 정보를 모아 보여주는 개인용 알림 대시보드">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -21,7 +21,7 @@
       </span>
       <div class="brand-text">
         <h1>장비 프로젝트 레이더</h1>
-        <p class="brand-sub">반도체 · 디스플레이 · 도금/TGV 장비 입찰 및 프로젝트 정보</p>
+        <p class="brand-sub">반도체 · 디스플레이 · TGV 장비 입찰 및 프로젝트 정보</p>
       </div>
     </div>
     <div class="source-chips" aria-label="공고 수집 출처">
@@ -29,7 +29,19 @@
       <span class="source-chip">나노종합기술원 <b>NNFC</b></span>
       <span class="source-chip">KOTRA <b>해외 프로젝트</b></span>
       <span class="source-chip">비롄왕(EBNEW) <b>China Site</b></span>
+      <span class="source-chip">중국국제초표망(MOFCOM) <b>China Site</b></span>
+      <!-- Cloudflare Worker 접속 게이트를 배포하면 이 링크가 실제 로그아웃으로 동작한다.
+           (security/cloudflare-worker/README.md 참고. 게이트 미배포 시엔 그냥 무해한 링크) -->
+      <a href="/__auth/logout" class="icon-btn logout-link" title="로그아웃">로그아웃</a>
     </div>
+    <details class="source-pending">
+      <summary>추후 연동 후보 사이트 (현재 수집 불가) 3곳</summary>
+      <ul>
+        <li>중국 입찰투찰 공공서비스 플랫폼(cebpubservice.cn) — WAF 차단</li>
+        <li>CXMT SRM 공급사·소싱 플랫폼 — 로그인 필수</li>
+        <li>중국 구매·입찰망(chinabidding.com.cn) — 로그인 필수</li>
+      </ul>
+    </details>
   </header>
 
   <nav class="filter-bar" id="filterBar" hidden>

@@ -78,29 +78,75 @@ HARD_EXCLUDE_TERMS = [
     # 배관/유틸리티
     "二次配管", "配管", "管道", "特气", "气体管道", "动力配管", "给排水",
     "暖通", "hvac", "消防",
-    # 전기/기계/클린룸 시공
+    # 전기/기계/클린룸/건축 시공
     "机电安装", "电气安装", "洁净室施工", "厂房建设", "土建", "基础施工",
-    "独立基础", "钢结构", "装修工程", "安装工程", "工程施工",
+    "独立基础", "钢结构", "装修工程", "安装工程", "工程施工", "建筑", "建设",
+    "研究中心建设", "厂房", "土建工程",
     # 총도급/EPC
     "epc", "总承包",
 ]
 
-# 반도체/디스플레이/TGV 산업 신호(하나는 있어야 포함된다). HARD_EXCLUDE_TERMS가
-# 먼저 걸러지므로, 여기 있는 단어가 있으면 배관/건설류가 아닌 이상 장비/생산
-# 관련 공고로 본다.
-STRONG_RELEVANCE_TERMS = [
-    "半导体", "晶圆", "wafer", "刻蚀", "etch", "镀膜", "沉积", "光刻",
-    "封装", "packaging", "显示面板", "显示设备", "oled", "lcd", "面板",
-    "微型发光二极管", "micro led", "玻璃基板", "玻璃通孔", "tgv",
-    "glass substrate", "through glass via", "中介层", "interposer",
-    "检测设备", "清洗设备", "自动光学检测", "aoi", "键合机", "刻蚀机",
-    "成长炉", "生长炉", "扩产", "产业化基地", "fab",
+# 반도체 산업 특이 신호(다른 카테고리 신호와 겹치지 않는, 반도체 공정 고유 용어).
+SEMICONDUCTOR_HINTS = [
+    "半导体", "晶圆", "wafer", "刻蚀", "etch", "光刻", "封装", "packaging",
+    "中介层", "interposer",
 ]
 
+# 디스플레이(OLED/AMOLED/LCD/Micro LED/Mini LED 등은 전부 디스플레이 장비의
+# 세부분류이지, 별도 최상위 카테고리가 아니다) 특이 신호.
+DISPLAY_HINTS = [
+    "显示", "oled", "amoled", "lcd", "tft-lcd", "面板", "micro led", "mini led",
+    "液晶", "显示面板", "显示设备",
+]
+
+# TGV(Through Glass Via/유리기판) 특이 신호.
+TGV_HINTS = [
+    "玻璃基板", "玻璃通孔", "tgv", "glass substrate", "through glass via",
+    "玻璃刻蚀", "电镀铜", "化学镀铜",
+]
+
+# 산업 전반에 걸쳐 쓰이는 범용 신호. 관련성(2차) 판정에는 포함시키되, 이
+# 신호만 있고 위 3개 카테고리 신호가 하나도 없으면 "어느 분야인지 확정하기
+# 어려운" 경우이므로 category=미분류/검토 필요로 내부 표시한다(사용자에게
+# 노출되는 관심 분야 선택지에는 추가하지 않는다 — 반도체/디스플레이/TGV
+# 3개만 유지).
+GENERIC_RELEVANCE_HINTS = [
+    "检测设备", "清洗设备", "自动光学检测", "aoi", "键合机", "刻蚀机",
+    "成长炉", "生长炉", "扩产", "产业化基地", "fab", "镀膜", "沉积",
+    "微型发光二极管",
+]
+
+STRONG_RELEVANCE_TERMS = SEMICONDUCTOR_HINTS + DISPLAY_HINTS + TGV_HINTS + GENERIC_RELEVANCE_HINTS
+
 CATEGORY_HINTS = {
-    "디스플레이 장비": ["显示", "oled", "lcd", "面板", "micro led", "液晶"],
-    "TGV 장비": ["玻璃基板", "玻璃通孔", "tgv", "glass substrate", "through glass via", "中介层", "interposer", "玻璃刻蚀", "电镀铜", "化学镀铜"],
+    "반도체 장비": SEMICONDUCTOR_HINTS,
+    "디스플레이 장비": DISPLAY_HINTS,
+    "TGV 장비": TGV_HINTS,
 }
+
+# 3차 판정: "실제 장비 구매/조달/입찰 성격"이 확인돼야 최종 포함한다.
+# 반도체/디스플레이/TGV 키워드가 있다는 것만으로는 부족하다(예: "반도체 공장
+# 건설", "OLED 생산라인 배관공사", "TGV 연구센터 건축"은 1차/2차를 통과해도
+# 실제 "설비 구매" 성격이 아니므로 제외해야 한다).
+EQUIPMENT_PURCHASE_TERMS = [
+    "设备采购", "设备招标", "设备购置", "采购项目", "生产设备", "工艺设备",
+    "检测设备", "清洗设备", "刻蚀设备", "电镀设备", "激光设备", "自动化设备",
+    "equipment procurement", "equipment purchase", "equipment tender",
+    "process equipment", "manufacturing equipment", "inspection equipment",
+]
+
+# 위 고정 문구와 정확히 일치하지 않아도, "구매/조달/입찰 행위를 뜻하는 동사"와
+# "设备(장비)"가 본문에 함께 있으면 장비 구매 문맥으로 인정한다(예: "XX设备
+# ...国际招标公告"처럼 사이의 어순이 다른 실제 공고 제목이 많기 때문).
+PROCUREMENT_ACTION_TERMS = ["采购", "招标", "中标", "竞标", "议标", "询价", "procurement", "tender", "bid"]
+
+
+def has_equipment_purchase_context(t: str) -> bool:
+    if any(normalize_text(term) in t for term in EQUIPMENT_PURCHASE_TERMS):
+        return True
+    has_action = any(normalize_text(term) in t for term in PROCUREMENT_ACTION_TERMS)
+    has_equipment_word = "设备" in t or "equipment" in t
+    return has_action and has_equipment_word
 
 TAG_TYPE_MAP = {
     "预告": "사전규격",
@@ -169,18 +215,17 @@ def parse_search_results(raw_html: str):
     return rows
 
 
-def is_relevant(text: str):
-    """2단계 판정: ① 배관/공조/전기/토목/EPC 등 부대공사 신호가 있으면
-    반도체/디스플레이 단어가 같이 있어도 무조건 제외한다(예:
-    "半导体设备独立基础项目" = 반도체 장비동 "기초 공사"이지 장비 구매가
-    아님 — 실제로 이런 오탐이 있었다). ② 산업 신호(STRONG_RELEVANCE_TERMS)
-    가 있어야 포함한다.
+def is_relevant_list_stage(text: str):
+    """1차(하드 제외)+2차(산업 관련성) 판정만 한다. 목록 단계(제목만 있고
+    아직 상세 페이지를 안 읽은 시점)에서 명백히 무관한 것을 먼저 걸러내
+    불필요한 상세 페이지 요청을 줄이기 위한 값싼 사전 필터다.
 
-    처음에는 "장비 구매 문맥(EQUIPMENT_CONTEXT_TERMS)까지 같이 있어야
-    포함"하는 더 엄격한 AND 조건도 시도했으나, "OLED 생산라인", "면板
-    자동광학검사 및 관련 설비 업그레이드"처럼 명시적으로 "设备采购"라고
-    쓰지 않는 정당한 장비/생산라인 공고까지 대거 제외되는 것을 테스트로
-    확인해 되돌렸다. 배관/건설 신호는 하드 제외로 충분히 걸러진다."""
+    3차(실제 장비 구매 성격)는 여기서 보지 않는다 — 이 사이트들의 실제
+    "招标产品/主要设备"(입찰 대상 품목) 정보는 대부분 제목이 아니라 상세
+    페이지 본문에만 있어서, 제목만으로 3차까지 판정하면 정당한 공고까지
+    대량으로 잘못 제외된다(실제로 이 사이트 EBNEW는 84건→2건, MOFCOM은
+    85건→0건까지 떨어지는 것을 확인했다). 그래서 3차는 상세 페이지를 읽은
+    뒤 is_equipment_purchase()로 별도 판정한다."""
     t = normalize_text(text)
 
     if any(normalize_text(term) in t for term in HARD_EXCLUDE_TERMS):
@@ -194,10 +239,40 @@ def is_relevant(text: str):
     return not has_low
 
 
+def is_equipment_purchase(text: str):
+    """3차 판정: 실제 "장비 구매/조달/입찰" 성격이 확인돼야 한다. 산업
+    키워드만 있고 이 성격이 없으면(예: "반도체 공장 건설", "OLED 연구센터
+    건축") 제외한다. 상세 페이지 본문까지 포함한 텍스트로 판정해야 이
+    사이트들의 실제 "招标产品/主要设备" 항목을 반영할 수 있다."""
+    t = normalize_text(text)
+    if any(normalize_text(term) in t for term in HARD_EXCLUDE_TERMS):
+        return False
+    return has_equipment_purchase_context(t)
+
+
+# 과거 코드/다른 모듈과의 호환을 위해 유지: 제목만으로 3단계를 한번에
+# 본다(주로 빠른 단위 테스트/수동 점검용). 실제 수집 파이프라인은 위
+# is_relevant_list_stage + is_equipment_purchase를 상세 페이지 확보 후
+# 나눠서 쓴다.
+def is_relevant(text: str):
+    return is_relevant_list_stage(text) and is_equipment_purchase(text)
+
+
 def match_categories(text: str):
+    """반도체/디스플레이/TGV 중 어디에 해당하는지 판정한다.
+
+    OLED/AMOLED/LCD/Micro LED/Mini LED는 전부 "디스플레이 장비"의 세부
+    분류이지 별도 최상위 카테고리가 아니다(DISPLAY_HINTS에 다 포함됨).
+
+    카테고리 고유 신호(SEMICONDUCTOR_HINTS/DISPLAY_HINTS/TGV_HINTS)가
+    하나도 안 걸리고 범용 신호(GENERIC_RELEVANCE_HINTS, 예: "检测设备"만
+    있고 어느 업종인지 알 수 없는 경우)만 걸린 경우엔 어느 분야인지 확정
+    하기 어려우므로 빈 리스트를 반환한다 — 호출부(build_item)에서 이걸
+    "미분류/검토 필요"로 내부 표시한다. 사용자에게 보이는 관심 분야
+    선택지에는 이 상태를 추가하지 않는다(반도체/디스플레이/TGV 3개 유지)."""
     t = normalize_text(text)
     matched = [cat for cat, terms in CATEGORY_HINTS.items() if any(normalize_text(term) in t for term in terms)]
-    return matched or ["반도체 장비"]
+    return matched
 
 
 def notice_type(tag: str):
@@ -265,7 +340,12 @@ def build_item(row: dict):
     translated_org, _ = zh_translate.translate(org) if org else (None, False)
     translated_region = zh_translate.translate_region(region) if region else None
 
-    combined_relevance_text = " ".join(filter(None, [original_title, product]))
+    combined_relevance_text = " ".join(filter(None, [original_title, product, detail_text]))
+
+    if not is_equipment_purchase(combined_relevance_text):
+        return None
+
+    categories = match_categories(combined_relevance_text)
 
     return {
         "id": f"ebnew{re.search(r'(\d+)', row['url']).group(1)}",
@@ -281,7 +361,11 @@ def build_item(row: dict):
         "status": "진행중",
         "dueDate": deadline,
         "postedDate": row["date"],
-        "keywords": match_categories(combined_relevance_text),
+        # 카테고리(반도체/디스플레이/TGV)를 확정 못하면 빈 리스트 —
+        # 사용자 관심 분야 필터에는 안 걸리고 "전체" 보기에서만 노출되며,
+        # classificationStatus로 내부적으로 검토 필요 표시를 남긴다.
+        "keywords": categories,
+        "classificationStatus": "확정" if categories else "미분류/검토 필요",
         "budget": budget,
         "currency": currency,
         "contractMethod": None,
@@ -310,7 +394,7 @@ def collect():
     items = []
     seen_ids = set()
     seen_title_date = set()  # 같은 공고가 검색어마다 다른 내부 ID로 잡히는 경우의 중복 제거용
-    stats = {"raw": 0, "not_relevant": 0, "duplicate": 0, "included": 0, "translate_failed": 0}
+    stats = {"raw": 0, "not_relevant": 0, "duplicate": 0, "included": 0, "translate_failed": 0, "excluded_after_detail": 0}
 
     for keyword in SEARCH_KEYWORDS:
         for page in range(1, MAX_PAGES_PER_KEYWORD + 1):
@@ -348,7 +432,7 @@ def collect():
                     continue
 
                 stats["raw"] += 1
-                if not is_relevant(row["title"]):
+                if not is_relevant_list_stage(row["title"]):
                     stats["not_relevant"] += 1
                     continue
 
@@ -356,6 +440,10 @@ def collect():
                 seen_title_date.add(dedup_key)
                 item = build_item(row)
                 if item is None:
+                    # 상세 페이지 요청 실패 또는(제목만으론 안 보이던) 3차
+                    # 장비 구매 성격 확인 실패 — 둘 다 build_item이 None을
+                    # 반환하는 경우라 여기서 합산 카운트한다.
+                    stats["excluded_after_detail"] += 1
                     continue
                 if item["translatedTitle"] == item["originalTitle"]:
                     stats["translate_failed"] += 1
@@ -369,7 +457,8 @@ def collect():
 
     print(f"[EBNEW] 조회 대상(raw): {stats['raw']}건")
     print(f"[EBNEW] 같은 공고 재색인으로 중복 제거: {stats['duplicate']}건")
-    print(f"[EBNEW] 관련성 낮아 제외: {stats['not_relevant']}건")
+    print(f"[EBNEW] 관련성 낮아 제외(1차/2차, 제목 기준): {stats['not_relevant']}건")
+    print(f"[EBNEW] 상세 확인 후 제외(3차 장비구매 성격 미확인/요청실패): {stats['excluded_after_detail']}건")
     print(f"[EBNEW] 최종 포함: {stats['included']}건 (번역 실패/원문 유지 {stats['translate_failed']}건)")
 
     return items

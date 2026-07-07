@@ -72,6 +72,31 @@ SOURCES = [
     {"code": "NNFC", "name": "나노종합기술원"},
     {"code": "KOTRA", "name": "대한무역투자진흥공사"},
     {"code": "EBNEW", "name": "중국 비롄왕(EBNEW)"},
+    {"code": "MOFCOM", "name": "중국국제초표망(MOFCOM)"},
+]
+
+# 실제로 접근을 시도했으나 현재 수집이 불가능해 미구현 상태로 남겨둔
+# 중국 사이트들. 완전히 삭제하지 않고 "추후 연동 후보"로 목록만 남겨둔다.
+# status: "현재 수집 불가" — 접근 자체가 막혀 있어 즉시 재시도해도 실패함.
+BLOCKED_SOURCES = [
+    {
+        "name": "중국 입찰투찰 공공서비스 플랫폼(cebpubservice.cn)",
+        "siteUrl": "http://www.cebpubservice.com/",
+        "status": "현재 수집 불가",
+        "reason": "WAF(방화벽)가 자동화된 요청을 차단함 — 브라우저 UA로도 접근 실패 확인",
+    },
+    {
+        "name": "CXMT SRM(공급사·소싱 플랫폼)",
+        "siteUrl": "https://srm.cxmt.com/",
+        "status": "현재 수집 불가",
+        "reason": "공급사 전용 로그인이 필수라 비로그인 공개 목록이 없음",
+    },
+    {
+        "name": "중국 구매·입찰망(chinabidding.com.cn)",
+        "siteUrl": "https://www.chinabidding.com.cn/",
+        "status": "현재 수집 불가",
+        "reason": "회원 로그인 후에만 공고 상세/목록 열람 가능함을 확인",
+    },
 ]
 
 
