@@ -3,6 +3,7 @@
 
 현재 등록된 수집원:
 - collectors.kanc : 한국나노기술원(KANC) 입찰공고 게시판
+- collectors.nnfc : 나노종합기술원(NNFC) 입찰공고 게시판
 
 (과거 나라장터(G2B) 오픈API 수집기가 있었으나, 전체 공고 대비 실제
 장비 구매 공고 비율이 낮고 502 오류·복잡한 필터링 문제로 제거했다.
@@ -23,12 +24,13 @@ import json
 import os
 from datetime import date, datetime
 
-from collectors import kanc
+from collectors import kanc, nnfc
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "announcements.json")
 
 COLLECTORS = [
     ("KANC", kanc),
+    ("NNFC", nnfc),
 ]
 
 

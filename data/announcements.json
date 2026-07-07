@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-07T12:45:20+09:00",
+  "updatedAt": "2026-07-07T13:08:46+09:00",
   "items": [
     {
       "id": "cid5558",
@@ -70,6 +70,129 @@
       "source": "한국나노기술원",
       "sourceCode": "KANC",
       "noticeType": "사전규격"
+    },
+    {
+      "id": "nttidB000000006047Yk3eR1",
+      "title": "입찰공고(제2026–043호) 300mm 실리콘 건식식각 공정용 칠러",
+      "org": "나노종합기술원",
+      "country": "국내",
+      "countryCode": "KR",
+      "status": "진행중",
+      "dueDate": "2026-07-15",
+      "postedDate": "2026-07-07",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "125,400,000원",
+      "contractMethod": "제한경쟁입찰 ( 중소기업제한 )",
+      "deliveryCondition": "나노종합기술원 / 현장 ( 지정장소 ) 설치도",
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고유형: 정식입찰 · 공고번호: 제2026–043호 · 계약방법: 제한경쟁입찰 ( 중소기업제한 )",
+      "attachments": [
+        {
+          "name": "1. 입찰공고서_칠러.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007218Ec4/0/FileDown.do"
+        },
+        {
+          "name": "1. 입찰공고서_칠러.pdf",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007218Ec4/1/FileDown.do"
+        },
+        {
+          "name": "2. 제안요청서_칠러.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007218Ec4/2/FileDown.do"
+        },
+        {
+          "name": "3. 구매사양서_칠러.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007218Ec4/3/FileDown.do"
+        }
+      ],
+      "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006047Yk3eR1",
+      "source": "나노종합기술원",
+      "sourceCode": "NNFC",
+      "noticeType": "정식입찰"
+    },
+    {
+      "id": "nttidB000000006046Fe1jF7",
+      "title": "입찰공고(제2026–042호) 300mm 실리콘 건식식각 공정용 건식펌프",
+      "org": "나노종합기술원",
+      "country": "국내",
+      "countryCode": "KR",
+      "status": "진행중",
+      "dueDate": "2026-07-15",
+      "postedDate": "2026-07-07",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "131,670,000원",
+      "contractMethod": "제한경쟁입찰 ( 중소기업제한 )",
+      "deliveryCondition": "나노종합기술원 / 현장 ( 지정장소 ) 설치도",
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고유형: 정식입찰 · 공고번호: 제2026–042호 · 계약방법: 제한경쟁입찰 ( 중소기업제한 )",
+      "attachments": [
+        {
+          "name": "1. 입찰공고서_건식펌프.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007217Qg1/0/FileDown.do"
+        },
+        {
+          "name": "1. 입찰공고서_건식펌프.pdf",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007217Qg1/1/FileDown.do"
+        },
+        {
+          "name": "2. 제안요청서_건식펌프.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007217Qg1/2/FileDown.do"
+        },
+        {
+          "name": "3. 구매사양서_건식펌프.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007217Qg1/3/FileDown.do"
+        }
+      ],
+      "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006046Fe1jF7",
+      "source": "나노종합기술원",
+      "sourceCode": "NNFC",
+      "noticeType": "정식입찰"
+    },
+    {
+      "id": "nttidB000000006045Is2rS4",
+      "title": "입찰공고(제2026–041호) 300mm 후공정 실리콘 건식식각장비 성능향상 개조",
+      "org": "나노종합기술원",
+      "country": "국내",
+      "countryCode": "KR",
+      "status": "진행중",
+      "dueDate": "2026-07-15",
+      "postedDate": "2026-07-07",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "1,900,250,000원",
+      "contractMethod": "제한경쟁입찰 ( 실적제한 )",
+      "deliveryCondition": "나노종합기술원 / 현장 ( 지정장소 ) 설치도",
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고유형: 정식입찰 · 공고번호: 제2026–041호 · 계약방법: 제한경쟁입찰 ( 실적제한 )",
+      "attachments": [
+        {
+          "name": "1. 입찰공고서_성능향상 개조.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007216Kl0/0/FileDown.do"
+        },
+        {
+          "name": "1. 입찰공고서_성능향상 개조.pdf",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007216Kl0/1/FileDown.do"
+        },
+        {
+          "name": "2. 제안요청서_성능향상 개조.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007216Kl0/2/FileDown.do"
+        },
+        {
+          "name": "3. 구매사양서_성능향상 개조.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007216Kl0/3/FileDown.do"
+        }
+      ],
+      "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006045Is2rS4",
+      "source": "나노종합기술원",
+      "sourceCode": "NNFC",
+      "noticeType": "정식입찰"
     }
   ]
 }

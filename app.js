@@ -19,6 +19,7 @@ const STORAGE_KEY = "g2b-alert-selected-keywords";
 // 여기에 한 줄만 추가하면 되고, 없는 소스는 "{source} 원문 보기"로 자동 처리된다.
 const SOURCE_LINK_LABELS = {
   KANC: "한국나노기술원 원문 보기",
+  NNFC: "나노종합기술원 원문 보기",
 };
 
 const NOTICE_TYPE_LABELS = {

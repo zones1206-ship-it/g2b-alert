@@ -36,6 +36,7 @@ CATEGORIES = ["반도체 장비", "디스플레이 장비", "도금 장비"]
 # 화면에 "수집 출처" 배지로 표시할 소스 목록 (orchestrator/collector가 사용하는 sourceCode와 일치해야 함)
 SOURCES = [
     {"code": "KANC", "name": "한국나노기술원"},
+    {"code": "NNFC", "name": "나노종합기술원"},
 ]
 
 
