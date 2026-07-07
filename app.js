@@ -15,6 +15,18 @@ const KEYWORD_ICONS = {
 
 const STORAGE_KEY = "g2b-alert-selected-keywords";
 
+// source 값을 기준으로 원문 버튼 문구를 결정한다. 새 수집원이 추가되면
+// 여기에 한 줄만 추가하면 되고, 없는 소스는 "{source} 원문 보기"로 자동 처리된다.
+const SOURCE_LINK_LABELS = {
+  G2B: "나라장터 원문 공고 보기",
+  KANC: "한국나노기술원 원문 보기",
+};
+
+const NOTICE_TYPE_LABELS = {
+  "사전규격": { label: "사전규격", cls: "notice-type-prespec" },
+  "정식입찰": { label: "정식입찰", cls: "notice-type-formal" },
+};
+
 const state = {
   selected: loadSelection(),
   data: { updatedAt: null, items: [] },
@@ -62,6 +74,7 @@ function renderKeywordGrid() {
 }
 
 function daysUntil(dateStr) {
+  if (!dateStr) return Infinity; // 마감일 미상 공고는 정렬 시 맨 뒤로
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const due = new Date(dateStr + "T00:00:00");
@@ -69,12 +82,26 @@ function daysUntil(dateStr) {
 }
 
 function ddayBadge(dateStr) {
+  if (!dateStr) return `<span class="dday-badge dday-gray">마감일 확인 필요</span>`;
   const d = daysUntil(dateStr);
   const label = d === 0 ? "D-DAY" : d > 0 ? `D-${d}` : `D+${Math.abs(d)}`;
   let cls = "dday-blue";
   if (d <= 3) cls = "dday-red";
   else if (d <= 7) cls = "dday-orange";
   return `<span class="dday-badge ${cls}">${label}</span>`;
+}
+
+function sourceAndTypeTags(item) {
+  const tags = [`<span class="source-badge">${escapeHtml(item.source || item.sourceCode || "출처 미상")}</span>`];
+  const noticeType = NOTICE_TYPE_LABELS[item.noticeType];
+  if (noticeType) {
+    tags.push(`<span class="notice-type-badge ${noticeType.cls}">${noticeType.label}</span>`);
+  }
+  return `<span class="notice-tags">${tags.join("")}</span>`;
+}
+
+function detailLinkLabel(item) {
+  return SOURCE_LINK_LABELS[item.sourceCode] || `${item.source || "원문"} 원문 보기`;
 }
 
 function renderResults() {
@@ -115,10 +142,11 @@ function renderResults() {
             <summary class="notice-summary">
               <span class="notice-icon">${iconSvg(kw, 18)}</span>
               <span class="notice-body">
+                ${sourceAndTypeTags(item)}
                 <p class="notice-title">${escapeHtml(item.title)}</p>
                 <span class="notice-meta">
                   <span>🏛 ${escapeHtml(item.org)}</span>
-                  <span>📅 마감일 ${item.dueDate}</span>
+                  <span>📅 마감일 ${item.dueDate || "확인 필요"}</span>
                 </span>
               </span>
               ${ddayBadge(item.dueDate)}
@@ -137,7 +165,7 @@ function renderResults() {
               </dl>
               <p class="notice-detail-desc">${escapeHtml(item.description || "상세 설명이 제공되지 않았습니다.")}</p>
               <a class="notice-detail-link" href="${item.url || "https://www.g2b.go.kr"}" target="_blank" rel="noopener">
-                나라장터 원본 공고 보기
+                ${detailLinkLabel(item)}
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
               </a>
             </div>

@@ -1,4 +1,4 @@
-name: Fetch G2B Announcements
+name: Fetch Announcements (G2B + KANC)
 
 on:
   schedule:
