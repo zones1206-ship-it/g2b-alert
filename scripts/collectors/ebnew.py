@@ -70,7 +70,24 @@ LOW_RELEVANCE_TERMS = [
     "广告", "培训", "教育", "装修", "维修保养", "会议服务", "餐饮",
 ]
 
-# 반도체/디스플레이/TGV 강한 신호(하나라도 있어야 포함)
+# 하드 제외: 배관/공조/전기/토목/건축/EPC 등 "설비 부대공사"류. 반도체/
+# 디스플레이 키워드가 title에 같이 있어도(예: "半导体设备独立基础项目" =
+# 반도체 장비동 "기초 공사") 이 신호가 있으면 장비 구매가 아니라 부대
+# 공사이므로 무조건 제외한다(강한 산업 신호보다 우선한다).
+HARD_EXCLUDE_TERMS = [
+    # 배관/유틸리티
+    "二次配管", "配管", "管道", "特气", "气体管道", "动力配管", "给排水",
+    "暖通", "hvac", "消防",
+    # 전기/기계/클린룸 시공
+    "机电安装", "电气安装", "洁净室施工", "厂房建设", "土建", "基础施工",
+    "独立基础", "钢结构", "装修工程", "安装工程", "工程施工",
+    # 총도급/EPC
+    "epc", "总承包",
+]
+
+# 반도체/디스플레이/TGV 산업 신호(하나는 있어야 포함된다). HARD_EXCLUDE_TERMS가
+# 먼저 걸러지므로, 여기 있는 단어가 있으면 배관/건설류가 아닌 이상 장비/생산
+# 관련 공고로 본다.
 STRONG_RELEVANCE_TERMS = [
     "半导体", "晶圆", "wafer", "刻蚀", "etch", "镀膜", "沉积", "光刻",
     "封装", "packaging", "显示面板", "显示设备", "oled", "lcd", "面板",
@@ -153,15 +170,28 @@ def parse_search_results(raw_html: str):
 
 
 def is_relevant(text: str):
+    """2단계 판정: ① 배관/공조/전기/토목/EPC 등 부대공사 신호가 있으면
+    반도체/디스플레이 단어가 같이 있어도 무조건 제외한다(예:
+    "半导体设备独立基础项目" = 반도체 장비동 "기초 공사"이지 장비 구매가
+    아님 — 실제로 이런 오탐이 있었다). ② 산업 신호(STRONG_RELEVANCE_TERMS)
+    가 있어야 포함한다.
+
+    처음에는 "장비 구매 문맥(EQUIPMENT_CONTEXT_TERMS)까지 같이 있어야
+    포함"하는 더 엄격한 AND 조건도 시도했으나, "OLED 생산라인", "면板
+    자동광학검사 및 관련 설비 업그레이드"처럼 명시적으로 "设备采购"라고
+    쓰지 않는 정당한 장비/생산라인 공고까지 대거 제외되는 것을 테스트로
+    확인해 되돌렸다. 배관/건설 신호는 하드 제외로 충분히 걸러진다."""
     t = normalize_text(text)
+
+    if any(normalize_text(term) in t for term in HARD_EXCLUDE_TERMS):
+        return False
+
     has_strong = any(normalize_text(term) in t for term in STRONG_RELEVANCE_TERMS)
     if not has_strong:
         return False
+
     has_low = any(normalize_text(term) in t for term in LOW_RELEVANCE_TERMS)
-    # 강한 신호가 있으면 낮은 신호가 같이 있어도 일단 포함한다(예: 산업단지
-    # "工程建设" 문구가 섞인 반도체 팹 증설 공고 등). 강한 신호가 전혀
-    # 없는데 낮은 신호만 있는 경우만 확실히 제외한다.
-    return True if has_strong else not has_low
+    return not has_low
 
 
 def match_categories(text: str):
