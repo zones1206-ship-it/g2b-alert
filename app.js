@@ -182,13 +182,6 @@ function init() {
   document.getElementById("telegramBtn").addEventListener("click", () => {
     alert("텔레그램 알림 연동은 다음 업데이트에서 제공될 예정입니다.");
   });
-
-  const menuPanel = document.getElementById("menuPanel");
-  document.getElementById("menuBtn").addEventListener("click", () => (menuPanel.hidden = false));
-  document.getElementById("closeMenuBtn").addEventListener("click", () => (menuPanel.hidden = true));
-  menuPanel.addEventListener("click", (e) => {
-    if (e.target === menuPanel) menuPanel.hidden = true;
-  });
 }
 
 document.addEventListener("DOMContentLoaded", init);

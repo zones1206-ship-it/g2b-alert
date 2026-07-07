@@ -245,32 +245,6 @@ body {
   font-size: 14px;
 }
 
-/* Menu panel */
-.menu-panel {
-  position: fixed; inset: 0;
-  background: rgba(10, 18, 45, .45);
-  display: flex; justify-content: flex-end;
-  z-index: 50;
-}
-.menu-panel[hidden] { display: none; }
-.menu-panel-inner {
-  width: 280px; max-width: 85%;
-  background: var(--white);
-  height: 100%;
-  padding: 20px;
-  box-shadow: -8px 0 24px rgba(0,0,0,.15);
-}
-.menu-panel-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.menu-panel-inner h3 { color: var(--navy); margin: 0; }
-.menu-panel-inner ul { padding-left: 18px; font-size: 13px; color: var(--text-muted); line-height: 1.7; }
-.menu-panel-inner a { display: inline-block; margin-top: 10px; color: var(--accent); font-size: 13px; font-weight: 600; text-decoration: none; }
-.close-btn { flex-shrink: 0; font-size: 16px; line-height: 1; }
-
 @media (min-width: 560px) {
   .keyword-grid { grid-template-columns: 1fr 1fr; }
 }
