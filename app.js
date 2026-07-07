@@ -20,14 +20,27 @@ const STORAGE_KEY = "g2b-alert-selected-keywords";
 const SOURCE_LINK_LABELS = {
   KANC: "한국나노기술원 원문 보기",
   NNFC: "나노종합기술원 원문 보기",
+  KOTRA: "KOTRA 원문 보기",
 };
 
 const NOTICE_TYPE_LABELS = {
   "사전규격": { label: "사전규격", cls: "notice-type-prespec" },
   "정식입찰": { label: "정식입찰", cls: "notice-type-formal" },
+  "프로젝트 정보": { label: "프로젝트 정보", cls: "notice-type-project" },
+  "공급사 모집": { label: "공급사 모집", cls: "notice-type-project" },
+  "수출상담회": { label: "수출상담회", cls: "notice-type-consult" },
+  "구매상담회": { label: "구매상담회", cls: "notice-type-consult" },
 };
 
-const TYPE_FILTERS = ["전체", "사전규격", "정식입찰"];
+const TYPE_FILTERS = ["전체", "사전규격", "정식입찰", "프로젝트 정보", "공급사 모집", "수출상담회", "구매상담회"];
+
+// 국가명 -> 국기 이모지 (없는 국가는 이모지 없이 이름만 표시)
+const COUNTRY_FLAGS = {
+  "국내": "🇰🇷", "중국": "🇨🇳", "베트남": "🇻🇳", "인도": "🇮🇳", "미국": "🇺🇸",
+  "일본": "🇯🇵", "독일": "🇩🇪", "대만": "🇹🇼", "태국": "🇹🇭", "인도네시아": "🇮🇩",
+  "말레이시아": "🇲🇾", "멕시코": "🇲🇽", "브라질": "🇧🇷", "러시아": "🇷🇺",
+  "싱가포르": "🇸🇬", "필리핀": "🇵🇭",
+};
 
 const state = {
   selected: loadSelection(),
@@ -123,7 +136,8 @@ function daysUntil(dateStr) {
 function ddayBadge(dateStr) {
   if (!dateStr) return `<span class="dday-badge dday-gray">마감일 확인 필요</span>`;
   const d = daysUntil(dateStr);
-  const label = d === 0 ? "D-DAY" : d > 0 ? `D-${d}` : `D+${Math.abs(d)}`;
+  if (d < 0) return `<span class="dday-badge dday-gray">마감</span>`;
+  const label = d === 0 ? "D-DAY" : `D-${d}`;
   let cls = "dday-blue";
   if (d <= 3) cls = "dday-red";
   else if (d <= 7) cls = "dday-orange";
@@ -131,7 +145,9 @@ function ddayBadge(dateStr) {
 }
 
 function topTags(item) {
-  const tags = [`<span class="country-badge">${escapeHtml(item.country || "국가 미상")}</span>`];
+  const flag = COUNTRY_FLAGS[item.country] || "";
+  const countryLabel = flag ? `${flag} ${item.country}` : (item.country || "국가 미상");
+  const tags = [`<span class="country-badge">${escapeHtml(countryLabel)}</span>`];
   tags.push(`<span class="source-badge">${escapeHtml(item.sourceCode || item.source || "출처 미상")}</span>`);
   const noticeType = NOTICE_TYPE_LABELS[item.noticeType];
   if (noticeType) {
@@ -149,6 +165,10 @@ function detailRow(label, value) {
   return `<div class="notice-detail-row"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`;
 }
 
+function detailRowWithFallback(label, value, fallback) {
+  return `<div class="notice-detail-row"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value || fallback)}</dd></div>`;
+}
+
 function renderAttachments(item) {
   if (!item.attachments || item.attachments.length === 0) return "";
   const links = item.attachments.map((a) =>
@@ -163,7 +183,7 @@ function renderAttachments(item) {
 
 function renderCard(item, kw) {
   const businessRows = [
-    detailRow("예산", item.budget),
+    detailRowWithFallback("예산", item.budget, "예산 정보 없음"),
     detailRow("계약방식", item.contractMethod),
     detailRow("인도조건", item.deliveryCondition),
     detailRow("지급조건", item.paymentCondition),
@@ -200,6 +220,8 @@ function renderCard(item, kw) {
           <dl class="notice-detail-list">
             ${detailRow("등록일", item.postedDate || "확인 필요")}
             ${detailRow("마감일", item.dueDate || "마감일 확인 필요")}
+            ${detailRow("행사 기간", item.eventPeriod)}
+            ${detailRow("상태", item.status)}
           </dl>
         </div>
         ${businessRows ? `<div class="detail-section"><h4>사업 정보</h4><dl class="notice-detail-list">${businessRows}</dl></div>` : ""}

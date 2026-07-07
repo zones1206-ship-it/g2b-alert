@@ -26,8 +26,14 @@ scripts/fetch_announcements.py의 COLLECTORS 목록에 추가하면 된다.
     "url": str,
     "source": str,             # 사람이 읽는 출처명, 예: "한국나노기술원"
     "sourceCode": str,         # 짧은 코드, 예: "KANC"
-    "noticeType": str | None,  # 예: "사전규격" / "정식입찰" (수집원에 따라 없을 수 있음)
+    "noticeType": str | None,  # "사전규격"/"정식입찰"(국내 입찰) 또는
+                               # "프로젝트 정보"/"공급사 모집"/"수출상담회"/
+                               # "구매상담회"(KOTRA류 해외 프로젝트 정보)
 }
+
+수집원별로 위 스키마에 없는 추가 필드를 넣어도 된다(예: KOTRA의
+`sourceSiteUrl`, `eventPeriod`). 프론트엔드는 없는 필드를 만나면
+그냥 표시를 생략하므로 다른 수집원에 영향이 없다.
 """
 
 # 사용자에게 노출되는 최상위 관심 분야 (홈 화면 토글 카드 / 결과 화면 그룹)
@@ -37,6 +43,7 @@ CATEGORIES = ["반도체 장비", "디스플레이 장비", "도금 장비"]
 SOURCES = [
     {"code": "KANC", "name": "한국나노기술원"},
     {"code": "NNFC", "name": "나노종합기술원"},
+    {"code": "KOTRA", "name": "대한무역투자진흥공사"},
 ]
 
 

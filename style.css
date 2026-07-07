@@ -274,6 +274,8 @@ body {
 }
 .notice-type-prespec { background: #fff8e1; color: #b8860b; }
 .notice-type-formal { background: var(--blue-bg); color: var(--blue); }
+.notice-type-project { background: #eef1fb; color: var(--navy-soft); }
+.notice-type-consult { background: #e8f7f0; color: var(--green); }
 .notice-title {
   font-size: 14px; font-weight: 700; color: var(--text);
   margin: 0 0 5px;

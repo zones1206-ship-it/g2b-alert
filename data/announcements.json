@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-07T13:08:46+09:00",
+  "updatedAt": "2026-07-07T13:31:28+09:00",
   "items": [
     {
       "id": "cid5558",
@@ -193,6 +193,99 @@
       "source": "나노종합기술원",
       "sourceCode": "NNFC",
       "noticeType": "정식입찰"
+    },
+    {
+      "id": "kotra26CN0J7",
+      "title": "(2026 세미콘 인디아 연계) 한-인도 반도체 파트너십 데이",
+      "org": "글로벌공급망사업팀,경제협력지원팀",
+      "country": "인도",
+      "countryCode": "IN",
+      "status": "진행중",
+      "dueDate": "2026-07-17",
+      "postedDate": "2026-06-29",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "ㅇ 일시/장소 : 2026.9.15(화)~9.19(토) / 인도 뉴델리 \n * 전시회 기간 : 9.17(목)~9.19(토)\nㅇ 프로그램 : 1) 인도 유망 바이어 초청 B2B 상담회, 인도 시장 진출전략 세미나 등\nㅇ 모집분야 : 반도체소부장, AIoT 및 응용 솔루션기업 등(10개사 내외)\nㅇ 참가비 : 무료 \n *항공, 숙박 등 출장비용 기업 자부담\nㅇ 지원사항 : 바이어 발굴 및 1:1 비즈니스 상담 지원(통역포함), 숙소-전시장 이동버스 제공, 전시회 입장 및 공식 오만찬 등\nㅇ 신청방법 : 무투24를 통한 온라인 신청\n * 참가신청서 양식 1부, 기업소개서 또는 카탈로그 1부 첨부하여, 웹사이트로 신청 필요\n * 신청양식 내 국가 및 무역관 정보 : '인도' > '뉴델리무역관' 으로 선택\nㅇ 상세일정 : 첨부 참고 (추천 일정으로, 개별 기업의 상황에 따라 조율 가능)\nㅇ 문의처 : KOTRA 글로벌공급망사업팀(heesoo5@kotra.or.kr/02-3460-3323)\n KOTRA 경제협력지원팀(kevinkim@kotra.or.kr/02-3460-7669)",
+      "attachments": [
+        {
+          "name": "2026 세미콘인디아 참가신청서.xlsx",
+          "url": "https://www.kotra.or.kr/kmodule/file/fileDown.do?storFileId=BM202606290000100697&fileSn=0"
+        }
+      ],
+      "url": "https://www.kotra.or.kr/subList/20000020753/subhome/bizAply/selectBizMntInfoDetail.do?dtlBizMntNo=26CN0J7&cpbizYn=N",
+      "source": "대한무역투자진흥공사",
+      "sourceCode": "KOTRA",
+      "sourceSiteUrl": "https://www.kotra.or.kr/",
+      "noticeType": "프로젝트 정보",
+      "eventPeriod": "2026-09-19 ~ 2026-09-19"
+    },
+    {
+      "id": "kotra26CN0GR",
+      "title": "(CSEAC 연계) 2026 우시  반도체 소·부·장 GP사업",
+      "org": "글로벌공급망사업팀",
+      "country": "중국",
+      "countryCode": "CN",
+      "status": "진행중",
+      "dueDate": "2026-07-30",
+      "postedDate": "2026-05-29",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "ㅇ 사업명 : 2026 우시 반도체 소·부·장 GP사업\nㅇ 일시/장소 : '26.8.31(월)-'26.9.2(수) / 우시태호국제박람중심\nㅇ 품목 : 반도체 장비 및 핵심부품·소재 전반\nㅇ 주요내용 : 제14회 반도체장비 및 핵심부품·소재 전시회(CSEAC)* 참가 및 참관기업 대상 1:1 상담 매칭 지원\nㅇ 규모 : 국내 8개사 내외\nㅇ 참고 : 통역 외 전시부스 등 기타 지원사항 없음\n * 전시회 참관에 필요한 현장 통역원만 제공함\n\nㅇ 참가기업 선정일정\n - (모집공고 및 접수) '26.5.29(금)~ '26.7.30(목)\n - (선정기업 발표 통보) '26.7.31(금) 예정\nㅇ 신청방법 : KOTRA 무역투자24 시스템 내 신청하기 클릭-> 신청\nㅇ 기타문의 : KOTRA 난징무역관 장려평 총감\n - 이메일 : jiangliping@kotra.or.kr\n - 위챗 : applejung",
+      "attachments": [
+        {
+          "name": "1. 2026 (우시) 반도체 소부장 GP사업 참가신청서_기업명.xlsx",
+          "url": "https://www.kotra.or.kr/kmodule/file/fileDown.do?storFileId=BM202605280000097839&fileSn=4"
+        },
+        {
+          "name": "2. 2026 (우시) 반도체 소부장 GP사업_ 출장자 정보 회신양식.xlsx",
+          "url": "https://www.kotra.or.kr/kmodule/file/fileDown.do?storFileId=BM202605280000097839&fileSn=5"
+        }
+      ],
+      "url": "https://www.kotra.or.kr/subList/20000020753/subhome/bizAply/selectBizMntInfoDetail.do?dtlBizMntNo=26CN0GR&cpbizYn=N",
+      "source": "대한무역투자진흥공사",
+      "sourceCode": "KOTRA",
+      "sourceSiteUrl": "https://www.kotra.or.kr/",
+      "noticeType": "프로젝트 정보",
+      "eventPeriod": "2026-08-31 ~ 2026-09-02"
+    },
+    {
+      "id": "kotra26CN0C3",
+      "title": "2026 서남아 반도체 공급망 진입지원 사업",
+      "org": "글로벌공급망사업팀",
+      "country": "인도",
+      "countryCode": "IN",
+      "status": "진행중",
+      "dueDate": null,
+      "postedDate": null,
+      "keywords": [
+        "반도체 장비",
+        "디스플레이 장비"
+      ],
+      "budget": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "ㅇ 일시/ 장소 : 연간 / 온오프라인 병행\nㅇ 분야 : 반도체 소부장 기업, 관련 스타트업 및 교류 가능 기관\nㅇ 내용 : ① 인도 내 현지 반도체 관련 행사 연계 수출상담회(별도안내)\n ② 주요 바이어 Delegation - Tata Supporters' Day(별도안내)\n ③ 구자라트 주 진출기업 상시 지원 (연중신청가능)\nㅇ 바이어 : 마이크론, CG Semi, Tata, Kaynes, Waaree, Sic Sem, 3D Glass, CDIL, ASIP 등\nㅇ 협업 : (해외) GSEM(Gujarat State Electronic Mission)\nㅇ 사업신청 : 코트라 홈페이지 신청\nㅇ 사업문의 : KOTRA 암다바드 무역관 (jaysandip@kotra.or.kr)",
+      "attachments": [],
+      "url": "https://www.kotra.or.kr/subList/20000020753/subhome/bizAply/selectBizMntInfoDetail.do?dtlBizMntNo=26CN0C3&cpbizYn=N",
+      "source": "대한무역투자진흥공사",
+      "sourceCode": "KOTRA",
+      "sourceSiteUrl": "https://www.kotra.or.kr/",
+      "noticeType": "수출상담회",
+      "eventPeriod": "2026-01-01 ~ 2026-12-31"
     }
   ]
 }

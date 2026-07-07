@@ -2,13 +2,18 @@
 여러 공고 수집원(collector)을 실행해 결과를 합친 뒤 data/announcements.json으로 저장한다.
 
 현재 등록된 수집원:
-- collectors.kanc : 한국나노기술원(KANC) 입찰공고 게시판
-- collectors.nnfc : 나노종합기술원(NNFC) 입찰공고 게시판
+- collectors.kanc  : 한국나노기술원(KANC) 입찰공고 게시판
+- collectors.nnfc  : 나노종합기술원(NNFC) 입찰공고 게시판
+- collectors.kotra : KOTRA 사업신청 목록 중 반도체/디스플레이/TGV 관련 프로젝트
 
 (과거 나라장터(G2B) 오픈API 수집기가 있었으나, 전체 공고 대비 실제
 장비 구매 공고 비율이 낮고 502 오류·복잡한 필터링 문제로 제거했다.
-KDIA/KOTRA는 조사 결과 자동 수집 가능한 공개 입찰 게시판을 찾지 못해
+KDIA는 조사 결과 자동 수집 가능한 공개 입찰 게시판을 찾지 못해
 보류 중이다.)
+
+KOTRA는 다른 수집원과 달리 "마감된 프로젝트"도 삭제하지 않는다(신규
+투자/후속 프로젝트 가능성이 있는 영업 정보이기 때문). 그래서 is_still_open()
+에서 sourceCode가 KOTRA인 항목은 날짜 필터링 대상에서 제외한다.
 
 새 수집원을 추가하려면:
 1. scripts/collectors/<이름>.py 에 collect() -> list[dict] 함수를 구현
@@ -24,14 +29,18 @@ import json
 import os
 from datetime import date, datetime
 
-from collectors import kanc, nnfc
+from collectors import kanc, nnfc, kotra
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "announcements.json")
 
 COLLECTORS = [
     ("KANC", kanc),
     ("NNFC", nnfc),
+    ("KOTRA", kotra),
 ]
+
+# 마감돼도 삭제하지 않고 계속 보여줄 출처 (영업 정보로서 가치가 있는 경우)
+KEEP_EXPIRED_SOURCES = {"KOTRA"}
 
 
 def load_existing_items():
@@ -70,6 +79,8 @@ def sort_key(item):
 
 
 def is_still_open(item):
+    if item.get("sourceCode") in KEEP_EXPIRED_SOURCES:
+        return True  # 마감돼도 영업 정보 가치가 있어 유지 (status 필드로 구분 표시)
     due = item.get("dueDate")
     if not due:
         return True  # 마감일을 알 수 없는 공고는 임의로 제외하지 않는다.
