@@ -252,6 +252,7 @@ body {
   display: flex; justify-content: flex-end;
   z-index: 50;
 }
+.menu-panel[hidden] { display: none; }
 .menu-panel-inner {
   width: 280px; max-width: 85%;
   background: var(--white);
