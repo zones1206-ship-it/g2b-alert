@@ -1,0 +1,37 @@
+{
+  "updatedAt": "2026-07-07T08:45:00+09:00",
+  "items": [
+    {
+      "id": "sample-001",
+      "title": "반도체 공정 장비 구매",
+      "org": "한국반도체연구원",
+      "dueDate": "2026-07-10",
+      "keywords": ["반도체 장비"],
+      "url": "https://www.g2b.go.kr"
+    },
+    {
+      "id": "sample-002",
+      "title": "웨이퍼 세정 설비 구축",
+      "org": "한국전자기술원",
+      "dueDate": "2026-07-08",
+      "keywords": ["세정 설비"],
+      "url": "https://www.g2b.go.kr"
+    },
+    {
+      "id": "sample-003",
+      "title": "디스플레이 검사 장비 도입",
+      "org": "충남테크노파크",
+      "dueDate": "2026-07-15",
+      "keywords": ["디스플레이 장비"],
+      "url": "https://www.g2b.go.kr"
+    },
+    {
+      "id": "sample-004",
+      "title": "클린룸 이송 시스템 설치",
+      "org": "국가나노센터",
+      "dueDate": "2026-07-09",
+      "keywords": ["디스플레이 장비", "이송 시스템", "클린룸"],
+      "url": "https://www.g2b.go.kr"
+    }
+  ]
+}

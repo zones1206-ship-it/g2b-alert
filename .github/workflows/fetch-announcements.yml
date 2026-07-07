@@ -1,0 +1,34 @@
+name: Fetch G2B Announcements
+
+on:
+  schedule:
+    - cron: "0 22 * * *"  # 매일 07:00 KST (UTC 22:00)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch announcements
+        env:
+          G2B_API_KEY: ${{ secrets.G2B_API_KEY }}
+        run: python scripts/fetch_announcements.py
+
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/announcements.json
+          git diff --cached --quiet && echo "No changes to commit" || git commit -m "chore: update announcements data"
+          git push
