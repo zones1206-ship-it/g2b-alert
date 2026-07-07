@@ -1,4 +1,668 @@
 {
-  "updatedAt": "2026-07-07T01:31:21+00:00",
-  "items": []
+  "updatedAt": "2026-07-07T01:57:41+00:00",
+  "items": [
+    {
+      "id": "R26BK01566566-000",
+      "title": "전자심의시스템 구축 사업 감리",
+      "org": "조달청",
+      "dueDate": "2026-07-07",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "446,258,640원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 일반경쟁 · 수요기관: 공정거래위원회",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01566566&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01566825-000",
+      "title": "지능형 연구데이터 관리 및 연구행정 플랫폼 구축 사업",
+      "org": "조달청",
+      "dueDate": "2026-07-07",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "1,006,700,880원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 한국표준과학연구원",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01566825&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01567117-000",
+      "title": "서산의료원 신관 리모델링 및 증축 타당성 연구 용역 공모",
+      "org": "충청남도 서산의료원",
+      "dueDate": "2026-07-07",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "300,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 직찰 · 계약방법: 일반경쟁 · 수요기관: 충청남도 서산의료원",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01567117&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01566883-000",
+      "title": "26년 전자통합평가시스템 기능개선 사업",
+      "org": "조달청",
+      "dueDate": "2026-07-07",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "428,540,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 국무조정실",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01566883&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01567021-000",
+      "title": "26년 국정관리시스템 기능개선 사업",
+      "org": "조달청",
+      "dueDate": "2026-07-07",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "449,699,600원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 국무조정실",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01567021&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01547884-001",
+      "title": "스마트안내시스템 통합 모니터링 대시보드 개발 사업",
+      "org": "인천국제공항공사",
+      "dueDate": "2026-07-07",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "412,020,384원",
+      "eligibility": null,
+      "description": "공고종류: 변경공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 인천국제공항공사",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01547884&bidPbancOrd=001"
+    },
+    {
+      "id": "R26BK01562026-000",
+      "title": "AI를 활용한 대학 진학상담 고도화  정보화전략계획(ISP) 수립",
+      "org": "조달청 서울지방조달청",
+      "dueDate": "2026-07-07",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "346,924,400원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 일반경쟁 · 수요기관: 한국대학교육협의회",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01562026&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01558817-000",
+      "title": "기업지원 통합 전산시스템 구축 감리",
+      "org": "조달청 부산지방조달청",
+      "dueDate": "2026-07-07",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "878,937,200원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 일반경쟁 · 수요기관: 한국자산관리공사",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01558817&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01564749-000",
+      "title": "우주항공 분야 수출통제 개선 및 기업 지원방안 연구 용역",
+      "org": "우주항공청",
+      "dueDate": "2026-07-09",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "50,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 우주항공청",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01564749&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01564804-000",
+      "title": "재난안전통신망 주요정보통신기반시설 보안취약점 분석평가 용역",
+      "org": "행정안전부",
+      "dueDate": "2026-07-09",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "52,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 행정안전부",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01564804&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01565901-000",
+      "title": "R&D 특화 LLM 성능 개선과 NTIS&IRIS AI 서비스 고도화",
+      "org": "조달청",
+      "dueDate": "2026-07-09",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "1,448,012,400원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 한국과학기술정보연구원",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01565901&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01572493-000",
+      "title": "경기도어린이박물관 《지구별마당》 상설 전시 설계 및 제작 설치 용역",
+      "org": "(재)경기문화재단경기도어린이박물관",
+      "dueDate": "2026-07-09",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "440,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 직찰 · 계약방법: 제한경쟁 · 수요기관: (재)경기문화재단경기도어린이박물관",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01572493&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01572493-001",
+      "title": "경기도어린이박물관 《지구별마당》 상설 전시 설계 및 제작 설치 용역",
+      "org": "(재)경기문화재단경기도어린이박물관",
+      "dueDate": "2026-07-09",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "440,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 변경공고 · 입찰방식: 직찰 · 계약방법: 제한경쟁 · 수요기관: (재)경기문화재단경기도어린이박물관",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01572493&bidPbancOrd=001"
+    },
+    {
+      "id": "R26BK01570502-000",
+      "title": "국방전략기술 성과분석 및 개선방안 연구",
+      "org": "국방기술진흥연구소",
+      "dueDate": "2026-07-10",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "70,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 국방기술진흥연구소",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01570502&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01561868-000",
+      "title": "행정재산 상시조사 IT환경 구축",
+      "org": "조달청 부산지방조달청",
+      "dueDate": "2026-07-10",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "1,807,475,580원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 한국자산관리공사",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01561868&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01571505-000",
+      "title": "제24회 허준축제 행사용역",
+      "org": "강서문화원",
+      "dueDate": "2026-07-10",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "329,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 직찰 · 계약방법: 제한경쟁 · 수요기관: 강서문화원",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01571505&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01569524-000",
+      "title": "생성형 AI 플랫폼 서비스 고도화",
+      "org": "조달청",
+      "dueDate": "2026-07-14",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "2,114,509,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 일반경쟁 · 수요기관: 한국도로교통공단",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01569524&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01563574-001",
+      "title": "2026년 소방청 개인정보보호 컨설팅",
+      "org": "소방청",
+      "dueDate": "2026-07-16",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "59,630,000원",
+      "eligibility": null,
+      "description": "공고종류: 취소공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 소방청",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01563574&bidPbancOrd=001"
+    },
+    {
+      "id": "R26BK01571078-000",
+      "title": "2026~2028 사업연도 세무조정 용역",
+      "org": "한국교직원공제회",
+      "dueDate": "2026-07-16",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "148,500,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 한국교직원공제회",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01571078&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01564994-000",
+      "title": "[IBK 디지털뱅킹 리빌딩 1단계 추진] 사업 외주 감리",
+      "org": "중소기업은행",
+      "dueDate": "2026-07-20",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "1,111,400,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 직찰 · 계약방법: 일반경쟁 · 수요기관: 중소기업은행",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01564994&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01565036-000",
+      "title": "차세대 ERP 시스템 구축 사업 PMO 용역",
+      "org": "한국조폐공사",
+      "dueDate": "2026-07-20",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "400,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 한국조폐공사",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01565036&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01565398-000",
+      "title": "TS AI 공통플랫폼 고도화 및 민원·전세버스 공시 AI 구축 용역",
+      "org": "한국교통안전공단",
+      "dueDate": "2026-07-20",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "448,316,087원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 한국교통안전공단",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01565398&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01565789-000",
+      "title": "[RISE] 경남대학교 2026학년도 피지컬AI 사관학교 운영 용역",
+      "org": "경남대학교",
+      "dueDate": "2026-07-20",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "396,220,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 경남대학교",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01565789&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01563663-000",
+      "title": "코디세이 AI 전환(AX) 산업수요형 PBL 콘텐츠 개발 용역",
+      "org": "재단법인 이노베이션아카데미",
+      "dueDate": "2026-07-20",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "1,000,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 재단법인 이노베이션아카데미",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01563663&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01563637-000",
+      "title": "코디세이 플랫폼 AI 기능 확장 및 생태계 구축 용역",
+      "org": "재단법인 이노베이션아카데미",
+      "dueDate": "2026-07-20",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "1,200,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 재단법인 이노베이션아카데미",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01563637&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01567500-000",
+      "title": "2026 공예트렌드페어 종합운영대행",
+      "org": "재단법인 한국공예디자인문화진흥원",
+      "dueDate": "2026-07-20",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "1,000,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 재단법인 한국공예디자인문화진흥원",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01567500&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01567463-000",
+      "title": "정보보안시스템 유지관리 및 운영 용역",
+      "org": "한국지역난방공사",
+      "dueDate": "2026-07-20",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "2,710,019,580원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 한국지역난방공사",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01567463&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01567516-000",
+      "title": "우즈벡-키르기즈스탄 기후변화대응 스마트 조기경보시스템 구축사업",
+      "org": "사단법인아시아물위원회사무국",
+      "dueDate": "2026-07-20",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "1,269,950,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 일반경쟁 · 수요기관: 사단법인아시아물위원회사무국",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01567516&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01570403-000",
+      "title": "KICT 주요사업 신규 과제 기획을 위한 컨설팅",
+      "org": "한국건설기술연구원",
+      "dueDate": "2026-07-20",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "269,989,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 일반경쟁 · 수요기관: 한국건설기술연구원",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01570403&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01571280-000",
+      "title": "IFRS 18 도입 및 회계정책 고도화 자문 용역",
+      "org": "한국산업은행",
+      "dueDate": "2026-07-20",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "650,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 직찰 · 계약방법: 제한경쟁 · 수요기관: 한국산업은행",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01571280&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01564824-000",
+      "title": "대한지방행정공제회 New한아름목돈 정보시스템 구축 용역 사업",
+      "org": "대한지방행정공제회",
+      "dueDate": "2026-07-21",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "2,277,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 대한지방행정공제회",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01564824&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01565053-000",
+      "title": "2026년 국가유산 미디어아트 영상 제작",
+      "org": "국가유산진흥원",
+      "dueDate": "2026-07-21",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "495,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 국가유산진흥원",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01565053&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01564849-000",
+      "title": "신용보증재단중앙회 전산 및 방송설비 유지보수 용역",
+      "org": "조달청",
+      "dueDate": "2026-07-21",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "358,008,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 신용보증재단중앙회",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01564849&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01566610-000",
+      "title": "원전산업 글로벌 협력플랫폼 구축전략 수립",
+      "org": "사단법인 한국원전수출산업협회",
+      "dueDate": "2026-07-21",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "100,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 직찰/우편 · 계약방법: 일반경쟁 · 수요기관: 사단법인 한국원전수출산업협회",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01566610&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01559111-000",
+      "title": "[정책,154] 손상기전별 AI 기반 손상위험 예측모델 개발 및 정책 활용 방안 연구",
+      "org": "조달청",
+      "dueDate": "2026-07-21",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "453,730,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 일반경쟁 · 수요기관: 질병관리청",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01559111&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01567582-000",
+      "title": "「산업단지 데모 다크팩토리 전략수립 과제개발 」 연구용역",
+      "org": "한국산업단지공단",
+      "dueDate": "2026-07-21",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "475,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 일반경쟁 · 수요기관: 한국산업단지공단",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01567582&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01568449-000",
+      "title": "드라마 크래시 시즌2 색보정 용역 공고",
+      "org": "(주)에이스토리",
+      "dueDate": "2026-07-21",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "77,550,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: (주)에이스토리",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01568449&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01568955-000",
+      "title": "지역신문제안사업(취재역량 강화 위한 AI 취재 지원 및 분석 시스템 구축)",
+      "org": "(주)원주투데이신문사",
+      "dueDate": "2026-07-21",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "31,900,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: (주)원주투데이신문사",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01568955&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01571263-000",
+      "title": "2026년 진료내역확인시스템 통합유지보수 용역",
+      "org": "한국보훈복지의료공단 위탁병원관리단",
+      "dueDate": "2026-07-21",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "102,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 한국보훈복지의료공단 위탁병원관리단",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01571263&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01572435-000",
+      "title": "아암물류2단지 2종 항만배후단지 사업화 방안 수립용역",
+      "org": "인천항만공사",
+      "dueDate": "2026-07-21",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "330,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 인천항만공사",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01572435&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01561853-000",
+      "title": "항만물류통합플랫폼(체인포털) AI 전환사업 감리용역",
+      "org": "조달청 부산지방조달청",
+      "dueDate": "2026-07-21",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "377,152,400원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 일반경쟁 · 수요기관: 부산항만공사",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01561853&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01569452-000",
+      "title": "중소기업 혁신바우처 사업 관리시스템 운영 및 유지보수 용역",
+      "org": "조달청 경남지방조달청",
+      "dueDate": "2026-07-21",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "502,322,770원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 중소벤처기업진흥공단",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01569452&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01573146-000",
+      "title": "서남병원 업무(보조원 외) 용역 전자입찰 공고",
+      "org": "서울특별시 서남병원",
+      "dueDate": "2026-07-21",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "9,063,224,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 서울특별시 서남병원",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01573146&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01566441-000",
+      "title": "[재공고]가천대학교 이길여암당뇨연구원 실험동물센터 IACUC 심의 및  동물실험종합관리 시스템 리뉴얼",
+      "org": "가천대학교",
+      "dueDate": "2026-07-22",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "115,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 직찰 · 계약방법: 제한경쟁 · 수요기관: 가천대학교",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01566441&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01569737-000",
+      "title": "한국투자공사 영상회의시스템 재구축",
+      "org": "한국투자공사",
+      "dueDate": "2026-07-22",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "1,380,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 직찰 · 계약방법: 제한경쟁 · 수요기관: 한국투자공사",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01569737&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01556226-000",
+      "title": "AI 플랫폼(KEXIM AI) 구축 및 AI기반 지능형 워크스페이스 구축 통합 감리",
+      "org": "한국수출입은행",
+      "dueDate": "2026-07-22",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "1,120,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 한국수출입은행",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01556226&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01571605-000",
+      "title": "인도,튀르키예 원전공급망 조사 및 B2B 용역",
+      "org": "사단법인 한국원전수출산업협회",
+      "dueDate": "2026-07-22",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "150,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 직찰 · 계약방법: 일반경쟁 · 수요기관: 사단법인 한국원전수출산업협회",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01571605&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01572196-000",
+      "title": "단거리공대공유도탄 무기효과 분석 소프트웨어 개발",
+      "org": "국방과학연구소",
+      "dueDate": "2026-07-22",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "196,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 국방과학연구소",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01572196&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01568735-000",
+      "title": "2027년도 국립한국해양대학교 달력 디자인 기획 및 제작 용역",
+      "org": "한국해양대학교",
+      "dueDate": "2026-07-24",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "33,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 등록공고 · 입찰방식: 전자입찰 · 계약방법: 제한경쟁 · 수요기관: 한국해양대학교",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01568735&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01566058-000",
+      "title": "고흥 드론센터 구내식당 위탁운영 용역",
+      "org": "재단법인전남테크노파크",
+      "dueDate": "2026-08-05",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": null,
+      "eligibility": null,
+      "description": "공고종류: 재공고 · 입찰방식: 직찰 · 계약방법: 제한경쟁 · 수요기관: 재단법인전남테크노파크",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01566058&bidPbancOrd=000"
+    },
+    {
+      "id": "R26BK01275874-001",
+      "title": "단체보험외 27종",
+      "org": "조달청",
+      "dueDate": "2036-10-30",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "400,000,000,000원",
+      "eligibility": null,
+      "description": "공고종류: 변경공고 · 입찰방식: 직찰 · 계약방법: 일반경쟁 · 수요기관: 각 수요기관",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01275874&bidPbancOrd=001"
+    }
+  ]
 }
