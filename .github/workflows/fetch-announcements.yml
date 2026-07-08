@@ -23,11 +23,21 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Snapshot previous data (신규 공고 판별용)
+        run: cp data/announcements.json data/announcements.before.json
+
       - name: Fetch announcements
         run: python scripts/fetch_announcements.py
 
+      - name: Notify new announcements via Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python scripts/notify_telegram.py data/announcements.before.json data/announcements.json
+
       - name: Commit updated data
         run: |
+          rm -f data/announcements.before.json
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/announcements.json
