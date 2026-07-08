@@ -2,14 +2,15 @@ name: (임시) Telegram Chat ID 확인
 
 # 텔레그램 알림 연동 준비용 1회성 확인 워크플로.
 # 사용자가 @equipment_project_radar_bot 에 /start를 보낸 뒤 이 워크플로를
-# 수동 실행하면, Telegram getUpdates 응답에서 개인 채팅(private) chat id만
-# 골라 Actions 로그에 출력한다.
+# 수동 실행하면, getMe로 토큰이 정상인지 먼저 검증한 뒤 getUpdates 응답에서
+# 개인 채팅(private) chat id만 골라 Actions 로그에 출력한다.
 #
 # 보안 원칙:
 # - 봇 토큰은 Repository Secret(TELEGRAM_BOT_TOKEN)에서만 읽는다(코드에
 #   직접 쓰지 않음).
-# - 토큰 자체, getUpdates 전체 응답(JSON), 사용자 이름 등 개인정보는 로그에
-#   출력하지 않는다 — chat id 숫자만 출력한다.
+# - 토큰 자체, getMe/getUpdates 전체 응답(JSON), 사용자 이름 등 개인정보는
+#   로그에 출력하지 않는다 — 실패 시엔 호출 단계/HTTP 상태코드/Telegram이
+#   반환한 description만, 성공 시엔 chat id 숫자만 출력한다.
 # - 신규 공고 발송 기능은 아직 구현하지 않는다(Chat ID 확인 전용).
 #
 # 확인 후에는 이 워크플로 파일을 삭제해도 된다(임시용).
@@ -24,37 +25,67 @@ jobs:
   get-chat-id:
     runs-on: ubuntu-latest
     steps:
-      - name: getUpdates 호출 후 private chat id만 출력
+      - name: getMe로 토큰 검증 후 getUpdates에서 private chat id만 출력
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         run: |
           python3 - <<'PYEOF'
           import json
           import os
-          import urllib.request
+          import sys
           import urllib.error
+          import urllib.request
 
-          token = os.environ.get("TELEGRAM_BOT_TOKEN")
+          # 러너는 기본 UTF-8이라 문제 없지만, 로컬 Windows(cp949)에서 테스트할
+          # 때 이모지/em-dash 등이 UnicodeEncodeError로 죽는 걸 막기 위한 안전장치.
+          for _stream in (sys.stdout, sys.stderr):
+              if hasattr(_stream, "reconfigure"):
+                  _stream.reconfigure(encoding="utf-8", errors="replace")
+
+
+          def call_telegram(token, method):
+              """Telegram API를 호출한다. 실패 시 [단계] HTTP상태 description만
+              출력하고 종료한다 — 토큰이나 응답 본문 전체는 절대 출력하지 않는다."""
+              url = f"https://api.telegram.org/bot{token}/{method}"
+              try:
+                  with urllib.request.urlopen(url, timeout=15) as res:
+                      return json.load(res)
+              except urllib.error.HTTPError as exc:
+                  try:
+                      body = json.loads(exc.read().decode("utf-8", "ignore"))
+                      description = body.get("description", "(설명 없음)")
+                  except Exception:
+                      description = "(응답 본문을 읽을 수 없음)"
+                  print(f"[{method}] 실패 — HTTP {exc.code} — {description}")
+                  raise SystemExit(1)
+              except urllib.error.URLError:
+                  print(f"[{method}] 실패 — 네트워크 오류(Telegram API에 접속할 수 없음)")
+                  raise SystemExit(1)
+
+
+          raw_token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+          token = raw_token.strip()
           if not token:
-              print("TELEGRAM_BOT_TOKEN 시크릿이 설정돼 있지 않습니다.")
+              print("TELEGRAM_BOT_TOKEN 시크릿이 비어 있습니다.")
               raise SystemExit(1)
+          if raw_token != token:
+              print("참고: TELEGRAM_BOT_TOKEN 시크릿 값에 앞뒤 공백/개행이 있어 제거하고 사용합니다.")
 
-          url = f"https://api.telegram.org/bot{token}/getUpdates"
-
-          try:
-              with urllib.request.urlopen(url, timeout=15) as res:
-                  data = json.load(res)
-          except urllib.error.HTTPError as exc:
-              # 에러 메시지에 토큰이 섞여 나오지 않도록 상태 코드만 출력한다.
-              print(f"Telegram API 호출 실패 (HTTP {exc.code})")
+          # 1) getMe로 토큰/URL 형식이 정상인지 먼저 검증한다.
+          me = call_telegram(token, "getMe")
+          if not me.get("ok"):
+              print("[getMe] Telegram이 실패 응답을 반환했습니다.")
               raise SystemExit(1)
+          print("[getMe] 토큰 정상 확인")
 
-          if not data.get("ok"):
-              print("Telegram API가 실패 응답을 반환했습니다.")
+          # 2) getUpdates에서 private chat id만 추출한다.
+          updates = call_telegram(token, "getUpdates")
+          if not updates.get("ok"):
+              print("[getUpdates] Telegram이 실패 응답을 반환했습니다.")
               raise SystemExit(1)
 
           chat_ids = set()
-          for update in data.get("result", []):
+          for update in updates.get("result", []):
               msg = update.get("message") or update.get("channel_post")
               if not msg:
                   continue
