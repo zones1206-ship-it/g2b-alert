@@ -47,8 +47,19 @@ const COUNTRY_FLAGS = {
 const state = {
   selected: loadSelection(),
   selectedNoticeTypes: new Set(), // 비어있으면 "전체"(모든 정보 유형 표시)
+  showOnlyNew: false, // true면 NEW(48시간 이내 최초발견) 공고만 표시
   data: { updatedAt: null, items: [] },
 };
+
+// firstSeenAt(우리 시스템이 실제로 처음 발견한 시각) 기준 48시간 이내면
+// NEW로 본다 — 공고의 등록일/마감일은 이 판단에 쓰지 않는다.
+const NEW_BADGE_WINDOW_MS = 48 * 60 * 60 * 1000;
+function isNewItem(item) {
+  if (!item.firstSeenAt) return false;
+  const seenTime = new Date(item.firstSeenAt).getTime();
+  if (Number.isNaN(seenTime)) return false;
+  return Date.now() - seenTime < NEW_BADGE_WINDOW_MS;
+}
 
 function loadSelection() {
   try {
@@ -171,6 +182,9 @@ function topTags(item) {
   if (noticeType) {
     tags.push(`<span class="notice-type-badge ${noticeType.cls}">${noticeType.label}</span>`);
   }
+  if (isNewItem(item)) {
+    tags.push(`<span class="new-badge">NEW</span>`);
+  }
   return `<span class="notice-tags">${tags.join("")}</span>`;
 }
 
@@ -274,13 +288,49 @@ function renderCard(item, kw) {
     </details>`;
 }
 
+function computeNewCount() {
+  // 신규 공고 바에 표시할 건수 — 현재 선택된 분야/정보유형 필터는 그대로
+  // 반영하고(그래야 바를 눌렀을 때 실제로 보이는 건수와 일치한다),
+  // NEW 필터 자체는 적용하지 않은 상태에서 센다.
+  const selectedList = [...state.selected];
+  let count = 0;
+  for (const kw of selectedList) {
+    count += state.data.items.filter((item) =>
+      item.keywords.includes(kw) &&
+      (state.selectedNoticeTypes.size === 0 || state.selectedNoticeTypes.has(item.noticeType)) &&
+      isNewItem(item)
+    ).length;
+  }
+  return count;
+}
+
+function updateNewAnnounceBar(count) {
+  const bar = document.getElementById("newAnnounceBar");
+  if (!bar) return;
+  bar.hidden = false;
+  if (count === 0) {
+    bar.disabled = true;
+    bar.classList.remove("active");
+    bar.textContent = "새로운 공고 없음";
+    return;
+  }
+  bar.disabled = false;
+  bar.classList.toggle("active", state.showOnlyNew);
+  bar.textContent = state.showOnlyNew
+    ? `🆕 신규 공고 ${count}건 표시 중 · 전체 보기`
+    : `🆕 신규 공고 ${count}건 보기`;
+}
+
 function renderResults() {
   const selectedList = [...state.selected];
+
+  updateNewAnnounceBar(computeNewCount());
 
   const groups = selectedList.map((kw) => {
     const items = state.data.items
       .filter((item) => item.keywords.includes(kw))
       .filter((item) => state.selectedNoticeTypes.size === 0 || state.selectedNoticeTypes.has(item.noticeType))
+      .filter((item) => !state.showOnlyNew || isNewItem(item))
       .sort((a, b) => daysUntil(a.dueDate) - daysUntil(b.dueDate));
     return { kw, items };
   }).filter((g) => g.items.length > 0);
@@ -354,6 +404,11 @@ function init() {
 
   document.getElementById("viewResultsBtn").addEventListener("click", () => showScreen("results"));
   document.getElementById("backBtn").addEventListener("click", () => showScreen("keywords"));
+
+  document.getElementById("newAnnounceBar").addEventListener("click", () => {
+    state.showOnlyNew = !state.showOnlyNew;
+    renderResults();
+  });
 
   document.getElementById("telegramBtn").addEventListener("click", () => {
     alert("텔레그램 알림 연동은 다음 업데이트에서 제공될 예정입니다.");

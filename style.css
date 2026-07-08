@@ -254,6 +254,33 @@ body {
 }
 .total-count { font-size: 13px; color: var(--text-muted); }
 
+.new-announce-bar {
+  display: block;
+  width: 100%;
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--red);
+  border-radius: var(--radius-md);
+  background: var(--red-bg);
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+}
+.new-announce-bar:hover { background: #fbdedb; }
+.new-announce-bar.active {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: var(--white);
+}
+.new-announce-bar:disabled {
+  cursor: default;
+  border-color: var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+}
+
 .result-groups { display: flex; flex-direction: column; gap: 22px; }
 .group-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -332,6 +359,16 @@ body {
 .notice-type-project { background: #eef1fb; color: var(--navy-soft); }
 .notice-type-consult { background: #e8f7f0; color: var(--green); }
 .notice-type-result { background: #f3e8fd; color: #7c3aed; }
+/* 최초 발견(firstSeenAt) 48시간 이내 공고 표시 — 정식입찰 등 기존 배지와
+   같은 줄(.notice-tags)에 나란히 붙어서 카드 높이를 늘리지 않는다. */
+.new-badge {
+  font-size: 10.5px; font-weight: 800;
+  color: var(--white);
+  background: var(--red);
+  border-radius: 5px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
 .notice-title {
   font-size: 14px; font-weight: 700; color: var(--text);
   margin: 0 0 5px;

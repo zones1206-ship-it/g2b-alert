@@ -32,6 +32,12 @@ scripts/fetch_announcements.py의 COLLECTORS 목록에 추가하면 된다.
                                # "낙찰·수주결과"(EBNEW류 낙찰/심사결과 공고)
 }
 
+개별 수집원(collect())은 firstSeenAt을 채우지 않는다 — scripts/fetch_announcements.py의
+stamp_first_seen()이 모든 소스를 합친 뒤 한 번에 부여한다(같은 id가 이전
+실행에도 있었으면 그때 값을 그대로 이어받아 재수집돼도 "신규"로 되돌아가지
+않는다). 프론트엔드는 이 필드로 NEW 배지(48시간)를 판단하며, 공고 자체의
+등록일/마감일과는 무관하다.
+
 중국 등 원문이 한국어가 아닌 출처는 위 스키마에 아래 필드를 추가로 채운다
 (common 스키마에는 없지만 프론트가 있으면 표시하고 없으면 생략한다):
     "translatedTitle" / "originalTitle"     : 번역/원문 제목

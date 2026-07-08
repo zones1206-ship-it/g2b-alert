@@ -97,6 +97,23 @@ def sort_key(item):
     return (0, due)
 
 
+def stamp_first_seen(all_items, existing_items):
+    """각 공고에 firstSeenAt(우리 시스템이 실제로 처음 발견한 시각, ISO 8601)을
+    부여한다. 공고 자체의 등록일/마감일과는 무관하다 — 이전 실행에서 같은
+    id로 이미 저장된 적이 있으면 그때의 firstSeenAt을 그대로 이어받아서
+    재수집돼도 다시 "신규"가 되지 않게 하고, 이번에 처음 보는 id만 지금
+    시각을 새로 기록한다(프론트엔드는 이 필드를 기준으로 48시간 이내면
+    NEW 배지를 표시한다)."""
+    previous_first_seen = {
+        item.get("id"): item.get("firstSeenAt")
+        for item in existing_items
+        if item.get("id") and item.get("firstSeenAt")
+    }
+    now_iso = datetime.now().astimezone().isoformat(timespec="seconds")
+    for item in all_items:
+        item["firstSeenAt"] = previous_first_seen.get(item.get("id")) or now_iso
+
+
 def is_still_open(item):
     if item.get("sourceCode") in KEEP_EXPIRED_SOURCES:
         return True  # 마감돼도 영업 정보 가치가 있어 유지 (status 필드로 구분 표시)
@@ -119,6 +136,7 @@ def main():
         all_items.extend(run_collector(name, module, existing_items, log))
 
     all_items = [item for item in all_items if is_still_open(item)]
+    stamp_first_seen(all_items, existing_items)
     all_items.sort(key=sort_key)
 
     now = datetime.now().astimezone()
