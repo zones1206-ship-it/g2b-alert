@@ -1,0 +1,72 @@
+name: (임시) Telegram Chat ID 확인
+
+# 텔레그램 알림 연동 준비용 1회성 확인 워크플로.
+# 사용자가 @equipment_project_radar_bot 에 /start를 보낸 뒤 이 워크플로를
+# 수동 실행하면, Telegram getUpdates 응답에서 개인 채팅(private) chat id만
+# 골라 Actions 로그에 출력한다.
+#
+# 보안 원칙:
+# - 봇 토큰은 Repository Secret(TELEGRAM_BOT_TOKEN)에서만 읽는다(코드에
+#   직접 쓰지 않음).
+# - 토큰 자체, getUpdates 전체 응답(JSON), 사용자 이름 등 개인정보는 로그에
+#   출력하지 않는다 — chat id 숫자만 출력한다.
+# - 신규 공고 발송 기능은 아직 구현하지 않는다(Chat ID 확인 전용).
+#
+# 확인 후에는 이 워크플로 파일을 삭제해도 된다(임시용).
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  get-chat-id:
+    runs-on: ubuntu-latest
+    steps:
+      - name: getUpdates 호출 후 private chat id만 출력
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: |
+          python3 - <<'PYEOF'
+          import json
+          import os
+          import urllib.request
+          import urllib.error
+
+          token = os.environ.get("TELEGRAM_BOT_TOKEN")
+          if not token:
+              print("TELEGRAM_BOT_TOKEN 시크릿이 설정돼 있지 않습니다.")
+              raise SystemExit(1)
+
+          url = f"https://api.telegram.org/bot{token}/getUpdates"
+
+          try:
+              with urllib.request.urlopen(url, timeout=15) as res:
+                  data = json.load(res)
+          except urllib.error.HTTPError as exc:
+              # 에러 메시지에 토큰이 섞여 나오지 않도록 상태 코드만 출력한다.
+              print(f"Telegram API 호출 실패 (HTTP {exc.code})")
+              raise SystemExit(1)
+
+          if not data.get("ok"):
+              print("Telegram API가 실패 응답을 반환했습니다.")
+              raise SystemExit(1)
+
+          chat_ids = set()
+          for update in data.get("result", []):
+              msg = update.get("message") or update.get("channel_post")
+              if not msg:
+                  continue
+              chat = msg.get("chat", {})
+              if chat.get("type") == "private" and "id" in chat:
+                  chat_ids.add(chat["id"])
+
+          print("=== 확인된 private chat id ===")
+          if chat_ids:
+              for cid in sorted(chat_ids):
+                  print(cid)
+          else:
+              print("(없음 — 봇에 /start를 보낸 뒤 다시 실행해보세요. "
+                    "getUpdates는 최근 미확인 업데이트만 반환합니다.)")
+          PYEOF
