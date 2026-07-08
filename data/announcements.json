@@ -38,7 +38,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-254CSOTGZT11/04"
+      "projectNo": "4197-254CSOTGZT11/04",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "mofcomff8080819e429056019ebac9b9df2fdc",
@@ -78,7 +79,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-2140CSOT0008/53"
+      "projectNo": "4197-2140CSOT0008/53",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "cid5558",
@@ -115,7 +117,8 @@
       "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5558&hcid=38",
       "source": "한국나노기술원",
       "sourceCode": "KANC",
-      "noticeType": "정식입찰"
+      "noticeType": "정식입찰",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "ebnew708933643",
@@ -154,7 +157,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "낙찰·수주결과",
-      "projectNo": "0618-264TC260709D"
+      "projectNo": "0618-264TC260709D",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "cid5563",
@@ -187,7 +191,8 @@
       "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5563&hcid=38",
       "source": "한국나노기술원",
       "sourceCode": "KANC",
-      "noticeType": "사전규격"
+      "noticeType": "사전규격",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "ebnew708999951",
@@ -227,7 +232,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "낙찰·수주결과",
-      "projectNo": "4197-254VISIONOX6/23"
+      "projectNo": "4197-254VISIONOX6/23",
+      "firstSeenAt": "2026-07-08T22:59:43+00:00"
     },
     {
       "id": "ebnew708847258",
@@ -267,7 +273,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-254VISIONOX6/24"
+      "projectNo": "4197-254VISIONOX6/24",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "mofcomff8080819e429056019ef35b8a57078e",
@@ -307,7 +314,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-2140CSOT0008/53"
+      "projectNo": "4197-2140CSOT0008/53",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "nttidB000000006047Yk3eR1",
@@ -348,7 +356,8 @@
       "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006047Yk3eR1",
       "source": "나노종합기술원",
       "sourceCode": "NNFC",
-      "noticeType": "정식입찰"
+      "noticeType": "정식입찰",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "nttidB000000006046Fe1jF7",
@@ -389,7 +398,8 @@
       "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006046Fe1jF7",
       "source": "나노종합기술원",
       "sourceCode": "NNFC",
-      "noticeType": "정식입찰"
+      "noticeType": "정식입찰",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "nttidB000000006045Is2rS4",
@@ -430,7 +440,8 @@
       "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006045Is2rS4",
       "source": "나노종합기술원",
       "sourceCode": "NNFC",
-      "noticeType": "정식입찰"
+      "noticeType": "정식입찰",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "ebnew708819980",
@@ -469,7 +480,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "0705-264266322699/23"
+      "projectNo": "0705-264266322699/23",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "mofcomff8080819e429056019efeafee314064",
@@ -508,7 +520,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-254YUNGU0002/32"
+      "projectNo": "4197-254YUNGU0002/32",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "kotra26CN0J7",
@@ -539,7 +552,8 @@
       "sourceCode": "KOTRA",
       "sourceSiteUrl": "https://www.kotra.or.kr/",
       "noticeType": "프로젝트 정보",
-      "eventPeriod": "2026-09-19 ~ 2026-09-19"
+      "eventPeriod": "2026-09-19 ~ 2026-09-19",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "mofcomff8080819e429056019f045678331800",
@@ -578,7 +592,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-244BOECDDT01/354"
+      "projectNo": "4197-244BOECDDT01/354",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "ebnew708872092",
@@ -618,7 +633,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-254VISIONOX6/28"
+      "projectNo": "4197-254VISIONOX6/28",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "mofcomff8080819e429056019f14024dd65781",
@@ -657,7 +673,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-224YUNGU0001/22"
+      "projectNo": "4197-224YUNGU0001/22",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "mofcomff8080819e429056019f140079c555e9",
@@ -696,7 +713,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-224YUNGU0001/23"
+      "projectNo": "4197-224YUNGU0001/23",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "ebnew708879122",
@@ -735,7 +753,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-2640CSOTGZT8/68"
+      "projectNo": "4197-2640CSOTGZT8/68",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "mofcomff8080819e429056019f168b6b6c0267",
@@ -774,7 +793,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-2640CSOTGZT8/68"
+      "projectNo": "4197-2640CSOTGZT8/68",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "mofcomff8080819e429056019ef38d2eee356c",
@@ -813,7 +833,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-254CSOTGZT11/06"
+      "projectNo": "4197-254CSOTGZT11/06",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "mofcomff8080819e429056019f2885c5774fed",
@@ -852,7 +873,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-254YUNGU0002/32"
+      "projectNo": "4197-254YUNGU0002/32",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "mofcomff8080819e429056019f286df7f03bd2",
@@ -891,7 +913,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-214GZZCGOV04/241"
+      "projectNo": "4197-214GZZCGOV04/241",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "ebnew708986010",
@@ -931,7 +954,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-254VISIONOX6/28"
+      "projectNo": "4197-254VISIONOX6/28",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "mofcomff8080819e429056019f3523c12a5368",
@@ -970,7 +994,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-254YUNGU0002/29"
+      "projectNo": "4197-254YUNGU0002/29",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "ebnew708999555",
@@ -1009,7 +1034,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "CECOM-2026-BD03-0297"
+      "projectNo": "CECOM-2026-BD03-0297",
+      "firstSeenAt": "2026-07-08T22:59:43+00:00"
     },
     {
       "id": "kotra26CN0GR",
@@ -1044,7 +1070,8 @@
       "sourceCode": "KOTRA",
       "sourceSiteUrl": "https://www.kotra.or.kr/",
       "noticeType": "프로젝트 정보",
-      "eventPeriod": "2026-08-31 ~ 2026-09-02"
+      "eventPeriod": "2026-08-31 ~ 2026-09-02",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "cid5568",
@@ -1081,7 +1108,8 @@
       "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5568&hcid=38",
       "source": "한국나노기술원",
       "sourceCode": "KANC",
-      "noticeType": "정식입찰"
+      "noticeType": "정식입찰",
+      "firstSeenAt": "2026-07-08T22:59:43+00:00"
     },
     {
       "id": "cid5566",
@@ -1114,7 +1142,8 @@
       "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5566&hcid=38",
       "source": "한국나노기술원",
       "sourceCode": "KANC",
-      "noticeType": "정식입찰"
+      "noticeType": "정식입찰",
+      "firstSeenAt": "2026-07-08T22:59:43+00:00"
     },
     {
       "id": "kotra26CN0C3",
@@ -1141,7 +1170,8 @@
       "sourceCode": "KOTRA",
       "sourceSiteUrl": "https://www.kotra.or.kr/",
       "noticeType": "수출상담회",
-      "eventPeriod": "2026-01-01 ~ 2026-12-31"
+      "eventPeriod": "2026-01-01 ~ 2026-12-31",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "ebnew708909498",
@@ -1180,7 +1210,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "낙찰·수주결과",
-      "projectNo": "4197-2640CSOTGZT8/38"
+      "projectNo": "4197-2640CSOTGZT8/38",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "ebnew708882642",
@@ -1219,7 +1250,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "낙찰·수주결과",
-      "projectNo": "4197-2640CSOTGZT8/48"
+      "projectNo": "4197-2640CSOTGZT8/48",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "ebnew708819587",
@@ -1258,7 +1290,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "0705-264266322699/23"
+      "projectNo": "0705-264266322699/23",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "ebnew708814721",
@@ -1297,7 +1330,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "公"
+      "projectNo": "公",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "ebnew708985933",
@@ -1337,7 +1371,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-254VISIONOX6/28"
+      "projectNo": "4197-254VISIONOX6/28",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "ebnew708969636",
@@ -1376,7 +1411,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "낙찰·수주결과",
-      "projectNo": "0655-2640NIT3003N"
+      "projectNo": "0655-2640NIT3003N",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "ebnew708886674",
@@ -1415,7 +1451,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "낙찰·수주결과",
-      "projectNo": "公"
+      "projectNo": "公",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "mofcomff8080819e429056019f286c24043a1e",
@@ -1454,7 +1491,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-234VISIONOX4/158"
+      "projectNo": "4197-234VISIONOX4/158",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "mofcomff8080819e429056019f27a837fe153c",
@@ -1493,7 +1531,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-244BOECDDT01/344"
+      "projectNo": "4197-244BOECDDT01/344",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     },
     {
       "id": "mofcomff8080819e429056019f214cb4c82e07",
@@ -1532,7 +1571,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-234VISIONOX4/157"
+      "projectNo": "4197-234VISIONOX4/157",
+      "firstSeenAt": "2026-07-04T23:30:13+00:00"
     }
   ]
 }
