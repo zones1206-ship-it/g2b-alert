@@ -199,6 +199,22 @@ function renderAttachments(item) {
     </div>`;
 }
 
+function originalTextBlock(item) {
+  const rows = [];
+  if (item.originalTitle && item.originalTitle !== item.title) {
+    rows.push(`<p class="original-text-block"><b>제목</b><br>${escapeHtml(item.originalTitle)}</p>`);
+  }
+  if (item.originalOrg && item.originalOrg !== item.org) {
+    rows.push(`<p class="original-text-block"><b>발주처</b><br>${escapeHtml(item.originalOrg)}</p>`);
+  }
+  if (rows.length === 0) return "";
+  return `
+    <div class="detail-section">
+      <h4>원문(중국어)</h4>
+      ${rows.join("")}
+    </div>`;
+}
+
 function renderCard(item, kw) {
   const businessRows = [
     detailRowWithFallback("예산", item.budget, "예산 정보 없음"),
@@ -232,10 +248,9 @@ function renderCard(item, kw) {
             ${detailRow("발주기관", item.org)}
             ${detailRow("분야", kw)}
             ${detailRow("정보 유형", item.noticeType)}
-            ${item.originalTitle && item.originalTitle !== item.title ? detailRow("원문 제목", item.originalTitle) : ""}
-            ${item.originalOrg && item.originalOrg !== item.org ? detailRow("원문 발주처", item.originalOrg) : ""}
           </dl>
         </div>
+        ${originalTextBlock(item)}
         <div class="detail-section">
           <h4>일정 정보</h4>
           <dl class="notice-detail-list">

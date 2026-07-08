@@ -28,12 +28,13 @@ body {
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
 }
 
 .app {
   max-width: 480px;
   margin: 0 auto;
-  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--bg);
   display: flex;
   flex-direction: column;
@@ -47,31 +48,55 @@ body {
 /* Header */
 .app-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  padding: 14px 20px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 20px;
   background: var(--white);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 10;
 }
-.brand { display: flex; align-items: center; gap: 8px; }
-.brand-icon { color: var(--navy); display: flex; }
-.brand-text { display: flex; flex-direction: column; }
-.brand h1 { font-size: 17px; font-weight: 800; color: var(--navy); margin: 0; letter-spacing: -0.2px; }
-.brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 1px 0 0; }
+.header-top-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.brand-icon { color: var(--navy); display: flex; flex-shrink: 0; }
+.brand-text { display: flex; flex-direction: column; min-width: 0; }
+.brand h1 { font-size: 16px; font-weight: 800; color: var(--navy); margin: 0; letter-spacing: -0.2px; }
+.brand-sub { font-size: 11px; color: var(--text-muted); margin: 1px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.source-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .logout-link {
   font-size: 11px; font-weight: 600;
   color: var(--text-muted);
   text-decoration: none;
   padding: 4px 8px;
+  flex-shrink: 0;
 }
 .logout-link:hover { color: var(--navy); background: var(--bg); }
+.icon-btn {
+  background: none; border: none; color: var(--navy); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  padding: 6px; border-radius: 8px;
+}
+.icon-btn:hover { background: var(--bg); }
+
+/* 출처 5곳: 기본은 한 줄 요약(대표 출처 2곳 + 나머지 개수)만 보이고,
+   펼치면 전체 배지가 나온다 — 세로 공간은 줄이되 신뢰성 정보(출처 이름)는
+   접힌 상태에서도 일부 계속 보이게 한다. */
+.source-chips-collapse {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+.source-summary {
+  cursor: pointer;
+  padding: 2px 0;
+  color: var(--navy-soft);
+  font-weight: 600;
+}
+.source-summary .source-more {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.source-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
 .source-chip {
   font-size: 11px;
   color: var(--navy-soft);
@@ -82,29 +107,24 @@ body {
   white-space: nowrap;
 }
 .source-chip b { color: var(--accent); font-weight: 700; }
-.icon-btn {
-  background: none; border: none; color: var(--navy); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  padding: 6px; border-radius: 8px;
-}
-.icon-btn:hover { background: var(--bg); }
 
 .source-pending {
   width: 100%;
   font-size: 11px;
   color: var(--text-muted);
-  margin-top: 2px;
 }
-.source-pending summary { cursor: pointer; }
+.source-pending summary { cursor: pointer; padding: 2px 0; }
 .source-pending ul { margin: 6px 0 0; padding-left: 18px; }
 
-/* Filter bar (results screen) */
+/* Filter bar (results screen) — 칩이 화면 끝에서 잘려 보이는 가로 스크롤
+   대신, 다시 여러 줄로 줄바꿈되는 방식을 쓴다(대신 필터 영역 세로 높이는
+   칩이 많을 때 늘어난다). */
 .filter-bar {
-  padding: 12px 20px 0;
-  display: flex; flex-direction: column; gap: 8px;
+  padding: 10px 20px 0;
+  display: flex; flex-direction: column; gap: 6px;
 }
 .filter-row { display: flex; flex-wrap: wrap; gap: 6px; }
-.filter-count { margin: 0; font-size: 11.5px; color: var(--text-muted); }
+.filter-count { margin: 0; font-size: 11px; color: var(--text-muted); }
 .chip {
   border: 1.5px solid var(--border);
   background: var(--white);
@@ -115,6 +135,8 @@ body {
   border-radius: 999px;
   cursor: pointer;
   white-space: nowrap;
+  transition: border-color .15s ease, background .15s ease, color .15s ease, transform .1s ease;
+  flex-shrink: 0;
 }
 .chip-active {
   border-color: var(--navy);
@@ -126,6 +148,8 @@ body {
   background: var(--blue-bg);
   color: var(--accent);
 }
+.chip:hover { border-color: var(--navy-soft); }
+.chip:active { transform: scale(0.96); }
 
 /* Screens */
 .screen { padding: 20px; padding-bottom: 40px; flex: 1; }
@@ -149,9 +173,11 @@ body {
   font-size: 14.5px;
   font-weight: 600;
   color: var(--text);
-  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease, transform .1s ease;
   user-select: none;
 }
+.keyword-card:hover { border-color: var(--navy-soft); }
+.keyword-card:active { transform: scale(0.98); }
 .keyword-card .checkbox {
   width: 20px; height: 20px; border-radius: 6px;
   border: 1.5px solid #c7cede;
@@ -184,9 +210,10 @@ body {
   font-weight: 700;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background .15s ease;
+  transition: background .15s ease, transform .1s ease;
 }
 .primary-btn:hover { background: var(--navy-deep); }
+.primary-btn:active { transform: scale(0.98); }
 
 .ghost-btn {
   width: 100%;
@@ -199,8 +226,10 @@ body {
   border-radius: var(--radius-md);
   cursor: pointer;
   margin-top: 10px;
+  transition: background .15s ease, border-color .15s ease, transform .1s ease;
 }
 .ghost-btn:hover { background: var(--white); border-color: var(--navy-soft); }
+.ghost-btn:active { transform: scale(0.98); }
 
 .hint {
   display: flex; align-items: center; gap: 6px;
@@ -306,7 +335,12 @@ body {
 .notice-title {
   font-size: 14px; font-weight: 700; color: var(--text);
   margin: 0 0 5px;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .notice-meta {
   display: flex; flex-wrap: wrap; gap: 10px;
@@ -362,6 +396,34 @@ body {
   line-height: 1.6;
   margin: 0;
   white-space: pre-line;
+}
+
+/* 원문(중국어) 보조 블록 — 구조화된 필드(국가/지역/분야 등)와 구분되는
+   참고용 정보임을 좌측 보더+연한 배경으로 표시한다. 이탤릭은 안 씀(가독성
+   저하), 긴 문장이 잘 읽히도록 line-height를 넉넉히 주고 word-break로
+   좁은 화면에서도 안전하게 줄바꿈되게 한다. */
+.original-text-block {
+  font-size: 12.5px;
+  font-style: normal;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 0 0 8px;
+  padding: 8px 10px;
+  background: #f8f9fb;
+  border-left: 3px solid var(--border);
+  border-radius: 0 6px 6px 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.original-text-block:last-child { margin-bottom: 0; }
+.original-text-block b {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--navy-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 3px;
 }
 .attachment-list {
   list-style: none;
