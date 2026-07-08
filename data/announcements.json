@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-08T08:38:40+09:00",
+  "updatedAt": "2026-07-08T22:59:43+00:00",
   "items": [
     {
       "id": "mofcomff8080819e429056019ebb1b36127aaa",
@@ -188,6 +188,46 @@
       "source": "한국나노기술원",
       "sourceCode": "KANC",
       "noticeType": "사전규격"
+    },
+    {
+      "id": "ebnew708999951",
+      "title": "쑤저우 GuoXian 혁신과학기술 유한공사 신형 디스플레이 기술 개발 연간생산 XR 제품 150만개 프로젝트 심사결과 공시 공고 (1)",
+      "translatedTitle": "쑤저우 GuoXian 혁신과학기술 유한공사 신형 디스플레이 기술 개발 연간생산 XR 제품 150만개 프로젝트 심사결과 공시 공고 (1)",
+      "originalTitle": "苏州国显创新科技有限公司新型显示技术开发年产XR产品150万件项目评标结果公示公告(1)",
+      "translatedSummary": "QingXi Ji",
+      "originalSummary": "清洗机",
+      "org": "쑤저우 GuoXian 혁신과학기술 유한공사",
+      "originalOrg": "苏州国显创新科技有限公司",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "장쑤성",
+      "status": "진행중",
+      "dueDate": "2026-07-13",
+      "postedDate": "2026-07-08",
+      "keywords": [
+        "반도체 장비",
+        "디스플레이 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "QingXi Ji",
+      "attachments": [],
+      "url": "http://www.ebnew.com/businessShow/708999951.html",
+      "originalUrl": "http://www.ebnew.com/businessShow/708999951.html",
+      "source": "중국 비롄왕(EBNEW)",
+      "sourceCode": "EBNEW",
+      "sourceSiteUrl": "https://www.ebnew.com/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "낙찰·수주결과",
+      "projectNo": "4197-254VISIONOX6/23"
     },
     {
       "id": "ebnew708847258",
@@ -933,6 +973,45 @@
       "projectNo": "4197-254YUNGU0002/29"
     },
     {
+      "id": "ebnew708999555",
+      "title": "상하이 XinYuan 혁신센터 웨이퍼 JianHe 장비 구매 프로젝트 （ErCi） 입찰공고",
+      "translatedTitle": "상하이 XinYuan 혁신센터 웨이퍼 JianHe 장비 구매 프로젝트 （ErCi） 입찰공고",
+      "originalTitle": "上海芯源创新中心晶圆键合设备采购项目（二次）招标公告",
+      "translatedSummary": "상하이 XinYuan 혁신센터 웨이퍼 JianHe 장비 구매 프로젝트 （ErCi） 입찰공고",
+      "originalSummary": "上海芯源创新中心晶圆键合设备采购项目（二次）招标公告",
+      "org": "상하이 XinYuan 혁신센터",
+      "originalOrg": "上海芯源创新中心",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "상하이/ShiXia Qu/PuDong XinQu",
+      "status": "진행중",
+      "dueDate": "2026-07-29",
+      "postedDate": "2026-07-08",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "상하이 XinYuan 혁신센터 웨이퍼 JianHe 장비 구매 프로젝트 （ErCi） 입찰공고",
+      "attachments": [],
+      "url": "http://www.ebnew.com/businessShow/708999555.html",
+      "originalUrl": "http://www.ebnew.com/businessShow/708999555.html",
+      "source": "중국 비롄왕(EBNEW)",
+      "sourceCode": "EBNEW",
+      "sourceSiteUrl": "https://www.ebnew.com/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "정식입찰",
+      "projectNo": "CECOM-2026-BD03-0297"
+    },
+    {
       "id": "kotra26CN0GR",
       "title": "(CSEAC 연계) 2026 우시  반도체 소·부·장 GP사업",
       "org": "글로벌공급망사업팀",
@@ -966,6 +1045,76 @@
       "sourceSiteUrl": "https://www.kotra.or.kr/",
       "noticeType": "프로젝트 정보",
       "eventPeriod": "2026-08-31 ~ 2026-09-02"
+    },
+    {
+      "id": "cid5568",
+      "title": "[공고 제2026-26호] Cyan Au 도금액 구매(내자) 견적입찰 공고",
+      "org": "한국나노기술원",
+      "country": "국내",
+      "countryCode": "KR",
+      "status": "진행중",
+      "dueDate": null,
+      "postedDate": "2026-07-08",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고유형: 정식입찰 · 공고번호: 제2026-26호",
+      "attachments": [
+        {
+          "name": "2 견적입찰 공고문.pdf",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5568&filename=5568_202607081336506470.pdf"
+        },
+        {
+          "name": "3 Cyan Au 도금액_물품상세규격서.hwp",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5568&filename=5568_202607081336506471.hwp"
+        },
+        {
+          "name": "4 입찰관련 서식.hwp",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5568&filename=5568_202607081336506622.hwp"
+        }
+      ],
+      "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5568&hcid=38",
+      "source": "한국나노기술원",
+      "sourceCode": "KANC",
+      "noticeType": "정식입찰"
+    },
+    {
+      "id": "cid5566",
+      "title": "[공고 제2026-18호] 8인치 레이저 마커 구매(내자)",
+      "org": "한국나노기술원",
+      "country": "국내",
+      "countryCode": "KR",
+      "status": "진행중",
+      "dueDate": null,
+      "postedDate": "2026-07-08",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": null,
+      "contractMethod": null,
+      "deliveryCondition": "현장 설치도 사. 납품장소 : 한국나노기술원 내 지정장소 (현장설치 조건 및 폐기물 회수처리 포함) 아.",
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고유형: 정식입찰 · 공고번호: 제2026-18호",
+      "attachments": [
+        {
+          "name": "3-1 8inch Laser Marker_상세규격서.pdf",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5566&filename=5566_202607081322076981.pdf"
+        },
+        {
+          "name": "3-2 8inch Laser Marker_용도설명서.pdf",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5566&filename=5566_202607081322077142.pdf"
+        }
+      ],
+      "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5566&hcid=38",
+      "source": "한국나노기술원",
+      "sourceCode": "KANC",
+      "noticeType": "정식입찰"
     },
     {
       "id": "kotra26CN0C3",
