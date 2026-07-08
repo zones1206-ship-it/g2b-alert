@@ -48,6 +48,8 @@ const state = {
   selected: loadSelection(),
   selectedNoticeTypes: new Set(), // 비어있으면 "전체"(모든 정보 유형 표시)
   showOnlyNew: false, // true면 NEW(48시간 이내 최초발견) 공고만 표시
+  dueSoonOnly: false, // true면 D-7 이내 마감 공고만 표시(대시보드 "마감 임박" 카드용)
+  region: "all", // "all" | "domestic" | "overseas" — 홈 대시보드 지역 필터, 공고 탭에도 함께 적용됨
   data: { updatedAt: null, items: [] },
 };
 
@@ -59,6 +61,40 @@ function isNewItem(item) {
   const seenTime = new Date(item.firstSeenAt).getTime();
   if (Number.isNaN(seenTime)) return false;
   return Date.now() - seenTime < NEW_BADGE_WINDOW_MS;
+}
+
+// --- 대시보드 공용 헬퍼 (기존 필터/렌더 로직은 그대로 두고 추가만 한다) ---
+
+function matchesRegion(item) {
+  if (state.region === "domestic") return item.country === "국내";
+  if (state.region === "overseas") return !!item.country && item.country !== "국내";
+  return true;
+}
+
+// 같은 공고가 여러 분야(keywords)에 속해 카드 목록에서는 여러 번 보일 수 있는데,
+// 대시보드 KPI/통계는 "몇 건의 공고가 있는지"를 물어보는 것이므로 id 기준으로
+// 한 번씩만 센다("중복 공고 제외" 요구사항).
+function uniqueItems(items) {
+  const seen = new Set();
+  const result = [];
+  for (const item of items) {
+    if (!item.id || seen.has(item.id)) continue;
+    seen.add(item.id);
+    result.push(item);
+  }
+  return result;
+}
+
+// 마감되지 않은 공고(= "현재 확인 가능한 유효 공고"). dueDate가 없는 공고는
+// 마감 여부를 알 수 없으므로 임의로 제외하지 않는다(기존 서버 로직과 동일 원칙).
+function isValidOpen(item) {
+  if (!item.dueDate) return true;
+  return daysUntil(item.dueDate) >= 0;
+}
+
+// 홈 대시보드가 기준으로 삼는 "유효 공고" 집합: 중복 제외 + 마감 제외 + 지역 필터.
+function getValidItems() {
+  return uniqueItems(state.data.items).filter((item) => isValidOpen(item) && matchesRegion(item));
 }
 
 function loadSelection() {
@@ -298,6 +334,7 @@ function computeNewCount() {
     count += state.data.items.filter((item) =>
       item.keywords.includes(kw) &&
       (state.selectedNoticeTypes.size === 0 || state.selectedNoticeTypes.has(item.noticeType)) &&
+      matchesRegion(item) &&
       isNewItem(item)
     ).length;
   }
@@ -331,6 +368,8 @@ function renderResults() {
       .filter((item) => item.keywords.includes(kw))
       .filter((item) => state.selectedNoticeTypes.size === 0 || state.selectedNoticeTypes.has(item.noticeType))
       .filter((item) => !state.showOnlyNew || isNewItem(item))
+      .filter((item) => !state.dueSoonOnly || (item.dueDate && daysUntil(item.dueDate) >= 0 && daysUntil(item.dueDate) <= 7))
+      .filter((item) => matchesRegion(item))
       .sort((a, b) => daysUntil(a.dueDate) - daysUntil(b.dueDate));
     return { kw, items };
   }).filter((g) => g.items.length > 0);
@@ -374,14 +413,363 @@ function formatUpdatedAt(iso) {
   return `마지막 업데이트 ${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-function showScreen(name) {
-  document.getElementById("screen-keywords").hidden = name !== "keywords";
-  document.getElementById("screen-results").hidden = name !== "results";
-  document.getElementById("filterBar").hidden = name !== "results";
-  if (name === "results") {
+// ============================================================
+// 대시보드(홈/통계/일정) — 전부 위의 기존 데이터/필터 헬퍼만 읽어서
+// 집계·렌더링하는 추가 레이어다. 기존 검색/필터/카드/Telegram 로직은
+// 여기서 호출만 하지, 내부를 바꾸지 않는다.
+// ============================================================
+
+function computeHomeStats() {
+  const valid = getValidItems();
+  const domestic = valid.filter((item) => item.country === "국내").length;
+  const overseas = valid.length - domestic;
+
+  const now = Date.now();
+  const weekAgoMs = now - 7 * 24 * 60 * 60 * 1000;
+  const newThisWeek = valid.filter((item) => {
+    if (!item.firstSeenAt) return false;
+    const t = new Date(item.firstSeenAt).getTime();
+    return !Number.isNaN(t) && t >= weekAgoMs;
+  }).length;
+
+  const newItems = valid.filter(isNewItem);
+  const dayAgoMs = now - 24 * 60 * 60 * 1000;
+  const newToday = newItems.filter((item) => new Date(item.firstSeenAt).getTime() >= dayAgoMs).length;
+
+  const dueSoon = valid.filter((item) => item.dueDate && daysUntil(item.dueDate) >= 0 && daysUntil(item.dueDate) <= 7);
+
+  const byCategory = {};
+  KEYWORDS.forEach((kw) => { byCategory[kw] = 0; });
+  valid.forEach((item) => (item.keywords || []).forEach((kw) => {
+    if (byCategory[kw] !== undefined) byCategory[kw] += 1;
+  }));
+
+  return { valid, domestic, overseas, newThisWeek, newCount: newItems.length, newToday, dueSoon, byCategory };
+}
+
+// 최근 N일 동안 firstSeenAt(최초발견) 기준 일자별 신규 공고 수 — Telegram
+// 발송 기준과 동일한 firstSeenAt을 그대로 재사용한다.
+function computeNewTrend(days) {
+  const buckets = [];
+  const base = new Date();
+  base.setHours(0, 0, 0, 0);
+  for (let i = days - 1; i >= 0; i -= 1) {
+    const d = new Date(base);
+    d.setDate(d.getDate() - i);
+    buckets.push({ time: d.getTime(), count: 0, label: `${d.getMonth() + 1}/${d.getDate()}` });
+  }
+  const items = uniqueItems(state.data.items).filter(matchesRegion);
+  items.forEach((item) => {
+    if (!item.firstSeenAt) return;
+    const d = new Date(item.firstSeenAt);
+    d.setHours(0, 0, 0, 0);
+    const bucket = buckets.find((b) => b.time === d.getTime());
+    if (bucket) bucket.count += 1;
+  });
+  return buckets;
+}
+
+// 라이브러리 없이 순수 인라인 SVG로 그리는 작은 막대 차트.
+function renderBarChart(buckets, opts = {}) {
+  const width = opts.width || 320;
+  const height = opts.height || 88;
+  const gap = 5;
+  const barWidth = (width - gap * (buckets.length - 1)) / buckets.length;
+  const max = Math.max(1, ...buckets.map((b) => b.count));
+  const bottomPad = 18;
+  const bars = buckets.map((b, i) => {
+    const barHeight = Math.round((b.count / max) * (height - bottomPad - 14));
+    const x = i * (barWidth + gap);
+    const y = height - bottomPad - barHeight;
+    const showEveryLabel = buckets.length <= 10;
+    return `
+      <rect x="${x.toFixed(1)}" y="${y}" width="${barWidth.toFixed(1)}" height="${Math.max(barHeight, 2)}" rx="3" fill="var(--accent)"></rect>
+      ${b.count > 0 ? `<text x="${(x + barWidth / 2).toFixed(1)}" y="${y - 4}" font-size="9" font-weight="700" fill="var(--navy)" text-anchor="middle">${b.count}</text>` : ""}
+      ${showEveryLabel ? `<text x="${(x + barWidth / 2).toFixed(1)}" y="${height - 5}" font-size="8.5" fill="var(--text-muted)" text-anchor="middle">${escapeHtml(b.label)}</text>` : ""}
+    `;
+  }).join("");
+  return `<svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}" role="img" aria-label="기간별 신규 공고 추이 차트">${bars}</svg>`;
+}
+
+// 라이브러리 없이 순수 인라인 SVG로 그리는 작은 도넛 차트.
+function renderDonutChart(segments, opts = {}) {
+  const size = opts.size || 108;
+  const stroke = opts.stroke || 15;
+  const r = (size - stroke) / 2;
+  const cx = size / 2;
+  const cy = size / 2;
+  const circumference = 2 * Math.PI * r;
+  const total = segments.reduce((sum, s) => sum + s.value, 0);
+  if (total === 0) {
+    return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"></circle></svg>`;
+  }
+  let offset = 0;
+  const circles = segments.filter((s) => s.value > 0).map((seg) => {
+    const dash = (seg.value / total) * circumference;
+    const circle = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${seg.color}" stroke-width="${stroke}" stroke-dasharray="${dash.toFixed(1)} ${(circumference - dash).toFixed(1)}" stroke-dashoffset="${(-offset).toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"></circle>`;
+    offset += dash;
+    return circle;
+  }).join("");
+  return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="분야별 비중 도넛 차트">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"></circle>
+    ${circles}
+  </svg>`;
+}
+
+function renderDonutLegend(segments) {
+  const total = segments.reduce((sum, s) => sum + s.value, 0);
+  return `<ul class="chart-legend">${segments.map((s) => {
+    const pct = total > 0 ? Math.round((s.value / total) * 100) : 0;
+    return `<li><span class="legend-dot" style="background:${s.color}"></span>${escapeHtml(s.label)} <b>${s.value}건</b> <span class="legend-pct">${pct}%</span></li>`;
+  }).join("")}</ul>`;
+}
+
+// 국내/해외처럼 2개 값 비교는 도넛보다 가로 비율 바가 더 즉각적으로 읽힌다.
+function renderRegionBar(domestic, overseas) {
+  const total = domestic + overseas;
+  const domPct = total > 0 ? Math.round((domestic / total) * 100) : 0;
+  const overPct = 100 - domPct;
+  return `
+    <div class="region-bar">
+      <div class="region-bar-fill" style="width:${total > 0 ? domPct : 50}%"></div>
+    </div>
+    <div class="region-bar-legend">
+      <span><span class="legend-dot" style="background:var(--navy)"></span>국내 <b>${domestic}건</b> (${domPct}%)</span>
+      <span><span class="legend-dot" style="background:var(--accent-soft)"></span>해외 <b>${overseas}건</b> (${overPct}%)</span>
+    </div>`;
+}
+
+function computeSpotlightItems(validItems, limit = 5) {
+  const scored = validItems.map((item) => {
+    let priority = 3; // 일반 공고
+    const d = item.dueDate ? daysUntil(item.dueDate) : null;
+    if (isNewItem(item)) priority = 0;
+    else if (d !== null && d >= 0 && d <= 3) priority = 1;
+    else if (d !== null && d >= 0 && d <= 7) priority = 2;
+    return { item, priority, d: d === null ? Infinity : d };
+  });
+  scored.sort((a, b) => a.priority - b.priority || a.d - b.d);
+  return scored.slice(0, limit).map((s) => s.item);
+}
+
+function renderSpotlightCard(item) {
+  const flag = COUNTRY_FLAGS[item.country] || "";
+  const kw = (item.keywords && item.keywords[0]) || "";
+  return `
+    <a class="spotlight-card" href="${item.url || "#"}" target="_blank" rel="noopener">
+      <span class="spotlight-badges">
+        ${isNewItem(item) ? '<span class="new-badge">NEW</span>' : ""}
+        ${ddayBadge(item.dueDate)}
+      </span>
+      <span class="spotlight-title">${escapeHtml(item.title)}</span>
+      <span class="spotlight-meta">${escapeHtml(flag ? `${flag} ${item.country}` : (item.country || "국가 미상"))} · ${escapeHtml(kw || "분야 미상")}</span>
+    </a>`;
+}
+
+function renderHome() {
+  const stats = computeHomeStats();
+
+  document.querySelectorAll(".region-chip").forEach((chip) => {
+    chip.classList.toggle("chip-active", chip.dataset.region === state.region);
+  });
+
+  document.getElementById("kpiHeroCard").innerHTML = `
+    <p class="kpi-hero-label">현재 유효 공고</p>
+    <p class="kpi-hero-value">${stats.valid.length}<span>건</span></p>
+    <p class="kpi-hero-sub">국내 ${stats.domestic} · 해외 ${stats.overseas}</p>
+    <p class="kpi-hero-delta">이번 주 +${stats.newThisWeek}건</p>
+  `;
+
+  document.getElementById("kpiMiniRow").innerHTML = `
+    <button type="button" class="kpi-mini-card" id="kpiNewCard">
+      <span class="kpi-mini-label">신규 공고</span>
+      <span class="kpi-mini-value">${stats.newCount}건</span>
+      <span class="kpi-mini-sub">오늘 +${stats.newToday}</span>
+    </button>
+    <button type="button" class="kpi-mini-card kpi-mini-warn" id="kpiDueSoonCard">
+      <span class="kpi-mini-label">마감 임박</span>
+      <span class="kpi-mini-value">${stats.dueSoon.length}건</span>
+      <span class="kpi-mini-sub">D-7 이내</span>
+    </button>
+  `;
+  document.getElementById("kpiNewCard").addEventListener("click", () => {
+    state.showOnlyNew = true;
+    state.dueSoonOnly = false;
+    showTab("tenders");
+  });
+  document.getElementById("kpiDueSoonCard").addEventListener("click", () => {
+    state.dueSoonOnly = true;
+    state.showOnlyNew = false;
+    showTab("tenders");
+  });
+
+  document.getElementById("homeTrendChart").innerHTML = renderBarChart(computeNewTrend(7));
+
+  document.getElementById("categoryStatsRow").innerHTML = KEYWORDS.map((kw) => `
+    <button type="button" class="stat-mini-card" data-goto-category="${escapeHtml(kw)}">
+      <span class="stat-mini-label">${escapeHtml(kw)}</span>
+      <span class="stat-mini-value">${stats.byCategory[kw] || 0}건</span>
+    </button>
+  `).join("");
+  document.querySelectorAll("[data-goto-category]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.selected = new Set([btn.dataset.gotoCategory]);
+      saveSelection();
+      showTab("tenders");
+    });
+  });
+
+  document.getElementById("regionStatsBar").innerHTML = renderRegionBar(stats.domestic, stats.overseas);
+
+  const spotlight = computeSpotlightItems(stats.valid, 5);
+  document.getElementById("spotlightList").innerHTML = spotlight.length
+    ? spotlight.map(renderSpotlightCard).join("")
+    : `<p class="empty-state">표시할 공고가 없습니다.</p>`;
+
+  const updatedText = formatUpdatedAt(state.data.updatedAt);
+  document.getElementById("updatedAtHome").innerHTML = `🔄 ${updatedText}`;
+}
+
+function computeCalendarDueMap() {
+  const map = {};
+  uniqueItems(state.data.items).forEach((item) => {
+    if (!item.dueDate) return; // 마감일 없는 공고는 캘린더에서 제외
+    if (!map[item.dueDate]) map[item.dueDate] = [];
+    map[item.dueDate].push(item);
+  });
+  return map;
+}
+
+function pad2(n) { return String(n).padStart(2, "0"); }
+function dateKey(y, m, d) { return `${y}-${pad2(m + 1)}-${pad2(d)}`; }
+
+function renderCalendar() {
+  const dueMap = computeCalendarDueMap();
+  const cursor = state.calendarMonth || new Date();
+  state.calendarMonth = cursor;
+  const year = cursor.getFullYear();
+  const month = cursor.getMonth();
+
+  document.getElementById("calMonthLabel").textContent = `${year}년 ${month + 1}월`;
+
+  const firstDay = new Date(year, month, 1);
+  const startWeekday = firstDay.getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayKey = dateKey(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+
+  const cells = [];
+  for (let i = 0; i < startWeekday; i += 1) cells.push("<div class=\"cal-cell cal-cell-empty\"></div>");
+  for (let d = 1; d <= daysInMonth; d += 1) {
+    const key = dateKey(year, month, d);
+    const dayItems = dueMap[key] || [];
+    let urgency = "";
+    if (dayItems.length) {
+      const minD = Math.min(...dayItems.map((it) => daysUntil(it.dueDate)));
+      if (minD <= 3) urgency = "cal-urgent";
+      else if (minD <= 7) urgency = "cal-soon";
+      else urgency = "cal-normal";
+    }
+    const isToday = key === todayKey ? "cal-today" : "";
+    const isSelected = key === state.calendarSelectedDate ? "cal-selected" : "";
+    cells.push(`
+      <button type="button" class="cal-cell ${urgency} ${isToday} ${isSelected}" data-date="${key}">
+        <span class="cal-day-num">${d}</span>
+        ${dayItems.length ? `<span class="cal-day-dot">${dayItems.length}</span>` : ""}
+      </button>
+    `);
+  }
+
+  document.getElementById("calendarGrid").innerHTML = cells.join("");
+  document.querySelectorAll(".cal-cell[data-date]").forEach((cell) => {
+    cell.addEventListener("click", () => {
+      state.calendarSelectedDate = cell.dataset.date === state.calendarSelectedDate ? null : cell.dataset.date;
+      renderCalendar();
+    });
+  });
+
+  const listEl = document.getElementById("calendarDayList");
+  if (!state.calendarSelectedDate) {
+    listEl.innerHTML = "";
+    return;
+  }
+  const dayItems = dueMap[state.calendarSelectedDate] || [];
+  listEl.innerHTML = `
+    <h3 class="dash-card-title">${escapeHtml(state.calendarSelectedDate)} 마감 (${dayItems.length}건)</h3>
+    <div class="spotlight-list">
+      ${dayItems.map(renderSpotlightCard).join("") || '<p class="empty-state">마감 공고가 없습니다.</p>'}
+    </div>`;
+}
+
+function renderStats() {
+  const all = uniqueItems(state.data.items).filter(isValidOpen);
+
+  document.getElementById("statsTrend7").innerHTML = renderBarChart(computeNewTrend(7));
+  document.getElementById("statsTrend30").innerHTML = renderBarChart(computeNewTrend(30), { height: 90 });
+
+  const catColors = { "반도체 장비": "var(--navy)", "디스플레이 장비": "var(--accent)", "TGV 장비": "var(--accent-soft)" };
+  const byCategory = KEYWORDS.map((kw) => ({
+    label: kw,
+    value: all.filter((item) => (item.keywords || []).includes(kw)).length,
+    color: catColors[kw],
+  }));
+  document.getElementById("statsCategoryDonut").innerHTML = `
+    ${renderDonutChart(byCategory)}
+    ${renderDonutLegend(byCategory)}
+  `;
+
+  const domestic = all.filter((item) => item.country === "국내").length;
+  document.getElementById("statsRegionBar").innerHTML = renderRegionBar(domestic, all.length - domestic);
+
+  const noticeTypeCounts = {};
+  all.forEach((item) => {
+    const t = item.noticeType || "미상";
+    noticeTypeCounts[t] = (noticeTypeCounts[t] || 0) + 1;
+  });
+  document.getElementById("statsNoticeType").innerHTML = renderBarList(noticeTypeCounts);
+
+  const sourceCounts = {};
+  all.forEach((item) => {
+    const s = item.sourceCode || "미상";
+    sourceCounts[s] = (sourceCounts[s] || 0) + 1;
+  });
+  document.getElementById("statsBySource").innerHTML = renderBarList(sourceCounts);
+}
+
+function renderBarList(countsByLabel) {
+  const entries = Object.entries(countsByLabel).sort((a, b) => b[1] - a[1]);
+  const max = Math.max(1, ...entries.map(([, v]) => v));
+  return entries.map(([label, value]) => `
+    <div class="bar-list-row">
+      <span class="bar-list-label">${escapeHtml(label)}</span>
+      <span class="bar-list-track"><span class="bar-list-fill" style="width:${Math.round((value / max) * 100)}%"></span></span>
+      <span class="bar-list-value">${value}</span>
+    </div>
+  `).join("");
+}
+
+const TABS = ["home", "tenders", "stats", "calendar", "settings"];
+function showTab(tab) {
+  TABS.forEach((t) => {
+    const el = document.getElementById(`screen-${t}`);
+    if (el) el.hidden = t !== tab;
+  });
+  document.getElementById("filterBar").hidden = tab !== "tenders";
+  document.querySelectorAll(".bottom-nav-item").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.tab === tab);
+  });
+
+  if (tab === "tenders") {
     renderCategoryChips();
     renderTypeChips();
     renderResults();
+  } else if (tab === "home") {
+    renderHome();
+  } else if (tab === "stats") {
+    renderStats();
+  } else if (tab === "calendar") {
+    renderCalendar();
+  } else if (tab === "settings") {
+    renderKeywordGrid();
   }
 }
 
@@ -396,14 +784,17 @@ async function loadData() {
   const updatedText = formatUpdatedAt(state.data.updatedAt);
   document.getElementById("updatedAt").innerHTML = `🔄 ${updatedText}`;
   document.getElementById("updatedAt2").innerHTML = `🔄 ${updatedText}`;
+  // 데이터가 늦게 도착해도 현재 보고 있는 탭을 다시 그려 숫자/차트를 채운다.
+  const active = document.querySelector(".bottom-nav-item.active");
+  showTab(active ? active.dataset.tab : "home");
 }
 
 function init() {
   renderKeywordGrid();
   loadData();
 
-  document.getElementById("viewResultsBtn").addEventListener("click", () => showScreen("results"));
-  document.getElementById("backBtn").addEventListener("click", () => showScreen("keywords"));
+  document.getElementById("viewResultsBtn").addEventListener("click", () => showTab("tenders"));
+  document.getElementById("viewAllTendersBtn").addEventListener("click", () => showTab("tenders"));
 
   document.getElementById("newAnnounceBar").addEventListener("click", () => {
     state.showOnlyNew = !state.showOnlyNew;
@@ -411,8 +802,35 @@ function init() {
   });
 
   document.getElementById("telegramBtn").addEventListener("click", () => {
-    alert("텔레그램 알림 연동은 다음 업데이트에서 제공될 예정입니다.");
+    alert("텔레그램 알림은 이미 자동으로 연결되어 있습니다 — 설정에서 알림 받을 분야를 선택하면 신규 공고가 발견될 때마다 전송됩니다.");
   });
+
+  document.querySelectorAll(".bottom-nav-item").forEach((btn) => {
+    btn.addEventListener("click", () => showTab(btn.dataset.tab));
+  });
+
+  document.querySelectorAll(".region-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      state.region = chip.dataset.region;
+      document.querySelectorAll(".region-chip").forEach((c) => c.classList.toggle("chip-active", c === chip));
+      renderHome();
+    });
+  });
+
+  document.getElementById("calPrevBtn").addEventListener("click", () => {
+    const c = state.calendarMonth || new Date();
+    state.calendarMonth = new Date(c.getFullYear(), c.getMonth() - 1, 1);
+    state.calendarSelectedDate = null;
+    renderCalendar();
+  });
+  document.getElementById("calNextBtn").addEventListener("click", () => {
+    const c = state.calendarMonth || new Date();
+    state.calendarMonth = new Date(c.getFullYear(), c.getMonth() + 1, 1);
+    state.calendarSelectedDate = null;
+    renderCalendar();
+  });
+
+  showTab("home");
 }
 
 document.addEventListener("DOMContentLoaded", init);
