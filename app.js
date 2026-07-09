@@ -36,23 +36,6 @@ const NOTICE_TYPE_LABELS = {
 
 const TYPE_FILTERS = ["전체", "사전규격", "정식입찰", "프로젝트 정보", "공급사 모집", "수출상담회", "구매상담회", "낙찰·수주결과"];
 
-// 통계 화면의 막대/범례 색을 공고 카드의 실제 배지 색과 매핑한다 —
-// 통계에서 본 색이 카드에서 본 색과 같아야 두 화면이 같은 언어로 읽힌다.
-const NOTICE_TYPE_CHART_COLORS = {
-  "사전규격": "#b8860b",
-  "정식입찰": "var(--blue)",
-  "프로젝트 정보": "var(--navy-soft)",
-  "공급사 모집": "var(--navy-soft)",
-  "수출상담회": "var(--green)",
-  "구매상담회": "var(--green)",
-  "낙찰·수주결과": "#7c3aed",
-};
-function noticeTypeChartColor(label) { return NOTICE_TYPE_CHART_COLORS[label] || "var(--text-muted)"; }
-
-// 출처 사이트 색도 "국내·해외 비중" 바와 동일하게 국내=accent, 해외=navy-soft로.
-const DOMESTIC_SOURCE_CODES = new Set(["KANC", "NNFC", "KRISS"]);
-function sourceChartColor(code) { return DOMESTIC_SOURCE_CODES.has(code) ? "var(--accent)" : "var(--navy-soft)"; }
-
 // 국가명 -> 국기 이모지 (없는 국가는 이모지 없이 이름만 표시)
 const COUNTRY_FLAGS = {
   "국내": "🇰🇷", "중국": "🇨🇳", "베트남": "🇻🇳", "인도": "🇮🇳", "미국": "🇺🇸",
@@ -486,10 +469,7 @@ function computeNewTrend(days) {
   return buckets;
 }
 
-// 라이브러리 없이 순수 인라인 SVG로 그리는 작은 막대 차트. 막대형 구조는
-// 유지하되(면적/선형 차트로 바꾸지 않음), 위쪽 모서리만 둥글게 하고
-// 가장 최신(오늘) 막대만 accent 색으로 강조해 나머지는 톤다운한다 —
-// 축/격자선은 처음부터 없었고, 라벨은 buckets가 10개 이하일 때만 표시한다.
+// 라이브러리 없이 순수 인라인 SVG로 그리는 작은 막대 차트.
 function renderBarChart(buckets, opts = {}) {
   const width = opts.width || 320;
   const height = opts.height || 88;
@@ -497,52 +477,21 @@ function renderBarChart(buckets, opts = {}) {
   const barWidth = (width - gap * (buckets.length - 1)) / buckets.length;
   const max = Math.max(1, ...buckets.map((b) => b.count));
   const bottomPad = 18;
-  const lastIndex = buckets.length - 1;
   const bars = buckets.map((b, i) => {
-    const barHeight = Math.max(Math.round((b.count / max) * (height - bottomPad - 14)), 2);
+    const barHeight = Math.round((b.count / max) * (height - bottomPad - 14));
     const x = i * (barWidth + gap);
     const y = height - bottomPad - barHeight;
-    const isToday = i === lastIndex;
-    const fill = isToday ? "var(--accent)" : "var(--chart-bar-muted)";
-    const r = Math.min(4, barWidth / 2, barHeight);
-    const path = `M${x.toFixed(1)},${(y + r).toFixed(1)} `
-      + `Q${x.toFixed(1)},${y.toFixed(1)} ${(x + r).toFixed(1)},${y.toFixed(1)} `
-      + `L${(x + barWidth - r).toFixed(1)},${y.toFixed(1)} `
-      + `Q${(x + barWidth).toFixed(1)},${y.toFixed(1)} ${(x + barWidth).toFixed(1)},${(y + r).toFixed(1)} `
-      + `L${(x + barWidth).toFixed(1)},${(y + barHeight).toFixed(1)} `
-      + `L${x.toFixed(1)},${(y + barHeight).toFixed(1)} Z`;
     const showEveryLabel = buckets.length <= 10;
     return `
-      <path d="${path}" fill="${fill}"></path>
-      ${b.count > 0 ? `<text x="${(x + barWidth / 2).toFixed(1)}" y="${y - 4}" font-size="9" font-weight="700" fill="${isToday ? "var(--navy)" : "var(--text-muted)"}" text-anchor="middle">${b.count}</text>` : ""}
-      ${showEveryLabel ? `<text x="${(x + barWidth / 2).toFixed(1)}" y="${height - 5}" font-size="8.5" font-weight="${isToday ? "700" : "400"}" fill="${isToday ? "var(--navy)" : "var(--text-muted)"}" text-anchor="middle">${escapeHtml(b.label)}</text>` : ""}
+      <rect x="${x.toFixed(1)}" y="${y}" width="${barWidth.toFixed(1)}" height="${Math.max(barHeight, 2)}" rx="3" fill="var(--accent)"></rect>
+      ${b.count > 0 ? `<text x="${(x + barWidth / 2).toFixed(1)}" y="${y - 4}" font-size="9" font-weight="700" fill="var(--navy)" text-anchor="middle">${b.count}</text>` : ""}
+      ${showEveryLabel ? `<text x="${(x + barWidth / 2).toFixed(1)}" y="${height - 5}" font-size="8.5" fill="var(--text-muted)" text-anchor="middle">${escapeHtml(b.label)}</text>` : ""}
     `;
   }).join("");
-  // 베이스라인을 항상 그려서 "빈 구간 = 데이터 없음"이 아니라 "빈 구간 = 0건"임을
-  // 시각적으로 명확히 한다(막대가 거의 없는 날에도 화면이 비어 보이지 않게).
-  const baseline = `<line x1="0" y1="${height - bottomPad}" x2="${width}" y2="${height - bottomPad}" stroke="var(--border)" stroke-width="1" stroke-dasharray="2,3"></line>`;
-  return `<svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}" role="img" aria-label="기간별 신규 공고 추이 차트">${baseline}${bars}</svg>`;
+  return `<svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}" role="img" aria-label="기간별 신규 공고 추이 차트">${bars}</svg>`;
 }
 
-// 차트 카드 제목 아래 짧은 보조 텍스트 — 활동일이 적을 때 "빈 화면처럼
-// 보이는" 문제를, 시스템이 정상 작동 중임을 알려주는 짧고 계층적인 두
-// 줄로 대체한다(긴 한 문장으로 늘어놓지 않음).
-function renderTrendSummary(buckets) {
-  const activeDays = buckets.filter((b) => b.count > 0).length;
-  const total = buckets.reduce((sum, b) => sum + b.count, 0);
-  if (activeDays === 0) {
-    return `<p class="dash-card-subtitle">최근 ${buckets.length}일간 신규 공고 없음</p><p class="dash-card-subtitle-sub">6개 출처 자동 수집 중</p>`;
-  }
-  const sparse = activeDays <= Math.max(2, Math.round(buckets.length * 0.2));
-  if (sparse) {
-    return `<p class="dash-card-subtitle">최근 ${buckets.length}일 활동일 <b>${activeDays}</b>일</p><p class="dash-card-subtitle-sub">6개 출처 자동 수집 중</p>`;
-  }
-  return `<p class="dash-card-subtitle">최근 ${buckets.length}일 총 <b>${total}</b>건</p>`;
-}
-
-// 라이브러리 없이 순수 인라인 SVG로 그리는 작은 도넛 차트. 중앙에 총합
-// 숫자를 항상 표시해(0건이어도) "빈 원"으로 보이지 않게 한다 — 홈
-// 히어로카드의 "큰 숫자" 언어를 통계 화면에도 이어주는 역할.
+// 라이브러리 없이 순수 인라인 SVG로 그리는 작은 도넛 차트.
 function renderDonutChart(segments, opts = {}) {
   const size = opts.size || 108;
   const stroke = opts.stroke || 15;
@@ -551,12 +500,8 @@ function renderDonutChart(segments, opts = {}) {
   const cy = size / 2;
   const circumference = 2 * Math.PI * r;
   const total = segments.reduce((sum, s) => sum + s.value, 0);
-  const centerText = `
-    <text x="${cx}" y="${cy - 2}" font-size="19" font-weight="800" fill="var(--navy)" text-anchor="middle" dominant-baseline="middle">${total}</text>
-    <text x="${cx}" y="${cy + 13}" font-size="9" fill="var(--text-muted)" text-anchor="middle">건</text>
-  `;
   if (total === 0) {
-    return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="분야별 비중 도넛 차트"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"></circle>${centerText}</svg>`;
+    return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"></circle></svg>`;
   }
   let offset = 0;
   const circles = segments.filter((s) => s.value > 0).map((seg) => {
@@ -568,7 +513,6 @@ function renderDonutChart(segments, opts = {}) {
   return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="분야별 비중 도넛 차트">
     <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"></circle>
     ${circles}
-    ${centerText}
   </svg>`;
 }
 
@@ -576,39 +520,23 @@ function renderDonutLegend(segments) {
   const total = segments.reduce((sum, s) => sum + s.value, 0);
   return `<ul class="chart-legend">${segments.map((s) => {
     const pct = total > 0 ? Math.round((s.value / total) * 100) : 0;
-    const zeroCls = s.value === 0 ? " legend-zero" : "";
-    const dotColor = s.value === 0 ? "var(--border)" : s.color;
-    return `<li class="${zeroCls.trim()}"><span class="legend-dot" style="background:${dotColor}"></span>${escapeHtml(s.label)} <b>${s.value}건</b> <span class="legend-pct">${pct}%</span></li>`;
+    return `<li><span class="legend-dot" style="background:${s.color}"></span>${escapeHtml(s.label)} <b>${s.value}건</b> <span class="legend-pct">${pct}%</span></li>`;
   }).join("")}</ul>`;
 }
 
 // 국내/해외처럼 2개 값 비교는 도넛보다 가로 비율 바가 더 즉각적으로 읽힌다.
-// 두 구간 모두 블루 계열(국내=accent, 해외=navy-soft)로 통일해 출처
-// 사이트별 건수 막대와 같은 색 언어를 공유한다(보라 사용 안 함).
 function renderRegionBar(domestic, overseas) {
   const total = domestic + overseas;
-  const domPct = total > 0 ? Math.round((domestic / total) * 100) : 50;
+  const domPct = total > 0 ? Math.round((domestic / total) * 100) : 0;
   const overPct = 100 - domPct;
   return `
     <div class="region-bar">
-      <div class="region-bar-fill" style="width:${domPct}%"></div>
-      <div class="region-bar-fill region-bar-fill-overseas" style="width:${overPct}%"></div>
+      <div class="region-bar-fill" style="width:${total > 0 ? domPct : 50}%"></div>
     </div>
     <div class="region-bar-legend">
-      <span><span class="legend-dot" style="background:var(--accent)"></span>국내 <b>${domestic}건</b> (${domPct}%)</span>
-      <span><span class="legend-dot" style="background:var(--navy-soft)"></span>해외 <b>${overseas}건</b> (${overPct}%)</span>
+      <span><span class="legend-dot" style="background:var(--navy)"></span>국내 <b>${domestic}건</b> (${domPct}%)</span>
+      <span><span class="legend-dot" style="background:var(--accent-soft)"></span>해외 <b>${overseas}건</b> (${overPct}%)</span>
     </div>`;
-}
-
-// 홈 화면 "지금 확인할 공고" 표시 개수 — 모바일(<768px)에서는 최대 3건,
-// 태블릿(768~1023px)은 4건, 데스크톱(1024px~)은 여유 공간이 많은
-// 좌측 컬럼에 표시되므로 6건까지 보여준다. 첫 화면이 과도하게
-// 길어지는 걸 막기 위한 순수 레이아웃 조정이며, 데이터/필터 로직과 무관.
-function getSpotlightLimit() {
-  const w = window.innerWidth;
-  if (w < 768) return 3;
-  if (w < 1024) return 4;
-  return 6;
 }
 
 function computeSpotlightItems(validItems, limit = 5) {
@@ -675,9 +603,7 @@ function renderHome() {
     showTab("tenders");
   });
 
-  const homeTrend = computeNewTrend(7);
-  document.getElementById("homeTrendSummary").innerHTML = renderTrendSummary(homeTrend);
-  document.getElementById("homeTrendChart").innerHTML = renderBarChart(homeTrend, { height: 60 });
+  document.getElementById("homeTrendChart").innerHTML = renderBarChart(computeNewTrend(7));
 
   document.getElementById("categoryStatsRow").innerHTML = KEYWORDS.map((kw) => `
     <button type="button" class="stat-mini-card" data-goto-category="${escapeHtml(kw)}">
@@ -695,7 +621,7 @@ function renderHome() {
 
   document.getElementById("regionStatsBar").innerHTML = renderRegionBar(stats.domestic, stats.overseas);
 
-  const spotlight = computeSpotlightItems(stats.valid, getSpotlightLimit());
+  const spotlight = computeSpotlightItems(stats.valid, 5);
   document.getElementById("spotlightList").innerHTML = spotlight.length
     ? spotlight.map(renderSpotlightCard).join("")
     : `<p class="empty-state">표시할 공고가 없습니다.</p>`;
@@ -777,12 +703,8 @@ function renderCalendar() {
 function renderStats() {
   const all = uniqueItems(state.data.items).filter(isValidOpen);
 
-  const trend7 = computeNewTrend(7);
-  const trend30 = computeNewTrend(30);
-  document.getElementById("statsTrend7Summary").innerHTML = renderTrendSummary(trend7);
-  document.getElementById("statsTrend7").innerHTML = renderBarChart(trend7);
-  document.getElementById("statsTrend30Summary").innerHTML = renderTrendSummary(trend30);
-  document.getElementById("statsTrend30").innerHTML = renderBarChart(trend30, { height: 90 });
+  document.getElementById("statsTrend7").innerHTML = renderBarChart(computeNewTrend(7));
+  document.getElementById("statsTrend30").innerHTML = renderBarChart(computeNewTrend(30), { height: 90 });
 
   const catColors = { "반도체 장비": "var(--navy)", "디스플레이 장비": "var(--accent)", "TGV 장비": "var(--accent-soft)" };
   const byCategory = KEYWORDS.map((kw) => ({
@@ -803,35 +725,26 @@ function renderStats() {
     const t = item.noticeType || "미상";
     noticeTypeCounts[t] = (noticeTypeCounts[t] || 0) + 1;
   });
-  document.getElementById("statsNoticeType").innerHTML = renderBarList(noticeTypeCounts, noticeTypeChartColor);
+  document.getElementById("statsNoticeType").innerHTML = renderBarList(noticeTypeCounts);
 
   const sourceCounts = {};
   all.forEach((item) => {
     const s = item.sourceCode || "미상";
     sourceCounts[s] = (sourceCounts[s] || 0) + 1;
   });
-  document.getElementById("statsBySource").innerHTML = renderBarList(sourceCounts, sourceChartColor);
+  document.getElementById("statsBySource").innerHTML = renderBarList(sourceCounts);
 }
 
-// colorFn(label) => CSS color 문자열. 지정하지 않으면 기존처럼 accent
-// 단색을 쓴다. 값이 작아 막대가 거의 안 보이던 문제를 막기 위해 최소
-// 폭(8%)을 보장하고, 항목이 하나도 없으면 "데이터 없음" 텍스트로 대체한다.
-function renderBarList(countsByLabel, colorFn) {
+function renderBarList(countsByLabel) {
   const entries = Object.entries(countsByLabel).sort((a, b) => b[1] - a[1]);
-  if (entries.length === 0) {
-    return `<p class="empty-state">아직 데이터가 없습니다.</p>`;
-  }
   const max = Math.max(1, ...entries.map(([, v]) => v));
-  return entries.map(([label, value]) => {
-    const pct = Math.max(Math.round((value / max) * 100), 8);
-    const color = colorFn ? colorFn(label) : "var(--accent)";
-    return `
+  return entries.map(([label, value]) => `
     <div class="bar-list-row">
       <span class="bar-list-label">${escapeHtml(label)}</span>
-      <span class="bar-list-track"><span class="bar-list-fill" style="width:${pct}%;background:${color}"></span></span>
+      <span class="bar-list-track"><span class="bar-list-fill" style="width:${Math.round((value / max) * 100)}%"></span></span>
       <span class="bar-list-value">${value}</span>
-    </div>`;
-  }).join("");
+    </div>
+  `).join("");
 }
 
 const TABS = ["home", "tenders", "stats", "calendar", "settings"];
@@ -915,18 +828,6 @@ function init() {
     state.calendarMonth = new Date(c.getFullYear(), c.getMonth() + 1, 1);
     state.calendarSelectedDate = null;
     renderCalendar();
-  });
-
-  // 창 폭이 바뀌어 반응형 구간(모바일/태블릿/데스크톱)이 달라지면 홈의
-  // "지금 확인할 공고" 표시 개수도 다시 계산해야 한다 — 순수 레이아웃
-  // 갱신이며 데이터/필터 로직은 건드리지 않는다.
-  let resizeTimer = null;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      const active = document.querySelector(".bottom-nav-item.active");
-      if (active && active.dataset.tab === "home") renderHome();
-    }, 150);
   });
 
   showTab("home");

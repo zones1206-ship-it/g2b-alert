@@ -30,40 +30,31 @@
            (security/cloudflare-worker/README.md 참고. 게이트 미배포 시엔 그냥 무해한 링크) -->
       <a href="/__auth/logout" class="icon-btn logout-link" title="로그아웃">로그아웃</a>
     </div>
-    <!-- 출처 상태는 항상 압축된 한 줄(●LIVE·6개 출처)로만 보이고, 클릭하면
-         출처 상세 목록이 펼쳐진다 — 탭 이동과 무관하게 어디서든 확인 가능. -->
-    <details class="source-status">
-      <summary class="source-status-summary">
-        <span class="live-dot" aria-hidden="true"></span>
-        <span>6개 출처 자동 수집 중</span>
-      </summary>
-      <div class="source-status-body">
-        <div class="source-chips" aria-label="공고 수집 출처">
-          <span class="source-chip">한국나노기술원 <b>KANC</b></span>
-          <span class="source-chip">나노종합기술원 <b>NNFC</b></span>
-          <span class="source-chip">KOTRA <b>해외 프로젝트</b></span>
-          <span class="source-chip">비롄왕(EBNEW) <b>China Site</b></span>
-          <span class="source-chip">중국국제초표망(MOFCOM) <b>China Site</b></span>
-          <span class="source-chip">한국표준과학연구원 <b>KRISS</b></span>
-        </div>
-        <details class="source-pending">
-          <summary>추후 연동 후보 사이트 (현재 수집 불가) 3곳</summary>
-          <ul>
-            <li>중국 입찰투찰 공공서비스 플랫폼(cebpubservice.cn) — WAF 차단</li>
-            <li>CXMT SRM 공급사·소싱 플랫폼 — 로그인 필수</li>
-            <li>중국 구매·입찰망(chinabidding.com.cn) — 로그인 필수</li>
-          </ul>
-        </details>
+    <details class="source-chips-collapse">
+      <summary class="source-summary">데이터 출처 6곳 · KANC · NNFC <span class="source-more">+4</span></summary>
+      <div class="source-chips" aria-label="공고 수집 출처">
+        <span class="source-chip">한국나노기술원 <b>KANC</b></span>
+        <span class="source-chip">나노종합기술원 <b>NNFC</b></span>
+        <span class="source-chip">KOTRA <b>해외 프로젝트</b></span>
+        <span class="source-chip">비롄왕(EBNEW) <b>China Site</b></span>
+        <span class="source-chip">중국국제초표망(MOFCOM) <b>China Site</b></span>
+        <span class="source-chip">한국표준과학연구원 <b>KRISS</b></span>
       </div>
+    </details>
+    <details class="source-pending">
+      <summary>추후 연동 후보 사이트 (현재 수집 불가) 3곳</summary>
+      <ul>
+        <li>중국 입찰투찰 공공서비스 플랫폼(cebpubservice.cn) — WAF 차단</li>
+        <li>CXMT SRM 공급사·소싱 플랫폼 — 로그인 필수</li>
+        <li>중국 구매·입찰망(chinabidding.com.cn) — 로그인 필수</li>
+      </ul>
     </details>
   </header>
 
   <nav class="filter-bar" id="filterBar" hidden>
     <div class="filter-row" id="categoryChipRow"></div>
-    <details class="type-filter-collapse">
-      <summary class="type-filter-summary">정보 유형 필터 <span id="typeFilterCount"></span></summary>
-      <div class="filter-row" id="typeChipRow"></div>
-    </details>
+    <div class="filter-row" id="typeChipRow"></div>
+    <p class="filter-count" id="typeFilterCount"></p>
   </nav>
 
   <!-- Screen: 홈 -->
@@ -78,29 +69,26 @@
 
     <div class="kpi-mini-row" id="kpiMiniRow"></div>
 
-    <section class="dash-card home-spotlight">
+    <section class="dash-card">
+      <h3 class="dash-card-title">최근 7일 신규 공고</h3>
+      <div class="chart-wrap" id="homeTrendChart"></div>
+    </section>
+
+    <section class="dash-card">
+      <h3 class="dash-card-title">분야별 현황</h3>
+      <div class="stat-mini-grid" id="categoryStatsRow"></div>
+    </section>
+
+    <section class="dash-card">
+      <h3 class="dash-card-title">국내 · 해외 비중</h3>
+      <div id="regionStatsBar"></div>
+    </section>
+
+    <section class="dash-card">
       <h3 class="dash-card-title">지금 확인할 공고</h3>
       <div class="spotlight-list" id="spotlightList"></div>
       <button type="button" class="ghost-btn" id="viewAllTendersBtn">전체 공고 보기 →</button>
     </section>
-
-    <section class="dash-card home-chart">
-      <h3 class="dash-card-title">최근 7일 신규 공고</h3>
-      <div id="homeTrendSummary"></div>
-      <div class="chart-wrap" id="homeTrendChart"></div>
-    </section>
-
-    <div class="home-stats-pair">
-      <section class="dash-card home-category">
-        <h3 class="dash-card-title">분야별 현황</h3>
-        <div class="stat-mini-grid" id="categoryStatsRow"></div>
-      </section>
-
-      <section class="dash-card home-region">
-        <h3 class="dash-card-title">국내 · 해외 비중</h3>
-        <div id="regionStatsBar"></div>
-      </section>
-    </div>
 
     <p class="updated" id="updatedAtHome"></p>
   </main>
@@ -123,12 +111,10 @@
 
     <section class="dash-card">
       <h3 class="dash-card-title">최근 7일 신규 공고</h3>
-      <div id="statsTrend7Summary"></div>
       <div class="chart-wrap" id="statsTrend7"></div>
     </section>
     <section class="dash-card">
       <h3 class="dash-card-title">최근 30일 신규 공고</h3>
-      <div id="statsTrend30Summary"></div>
       <div class="chart-wrap" id="statsTrend30"></div>
     </section>
     <section class="dash-card">
@@ -139,11 +125,11 @@
       <h3 class="dash-card-title">국내 · 해외 비중</h3>
       <div id="statsRegionBar"></div>
     </section>
-    <section class="dash-card dash-card-compact">
+    <section class="dash-card">
       <h3 class="dash-card-title">정보 유형별 건수</h3>
       <div class="bar-list" id="statsNoticeType"></div>
     </section>
-    <section class="dash-card dash-card-compact">
+    <section class="dash-card">
       <h3 class="dash-card-title">출처 사이트별 건수</h3>
       <div class="bar-list" id="statsBySource"></div>
     </section>
@@ -188,38 +174,26 @@
   </main>
 
   <nav class="bottom-nav" aria-label="주요 화면 이동">
-    <div class="bottom-nav-inner">
-      <button type="button" class="bottom-nav-item" data-tab="home">
-        <span class="nav-pill">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H10v-5.5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1V20h3.5a1 1 0 0 0 1-1v-9"/></svg>
-          <span>홈</span>
-        </span>
-      </button>
-      <button type="button" class="bottom-nav-item" data-tab="tenders">
-        <span class="nav-pill">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/></svg>
-          <span>공고</span>
-        </span>
-      </button>
-      <button type="button" class="bottom-nav-item" data-tab="stats">
-        <span class="nav-pill">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M12 20V4M20 20v-7"/><path d="M3 20h18"/></svg>
-          <span>통계</span>
-        </span>
-      </button>
-      <button type="button" class="bottom-nav-item" data-tab="calendar">
-        <span class="nav-pill">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/></svg>
-          <span>일정</span>
-        </span>
-      </button>
-      <button type="button" class="bottom-nav-item" data-tab="settings">
-        <span class="nav-pill">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5c.1-.5.1-1 0-1.5l1.6-1.2-1.5-2.6-1.9.6a5.7 5.7 0 0 0-1.3-.75L16 6h-4l-.3 2.05c-.47.18-.9.44-1.3.75l-1.9-.6-1.5 2.6 1.6 1.2c-.1.5-.1 1 0 1.5l-1.6 1.2 1.5 2.6 1.9-.6c.4.31.83.57 1.3.75L12 18h4l.3-2.05c.47-.18.9-.44 1.3-.75l1.9.6 1.5-2.6-1.6-1.2Z"/></svg>
-          <span>설정</span>
-        </span>
-      </button>
-    </div>
+    <button type="button" class="bottom-nav-item" data-tab="home">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H10v-5.5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1V20h3.5a1 1 0 0 0 1-1v-9"/></svg>
+      <span>홈</span>
+    </button>
+    <button type="button" class="bottom-nav-item" data-tab="tenders">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/></svg>
+      <span>공고</span>
+    </button>
+    <button type="button" class="bottom-nav-item" data-tab="stats">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M12 20V4M20 20v-7"/><path d="M3 20h18"/></svg>
+      <span>통계</span>
+    </button>
+    <button type="button" class="bottom-nav-item" data-tab="calendar">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/></svg>
+      <span>일정</span>
+    </button>
+    <button type="button" class="bottom-nav-item" data-tab="settings">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5c.1-.5.1-1 0-1.5l1.6-1.2-1.5-2.6-1.9.6a5.7 5.7 0 0 0-1.3-.75L16 6h-4l-.3 2.05c-.47.18-.9.44-1.3.75l-1.9-.6-1.5 2.6 1.6 1.2c-.1.5-.1 1 0 1.5l-1.6 1.2 1.5 2.6 1.9-.6c.4.31.83.57 1.3.75L12 18h4l.3-2.05c.47-.18.9-.44 1.3-.75l1.9.6 1.5-2.6-1.6-1.2Z"/></svg>
+      <span>설정</span>
+    </button>
   </nav>
 
 </div>
