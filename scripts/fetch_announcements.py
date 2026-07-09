@@ -9,6 +9,8 @@
                      (China Site — 용어집 기반 최선노력 한국어 번역, 원문 보존)
 - collectors.mofcom : 중국국제초표망(chinabidding.mofcom.gov.cn, 상무부) 입찰공고
                      (China Site — EBNEW와 동일한 번역/관련성 판정 로직 재사용)
+- collectors.kriss  : 한국표준과학연구원(KRISS) 입찰공고 게시판
+                     (KANC와 동일한 4단계 관련성 판정 로직 재사용)
 
 (과거 나라장터(G2B) 오픈API 수집기가 있었으나, 전체 공고 대비 실제
 장비 구매 공고 비율이 낮고 502 오류·복잡한 필터링 문제로 제거했다.
@@ -43,7 +45,7 @@ for _stream in (sys.stdout, sys.stderr):
     if hasattr(_stream, "reconfigure"):
         _stream.reconfigure(encoding="utf-8", errors="replace")
 
-from collectors import kanc, nnfc, kotra, ebnew, mofcom
+from collectors import kanc, nnfc, kotra, ebnew, mofcom, kriss
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "announcements.json")
 
@@ -53,6 +55,7 @@ COLLECTORS = [
     ("KOTRA", kotra),
     ("EBNEW", ebnew),
     ("MOFCOM", mofcom),
+    ("KRISS", kriss),
 ]
 
 # 마감돼도 삭제하지 않고 계속 보여줄 출처 (영업 정보로서 가치가 있는 경우)

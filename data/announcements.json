@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-08T22:59:43+00:00",
+  "updatedAt": "2026-07-09T09:18:45+09:00",
   "items": [
     {
       "id": "mofcomff8080819e429056019ebb1b36127aaa",
@@ -83,44 +83,6 @@
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
     },
     {
-      "id": "cid5558",
-      "title": "[공고 제2026-21-01호] Atomic Layer Etcher 1SET (원자층 식각 장비 1대) (외자)(재공고)",
-      "org": "한국나노기술원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": "2026-07-08",
-      "postedDate": "2026-07-02",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": "704,573,000원",
-      "contractMethod": "규격/가격동시입찰",
-      "deliveryCondition": "FCA (Incoterms 2020 적용)",
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 정식입찰 · 공고번호: 제2026-21-01호 · 계약방법: 규격/가격동시입찰",
-      "attachments": [
-        {
-          "name": "(재)입찰공고서_ALE.pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5558&filename=5558_202607021645360860.pdf"
-        },
-        {
-          "name": "상세규격서 등.zip",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5558&filename=5558_202607021645360861.zip"
-        },
-        {
-          "name": "(Re)Summary_of_Bidding.pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5558&filename=5558_202607021645361012.pdf"
-        }
-      ],
-      "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5558&hcid=38",
-      "source": "한국나노기술원",
-      "sourceCode": "KANC",
-      "noticeType": "정식입찰",
-      "firstSeenAt": "2026-06-18T23:53:10+00:00"
-    },
-    {
       "id": "ebnew708933643",
       "title": "ReJie 본더(Bonder) 심사결과 공시 공고 (1)",
       "translatedTitle": "ReJie 본더(Bonder) 심사결과 공시 공고 (1)",
@@ -159,6 +121,38 @@
       "noticeType": "낙찰·수주결과",
       "projectNo": "0618-264TC260709D",
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
+    },
+    {
+      "id": "kotra26EX017",
+      "title": "2026 대만 타이베이 반도체 전시회(Semicon Taiwan 2026)",
+      "org": "해외전시팀",
+      "country": "대만",
+      "countryCode": "TW",
+      "status": "마감임박",
+      "dueDate": "2026-07-10",
+      "postedDate": "2026-03-17",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "KOTRA와 한국산업지능화협회는 2026년 9월 2일 ~ 9월 4일 (3일간) 대만 TaiNEX에서 개최되는 ‘2026 타이베이 세미콘 반도체 전시회(SEMICON TAIWAN)’ 한국관 참가기업을 아래와 같이 모집하오니 관심 기업들의 많은 신청 바랍니다.",
+      "attachments": [
+        {
+          "name": "2. 붙임서류(2026년 개정).zip",
+          "url": "https://www.kotra.or.kr/kmodule/file/fileDown.do?storFileId=BM202603160000090126&fileSn=0"
+        }
+      ],
+      "url": "https://www.kotra.or.kr/subList/20000020753/subhome/bizAply/selectBizMntInfoDetail.do?dtlBizMntNo=26EX017&cpbizYn=N",
+      "source": "대한무역투자진흥공사",
+      "sourceCode": "KOTRA",
+      "sourceSiteUrl": "https://www.kotra.or.kr/",
+      "noticeType": "프로젝트 정보",
+      "eventPeriod": "2026-09-02 ~ 2026-09-04",
+      "firstSeenAt": "2026-07-09T09:18:45+09:00"
     },
     {
       "id": "cid5563",
@@ -552,7 +546,7 @@
       "sourceCode": "KOTRA",
       "sourceSiteUrl": "https://www.kotra.or.kr/",
       "noticeType": "프로젝트 정보",
-      "eventPeriod": "2026-09-19 ~ 2026-09-19",
+      "eventPeriod": "2026-09-15 ~ 2026-09-19",
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
     },
     {
