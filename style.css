@@ -17,9 +17,15 @@
   --green: #1f9d6b;
   --accent-soft: #8b7ff0; /* 대시보드 보조 포인트(연보라) — 기존 네이비/블루를 보완하는 용도로만 소량 사용 */
   --accent-soft-bg: #f1efff;
+  --hero-grad-start: #2f80ed; /* 히어로 카드: 검정에 가까운 네이비 대신 밝은 블루→진한 블루 그라디언트 */
+  --hero-grad-end: #1c4fc7;
+  --chart-bar-muted: #c3d7f8; /* 막대차트: 오늘(최신) 막대만 accent로 강조하고 나머지는 톤다운 */
   --radius-lg: 18px;
   --radius-md: 12px;
+  --radius-sm: 9px; /* Tier4(리스트형 카드) 전용 — 히어로보다 살짝 각지게 해 "빠르게 훑는 목록"임을 형태로도 암시 */
   --shadow: 0 4px 16px rgba(15, 29, 69, 0.08);
+  --shadow-sm: 0 1px 3px rgba(15, 29, 69, 0.06), 0 1px 2px rgba(15, 29, 69, 0.04); /* Tier4: 공고 카드 등 촘촘한 리스트용 최소 그림자 */
+  --shadow-card: 0 2px 10px rgba(15, 29, 69, 0.07); /* Tier2/3: 대시보드 카드용 그림자 */
 }
 
 * { box-sizing: border-box; }
@@ -43,8 +49,11 @@ body {
   box-shadow: 0 0 40px rgba(15, 29, 69, 0.06);
 }
 
-@media (min-width: 900px) {
-  .app { max-width: 640px; }
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .app { max-width: 700px; }
+}
+@media (min-width: 1024px) {
+  .app { max-width: 1200px; box-shadow: none; }
 }
 
 /* Header */
@@ -81,23 +90,32 @@ body {
 }
 .icon-btn:hover { background: var(--bg); }
 
-/* 출처 5곳: 기본은 한 줄 요약(대표 출처 2곳 + 나머지 개수)만 보이고,
-   펼치면 전체 배지가 나온다 — 세로 공간은 줄이되 신뢰성 정보(출처 이름)는
-   접힌 상태에서도 일부 계속 보이게 한다. */
-.source-chips-collapse {
+/* 출처 상태 표시 — 사이트의 신뢰 요소라 항상 노출하되, 헤더 높이가
+   늘어나지 않도록 기본은 압축된 한 줄(LIVE 점 + "N개 출처")만 보이고,
+   클릭하면 전체 출처 목록이 펼쳐진다(탭 이동과 무관하게 어디서든 확인 가능). */
+.source-status {
   font-size: 11.5px;
   color: var(--text-muted);
 }
-.source-summary {
+.source-status-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   cursor: pointer;
   padding: 2px 0;
   color: var(--navy-soft);
   font-weight: 600;
+  list-style: none;
 }
-.source-summary .source-more {
-  color: var(--text-muted);
-  font-weight: 500;
+.source-status-summary::-webkit-details-marker { display: none; }
+.source-status-summary::marker { content: ""; }
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(31, 157, 107, 0.15);
 }
+.source-status-body { margin-top: 4px; }
 .source-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
 .source-chip {
   font-size: 11px;
@@ -132,6 +150,18 @@ body {
 .filter-bar[hidden] { display: none; }
 .filter-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .filter-count { margin: 0; font-size: 11px; color: var(--text-muted); }
+/* 정보유형 칩 7개는 기본으로 접어둔다(분야 3칩만 항상 보임) — 공고 탭
+   진입 시 첫 카드까지의 스크롤 거리를 줄인다. */
+.type-filter-collapse { margin-top: 2px; }
+.type-filter-summary {
+  cursor: pointer;
+  padding: 4px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--navy-soft);
+}
+.type-filter-summary #typeFilterCount { color: var(--text-muted); font-weight: 500; margin-left: 4px; }
+.type-filter-collapse .filter-row { margin-top: 6px; }
 .chip {
   border: 1.5px solid var(--border);
   background: var(--white);
@@ -302,19 +332,23 @@ body {
 .group-count { font-size: 12.5px; color: var(--text-muted); }
 
 .card-list { display: flex; flex-direction: column; gap: 10px; }
+/* Tier4(리스트 카드): 보더 대신 아주 옅은 그림자만 사용 — 대시보드 카드와
+   같은 "그림자 기반 분리" 언어로 통일하되, 카드 수가 많은 리스트라
+   강도는 대시보드보다 훨씬 약하게 둔다(보더+그림자 동시 사용 금지). */
 .notice-card {
   background: var(--white);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-md);
   overflow: hidden;
+  box-shadow: var(--shadow-sm);
   transition: box-shadow .15s ease;
 }
-.notice-card:hover { box-shadow: var(--shadow); }
-.notice-card[open] { box-shadow: var(--shadow); }
+.notice-card:hover { box-shadow: var(--shadow-card); }
+.notice-card[open] { box-shadow: var(--shadow-card); }
 
 .notice-summary {
   display: flex; align-items: center; gap: 12px;
-  padding: 14px;
+  padding: 14px 14px 10px;
   cursor: pointer;
   list-style: none;
 }
@@ -322,13 +356,14 @@ body {
 .notice-summary::marker { content: ""; }
 
 .notice-icon {
-  width: 40px; height: 40px; border-radius: 10px;
-  background: var(--blue-bg); color: var(--accent);
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-bg), var(--white));
+  color: var(--accent);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
 .notice-body { flex: 1; min-width: 0; }
-.notice-tags { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; flex-wrap: wrap; }
+.notice-tags { display: flex; align-items: center; gap: 5px; margin-top: 4px; margin-bottom: 6px; flex-wrap: wrap; }
 .country-badge {
   font-size: 10.5px; font-weight: 800;
   color: var(--green);
@@ -369,12 +404,14 @@ body {
 .notice-type-result { background: #f3e8fd; color: #7c3aed; }
 /* 최초 발견(firstSeenAt) 48시간 이내 공고 표시 — 정식입찰 등 기존 배지와
    같은 줄(.notice-tags)에 나란히 붙어서 카드 높이를 늘리지 않는다. */
+/* NEW/D-Day/마감임박처럼 "강한 상태 정보"만 pill(완전 캡슐)로 강조하고,
+   국가/출처/분야 등 일반 분류 배지는 기존 rounded-badge(5px)를 유지한다. */
 .new-badge {
   font-size: 10.5px; font-weight: 800;
   color: var(--white);
   background: var(--red);
-  border-radius: 5px;
-  padding: 1px 6px;
+  border-radius: 999px;
+  padding: 1px 7px;
   white-space: nowrap;
 }
 .notice-title {
@@ -397,9 +434,10 @@ body {
 .dday-badge {
   flex-shrink: 0;
   font-size: 12.5px; font-weight: 800;
-  padding: 5px 10px;
-  border-radius: 8px;
+  padding: 5px 11px;
+  border-radius: 999px;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 .dday-red { background: var(--red-bg); color: var(--red); }
 .dday-orange { background: var(--orange-bg); color: var(--orange); }
@@ -522,34 +560,52 @@ body {
   z-index: 10;
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
+.bottom-nav-inner {
+  display: flex;
+  width: 100%;
+}
 .bottom-nav-item {
   flex: 1;
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  display: flex; justify-content: center;
   background: none; border: none; cursor: pointer;
-  padding: 9px 4px 8px;
+  padding: 7px 4px;
   color: var(--text-muted);
   font-size: 11px; font-weight: 600;
-  transition: color .15s ease;
 }
-.bottom-nav-item svg { transition: transform .1s ease; }
-.bottom-nav-item:active svg { transform: scale(0.9); }
-.bottom-nav-item.active { color: var(--navy); }
+/* 활성 탭은 텍스트 색만 바꾸는 대신, 아이콘+라벨을 감싼 캡슐(연한 블루
+   배경 + 진한 블루 아이콘/텍스트)로 명확히 강조한다. 캡슐은 버튼 전체가
+   아니라 내용물 크기만큼만 감싸도록 내부 래퍼(.nav-pill)에 적용해
+   터치 영역(버튼 flex:1)은 그대로 유지한다. */
+.nav-pill {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 5px 14px 6px;
+  border-radius: 14px;
+  transition: background-color .15s ease, color .15s ease;
+}
+.nav-pill svg { transition: transform .1s ease; }
+.bottom-nav-item:active .nav-pill svg { transform: scale(0.9); }
+.bottom-nav-item.active .nav-pill {
+  background: var(--blue-bg);
+  color: var(--accent);
+}
 
 /* 지역 필터(전체/국내/해외) */
-.region-filter { display: flex; gap: 6px; margin-bottom: 14px; }
+.region-filter { display: flex; gap: 6px; margin-bottom: 10px; }
 
-/* 큰 핵심 KPI 카드 */
+/* 큰 핵심 KPI 카드 — Tier1(최고 강조): 검정에 가까운 네이비가 아니라
+   밝은 블루에서 조금 더 진한 블루로 이어지는 그라디언트 + 가장 진한 그림자. */
 .kpi-hero-card {
-  background: linear-gradient(135deg, var(--navy), var(--navy-deep));
+  background: linear-gradient(135deg, var(--hero-grad-start), var(--hero-grad-end));
   color: var(--white);
   border-radius: var(--radius-lg);
   padding: 22px 20px;
   margin-bottom: 12px;
+  box-shadow: 0 8px 20px rgba(28, 79, 199, 0.25);
 }
 .kpi-hero-label { font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,.7); margin: 0 0 4px; }
-.kpi-hero-value { font-size: 40px; font-weight: 800; margin: 0; line-height: 1.1; }
+.kpi-hero-value { font-size: 40px; font-weight: 800; margin: 0; line-height: 1.1; font-variant-numeric: tabular-nums; letter-spacing: 0.01em; }
 .kpi-hero-value span { font-size: 18px; font-weight: 700; margin-left: 2px; }
-.kpi-hero-sub { font-size: 13px; color: rgba(255,255,255,.75); margin: 6px 0 0; }
+.kpi-hero-sub { font-size: 13px; color: rgba(255,255,255,.75); margin: 6px 0 0; font-variant-numeric: tabular-nums; }
 .kpi-hero-delta {
   display: inline-block;
   margin-top: 10px;
@@ -557,37 +613,63 @@ body {
   background: rgba(255,255,255,.14);
   padding: 4px 10px;
   border-radius: 999px;
+  font-variant-numeric: tabular-nums;
 }
 
 /* 작은 KPI 카드 2개 */
-.kpi-mini-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.kpi-mini-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+/* Tier2(중간 강조): 보더 대신 좌측 컬러 accent bar + 카드 그림자로
+   포인트를 준다(신규=블루, 마감임박=오렌지). */
 .kpi-mini-card {
   text-align: left;
   background: var(--white);
-  border: 1px solid var(--border);
+  border: none;
+  border-left: 3px solid var(--accent);
   border-radius: var(--radius-md);
   padding: 14px;
   cursor: pointer;
   display: flex; flex-direction: column; gap: 2px;
-  transition: border-color .15s ease, transform .1s ease;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow .15s ease, transform .1s ease;
 }
-.kpi-mini-card:hover { border-color: var(--navy-soft); }
+.kpi-mini-card:hover { box-shadow: var(--shadow); }
 .kpi-mini-card:active { transform: scale(0.98); }
+.kpi-mini-warn { border-left-color: var(--orange); }
 .kpi-mini-label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
-.kpi-mini-value { font-size: 24px; font-weight: 800; color: var(--navy); }
+.kpi-mini-value { font-size: 24px; font-weight: 800; color: var(--navy); font-variant-numeric: tabular-nums; }
 .kpi-mini-sub { font-size: 11.5px; color: var(--accent); font-weight: 700; }
 .kpi-mini-warn .kpi-mini-sub { color: var(--red); }
 
-/* 차트/통계 카드 공통 컨테이너 */
+/* 차트/통계 카드 공통 컨테이너 — Tier3(낮은 강조): 데이터 자체가 주인공이라
+   보더 없이 가장 옅은 그림자만 사용해 톤다운한다. */
 .dash-card {
   background: var(--white);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-md);
-  padding: 16px;
-  margin-bottom: 14px;
+  padding: 14px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
 }
 .dash-card-title { font-size: 13.5px; font-weight: 700; color: var(--navy); margin: 0 0 10px; }
 .chart-wrap { width: 100%; }
+.chart-wrap text, .donut-row text { font-variant-numeric: tabular-nums; }
+
+/* 차트 카드 보조 요약 — "빈 화면"이 아니라 "지금 상태가 정상"임을 짧고
+   계층적으로 알려준다(한 문장으로 늘어놓지 않고 2줄까지만). */
+.dash-card-subtitle {
+  font-size: 11px; font-weight: 600; color: var(--text-muted);
+  margin: -6px 0 8px;
+}
+.dash-card-subtitle b { color: var(--navy); font-variant-numeric: tabular-nums; }
+.dash-card-subtitle-sub {
+  font-size: 10.5px; color: var(--text-muted);
+  margin: -6px 0 8px;
+  opacity: .75;
+}
+
+/* Tier4(리스트형 통계 카드: 정보유형/출처별 건수) — 히어로보다 살짝
+   각진 radius로 "빠르게 훑는 목록"이라는 역할을 형태로도 구분한다. */
+.dash-card-compact { border-radius: var(--radius-sm); }
 
 /* 분야별 현황 미니 카드 3개 */
 .stat-mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -604,46 +686,59 @@ body {
 .stat-mini-card:hover { border-color: var(--navy-soft); }
 .stat-mini-card:active { transform: scale(0.97); }
 .stat-mini-label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
-.stat-mini-value { font-size: 15px; color: var(--navy); font-weight: 800; }
+.stat-mini-value { font-size: 15px; color: var(--navy); font-weight: 800; font-variant-numeric: tabular-nums; }
 
-/* 국내/해외 가로 비율 바 */
-.region-bar { width: 100%; height: 10px; border-radius: 999px; background: var(--accent-soft-bg); overflow: hidden; }
-.region-bar-fill { height: 100%; background: var(--navy); border-radius: 999px 0 0 999px; }
+/* 국내/해외 가로 비율 바 — 두 구간 모두 블루 계열로 통일(보라 사용 안 함),
+   국내=accent(밝은 블루), 해외=navy-soft(짙은 슬레이트블루)로 출처별
+   건수 막대와 동일한 색 언어를 공유한다. */
+.region-bar { display: flex; width: 100%; height: 10px; border-radius: 999px; overflow: hidden; background: var(--bg); }
+.region-bar-fill { height: 100%; background: var(--accent); }
+.region-bar-fill-overseas { background: var(--navy-soft); }
 .region-bar-legend {
   display: flex; justify-content: space-between;
   margin-top: 8px;
   font-size: 12px; color: var(--text-muted);
 }
-.region-bar-legend b { color: var(--text); }
+.region-bar-legend b { color: var(--text); font-variant-numeric: tabular-nums; }
 
 /* 도넛 차트 + 범례 */
 .donut-row { display: flex; align-items: center; gap: 18px; }
 .chart-legend { list-style: none; margin: 0; padding: 0; flex: 1; display: flex; flex-direction: column; gap: 6px; }
 .chart-legend li { font-size: 12.5px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
-.chart-legend b { color: var(--text); }
-.chart-legend .legend-pct { margin-left: auto; color: var(--text-muted); }
-.legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.chart-legend li.legend-zero { opacity: .55; }
+.chart-legend b { color: var(--text); font-variant-numeric: tabular-nums; }
+.chart-legend .legend-pct { margin-left: auto; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+/* 점(dot) 대신 작은 rounded 칩으로 — 카드/배지에서 쓰는 형태 언어와 통일 */
+.legend-dot { width: 10px; height: 7px; border-radius: 3px; flex-shrink: 0; }
 
-/* 정보유형/출처별 가로 막대 리스트 */
+/* 정보유형/출처별 가로 막대 리스트 — 트랙에 25/50/75% 미세 눈금을 넣어
+   "계측기 눈금"처럼 값 비교가 쉬워지게 하고(장식이 아니라 정보),
+   막대 색은 각 항목의 실제 의미(정보유형 배지색 / 국내·해외)에 매핑한다. */
 .bar-list { display: flex; flex-direction: column; gap: 9px; }
 .bar-list-row { display: flex; align-items: center; gap: 8px; }
 .bar-list-label { width: 84px; flex-shrink: 0; font-size: 12px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.bar-list-track { flex: 1; height: 8px; border-radius: 999px; background: var(--bg); overflow: hidden; }
+.bar-list-track {
+  flex: 1; height: 8px; border-radius: 999px; background: var(--bg); overflow: hidden;
+  background-image: repeating-linear-gradient(to right, var(--border) 0, var(--border) 1px, transparent 1px, transparent 25%);
+}
 .bar-list-fill { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
-.bar-list-value { width: 28px; flex-shrink: 0; text-align: right; font-size: 12.5px; font-weight: 700; color: var(--navy); }
+.bar-list-value { width: 28px; flex-shrink: 0; text-align: right; font-size: 12.5px; font-weight: 700; color: var(--navy); font-variant-numeric: tabular-nums; }
 
 /* 지금 확인할 공고(스포트라이트) */
 .spotlight-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
 .spotlight-card {
   display: flex; flex-direction: column; gap: 4px;
-  padding: 12px;
-  border: 1px solid var(--border);
+  padding: 12px 12px 12px 14px;
+  border: none;
+  border-left: 3px solid var(--accent);
   border-radius: 10px;
+  background: var(--white);
   text-decoration: none;
   color: inherit;
-  transition: border-color .15s ease, background .15s ease;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .15s ease, background .15s ease;
 }
-.spotlight-card:hover { border-color: var(--navy-soft); background: var(--bg); }
+.spotlight-card:hover { box-shadow: var(--shadow-card); background: var(--bg); }
 .spotlight-badges { display: flex; gap: 5px; }
 .spotlight-title {
   font-size: 13.5px; font-weight: 700; color: var(--text);
@@ -691,3 +786,49 @@ body {
 .cal-selected { background: var(--navy); }
 .cal-selected .cal-day-num { color: var(--white); }
 .calendar-day-list { margin-top: 4px; }
+
+/* ============================================================
+   반응형: 태블릿(768~1023px) / 데스크톱(1024px~)
+   모바일 카드를 단순 확대하지 않고, 화면 폭이 늘어난 만큼 통계/보조
+   정보 영역의 레이아웃 자체를 재구성한다. 공고 리스트(spotlight-list)는
+   카드 폭이 좁아지는 걸 막기 위해 1024px 미만에서는 항상 1열을 유지한다.
+   ============================================================ */
+
+/* 분야별 현황 + 국내·해외 비중을 한 그룹으로 묶어, 태블릿 이상에서만
+   나란히 2열로 배치한다(공고 카드는 이 그룹과 무관하게 항상 1열). */
+.home-stats-pair { display: flex; flex-direction: column; gap: 10px; }
+@media (min-width: 768px) {
+  .home-stats-pair { flex-direction: row; }
+  .home-stats-pair > .dash-card { flex: 1; min-width: 0; margin-bottom: 0; }
+}
+
+@media (min-width: 1024px) {
+  /* 데스크톱: 좌(핵심 콘텐츠) / 우(보조 통계 사이드바) 2컬럼 대시보드.
+     DOM 순서·app.js의 id 참조는 그대로 두고 grid-area로 배치만 바꾼다. */
+  #screen-home {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    grid-template-areas:
+      "filter filter"
+      "hero   mini"
+      "spot   chart"
+      "spot   statspair"
+      "spot   updated";
+    gap: 20px;
+    align-items: start;
+  }
+  #screen-home .region-filter { grid-area: filter; margin-bottom: 0; }
+  #screen-home .kpi-hero-card { grid-area: hero; margin-bottom: 0; }
+  #screen-home .kpi-mini-row { grid-area: mini; margin-bottom: 0; }
+  #screen-home .home-spotlight { grid-area: spot; margin-bottom: 0; }
+  #screen-home .home-chart { grid-area: chart; margin-bottom: 0; }
+  #screen-home .home-stats-pair { grid-area: statspair; flex-direction: column; }
+  #screen-home #updatedAtHome { grid-area: updated; margin-top: 0; }
+}
+
+/* 데스크톱에서 하단 네비가 화면 전체 폭으로 늘어나 모바일 UI를 그대로
+   확대한 것처럼 보이지 않도록, 내부 메뉴 영역만 중앙 정렬한다(기능/라벨
+   변경 없음 — 메뉴 폭만 제한). */
+@media (min-width: 1024px) {
+  .bottom-nav-inner { max-width: 480px; margin: 0 auto; }
+}
