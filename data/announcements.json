@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-09T23:07:55+00:00",
+  "updatedAt": "2026-07-10T22:54:03+00:00",
   "items": [
     {
       "id": "mofcomff8080819e429056019ebb1b36127aaa",
@@ -398,44 +398,50 @@
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
     },
     {
-      "id": "ebnew708819980",
-      "title": "BuJin Shi 포토리소그래피 Ji（ZhongDao， 첨단 패키징(Advanced Packaging) Yong） 국제 입찰공고 (2)",
-      "translatedTitle": "BuJin Shi 포토리소그래피 Ji（ZhongDao， 첨단 패키징(Advanced Packaging) Yong） 국제 입찰공고 (2)",
-      "originalTitle": "步进式光刻机（中道，先进封装用）国际招标公告(2)",
-      "translatedSummary": "포토리소그래피 Ji",
-      "originalSummary": "光刻机",
-      "org": "상하이 XinYuan 혁신센터",
-      "originalOrg": "上海芯源创新中心",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "상하이",
+      "id": "nttidB000000006050Pi3cD1",
+      "title": "소액수의계약 견적제출 안내 공고 (제2026-046호) 스펙트로라디오미터",
+      "org": "나노종합기술원",
+      "country": "국내",
+      "countryCode": "KR",
       "status": "진행중",
       "dueDate": "2026-07-16",
-      "postedDate": "2026-06-25",
+      "postedDate": "2026-07-09",
       "keywords": [
         "반도체 장비"
       ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
+      "budget": "81,994,000원",
+      "contractMethod": "소액수의계약 ( 소기업 · 소상공인 제한 )",
+      "deliveryCondition": "나노종합기술원 / 현장설치도 ( 수요자 지정 장소 )",
       "paymentCondition": null,
       "eligibility": null,
-      "description": "포토리소그래피 Ji",
-      "attachments": [],
-      "url": "http://www.ebnew.com/businessShow/708819980.html",
-      "originalUrl": "http://www.ebnew.com/businessShow/708819980.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "정식입찰",
-      "projectNo": "0705-264266322699/23",
-      "firstSeenAt": "2026-06-18T23:53:10+00:00"
+      "description": "공고유형: 소액수의계약 · 공고번호: 제2026-046호 · 계약방법: 소액수의계약 ( 소기업 · 소상공인 제한 )",
+      "attachments": [
+        {
+          "name": "1. 소액수의계약 공고문_스펙트로라디오미터.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007221Lw7/0/FileDown.do"
+        },
+        {
+          "name": "1. 소액수의계약 공고문_스펙트로라디오미터.pdf",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007221Lw7/1/FileDown.do"
+        },
+        {
+          "name": "2. 일반사양서_스펙트로라디오미터.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007221Lw7/2/FileDown.do"
+        },
+        {
+          "name": "3. 구매사양서_스펙트로라디오미터.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007221Lw7/3/FileDown.do"
+        },
+        {
+          "name": "4. 제안사양(규격) 비교표_스펙트로라디오미터.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007221Lw7/4/FileDown.do"
+        }
+      ],
+      "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006050Pi3cD1",
+      "source": "나노종합기술원",
+      "sourceCode": "NNFC",
+      "noticeType": "소액수의계약",
+      "firstSeenAt": "2026-07-10T22:54:03+00:00"
     },
     {
       "id": "kotra26CN0J7",
@@ -468,6 +474,92 @@
       "noticeType": "프로젝트 정보",
       "eventPeriod": "2026-09-15 ~ 2026-09-19",
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
+    },
+    {
+      "id": "nttidB000000006049Vm5gD9",
+      "title": "입찰공고(제2026–045호) 비상발전기용 엔클로저(컨테이너) 제작 설치",
+      "org": "나노종합기술원",
+      "country": "국내",
+      "countryCode": "KR",
+      "status": "진행중",
+      "dueDate": "2026-07-20",
+      "postedDate": "2026-07-09",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "185,818,800원",
+      "contractMethod": "제한경쟁입찰 ( 중소기업제한 )",
+      "deliveryCondition": "나노종합기술원 / 현장 ( 지정장소 ) 설치도",
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고유형: 정식입찰 · 공고번호: 제2026–045호 · 계약방법: 제한경쟁입찰 ( 중소기업제한 )",
+      "attachments": [
+        {
+          "name": "1. 입찰공고서_엔클로저.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007220Jb1/0/FileDown.do"
+        },
+        {
+          "name": "1. 입찰공고서_엔클로저.pdf",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007220Jb1/1/FileDown.do"
+        },
+        {
+          "name": "2. 구매사양서_엔클로저(컨테이너).hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007220Jb1/2/FileDown.do"
+        },
+        {
+          "name": "3. 도면_GNC_발전기1500kW 엔클로저 외형도.pdf",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007220Jb1/3/FileDown.do"
+        },
+        {
+          "name": "3. 도면_GNC_발전기1500kW 엔클로저 외형도2.pdf",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007220Jb1/4/FileDown.do"
+        },
+        {
+          "name": "4. 실적증명서 양식.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007220Jb1/5/FileDown.do"
+        }
+      ],
+      "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006049Vm5gD9",
+      "source": "나노종합기술원",
+      "sourceCode": "NNFC",
+      "noticeType": "정식입찰",
+      "firstSeenAt": "2026-07-10T22:54:03+00:00"
+    },
+    {
+      "id": "kriss63785",
+      "title": "새글 EUV 펄스 에너지 측정용 디지타이저",
+      "org": "한국표준과학연구원",
+      "country": "국내",
+      "countryCode": "KR",
+      "status": "진행중",
+      "dueDate": "2026-07-20",
+      "postedDate": "2026-07-13",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고유형: 정식입찰 · 공고번호: 제26-01-028-02호",
+      "attachments": [
+        {
+          "name": "5.구매규격서.hwp",
+          "url": "https://www.kriss.re.kr/boardDownload.es?bid=0005&list_no=63785&seq=1"
+        },
+        {
+          "name": "4.입찰공고문(안).pdf",
+          "url": "https://www.kriss.re.kr/boardDownload.es?bid=0005&list_no=63785&seq=2"
+        }
+      ],
+      "url": "https://www.kriss.re.kr/board.es?mid=a10506000000&bid=0005&act=view&list_no=63785",
+      "source": "한국표준과학연구원",
+      "sourceCode": "KRISS",
+      "noticeType": "정식입찰",
+      "projectNo": "제26-01-028-02호",
+      "g2bBidNo": "R26BK01589633-000",
+      "firstSeenAt": "2026-07-10T22:54:03+00:00"
     },
     {
       "id": "ebnew708872092",
@@ -792,12 +884,12 @@
       "firstSeenAt": "2026-07-08T22:59:43+00:00"
     },
     {
-      "id": "mofcomff8080819e429056019f412aaabe7787",
+      "id": "mofcomff8080819e429056019f412aaabd777f",
       "title": "BOE(징둥팡) 충칭 제6세대AMOLED（RouXing） 생산라인 프로젝트 - 국제 입찰공고 (1)",
       "translatedTitle": "BOE(징둥팡) 충칭 제6세대AMOLED（RouXing） 생산라인 프로젝트 - 국제 입찰공고 (1)",
       "originalTitle": "京东方重庆第6代AMOLED（柔性）生产线项目 - 国际招标公告(1)",
-      "translatedSummary": "4197-244BOECQ0001/124, BOE(징둥팡) 충칭 제6세대AMOLED（RouXing） 생산라인 프로젝트",
-      "originalSummary": "4197-244BOECQ0001/124,京东方重庆第6代AMOLED（柔性）生产线项目",
+      "translatedSummary": "4197-244BOECQ0001/123, BOE(징둥팡) 충칭 제6세대AMOLED（RouXing） 생산라인 프로젝트",
+      "originalSummary": "4197-244BOECQ0001/123,京东方重庆第6代AMOLED（柔性）生产线项目",
       "org": "충칭 BOE(징둥팡) 디스플레이 기술 유한공사",
       "originalOrg": "重庆京东方显示技术有限公司",
       "translationIncomplete": true,
@@ -817,10 +909,10 @@
       "deliveryCondition": null,
       "paymentCondition": null,
       "eligibility": null,
-      "description": "4197-244BOECQ0001/124, BOE(징둥팡) 충칭 제6세대AMOLED（RouXing） 생산라인 프로젝트",
+      "description": "4197-244BOECQ0001/123, BOE(징둥팡) 충칭 제6세대AMOLED（RouXing） 생산라인 프로젝트",
       "attachments": [],
-      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f412aaabe7787.html",
-      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f412aaabe7787.html",
+      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f412aaabd777f.html",
+      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f412aaabd777f.html",
       "source": "중국국제초표망(MOFCOM)",
       "sourceCode": "MOFCOM",
       "sourceSiteUrl": "https://chinabidding.mofcom.gov.cn/",
@@ -828,8 +920,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-244BOECQ0001/124",
-      "firstSeenAt": "2026-07-09T23:07:55+00:00"
+      "projectNo": "4197-244BOECQ0001/123",
+      "firstSeenAt": "2026-07-10T22:54:03+00:00"
     },
     {
       "id": "kotra26CN0GR",
@@ -866,6 +958,46 @@
       "noticeType": "프로젝트 정보",
       "eventPeriod": "2026-08-31 ~ 2026-09-02",
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
+    },
+    {
+      "id": "ebnew709022398",
+      "title": "우한 BOE(징둥팡) GuangDian 과학기술 유한공사 MianBan 자동광학검사(AOI) 및 XiangGuan 장비 업그레이드 개조 프로젝트 국제 입찰공고 (1)",
+      "translatedTitle": "우한 BOE(징둥팡) GuangDian 과학기술 유한공사 MianBan 자동광학검사(AOI) 및 XiangGuan 장비 업그레이드 개조 프로젝트 국제 입찰공고 (1)",
+      "originalTitle": "武汉京东方光电科技有限公司面板自动光学检测及相关设备升级改造项目国际招标公告(1)",
+      "translatedSummary": "XiangGuan 장비 구매",
+      "originalSummary": "相关设备采购",
+      "org": "우한 BOE(징둥팡) GuangDian 과학기술 유한공사",
+      "originalOrg": "武汉京东方光电科技有限公司",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "후베이성",
+      "status": "진행중",
+      "dueDate": "2026-07-31",
+      "postedDate": "2026-07-10",
+      "keywords": [
+        "디스플레이 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "XiangGuan 장비 구매",
+      "attachments": [],
+      "url": "http://www.ebnew.com/businessShow/709022398.html",
+      "originalUrl": "http://www.ebnew.com/businessShow/709022398.html",
+      "source": "중국 비롄왕(EBNEW)",
+      "sourceCode": "EBNEW",
+      "sourceSiteUrl": "https://www.ebnew.com/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "정식입찰",
+      "projectNo": "4197-264BOEWH0005/07",
+      "firstSeenAt": "2026-07-10T22:54:03+00:00"
     },
     {
       "id": "cid5570",
@@ -1138,86 +1270,6 @@
       "firstSeenAt": "2026-07-09T23:07:55+00:00"
     },
     {
-      "id": "ebnew708819587",
-      "title": "BuJin Shi 포토리소그래피 Ji（ZhongDao， 첨단 패키징(Advanced Packaging) Yong） 재입찰 정정·변경 공고 (1)",
-      "translatedTitle": "BuJin Shi 포토리소그래피 Ji（ZhongDao， 첨단 패키징(Advanced Packaging) Yong） 재입찰 정정·변경 공고 (1)",
-      "originalTitle": "步进式光刻机（中道，先进封装用）重新招标澄清或变更公告(1)",
-      "translatedSummary": "포토리소그래피 Ji",
-      "originalSummary": "光刻机",
-      "org": "상하이 XinYuan 혁신센터",
-      "originalOrg": "上海芯源创新中心",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "상하이 GouMai BiaoShu",
-      "status": "진행중",
-      "dueDate": null,
-      "postedDate": "2026-06-25",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "포토리소그래피 Ji",
-      "attachments": [],
-      "url": "http://www.ebnew.com/businessShow/708819587.html",
-      "originalUrl": "http://www.ebnew.com/businessShow/708819587.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "정식입찰",
-      "projectNo": "0705-264266322699/23",
-      "firstSeenAt": "2026-06-18T23:53:10+00:00"
-    },
-    {
-      "id": "ebnew708814721",
-      "title": "첨단 패키징(Advanced Packaging) JiShu YanXun YiTi ShiYan Shi 입찰공고",
-      "translatedTitle": "첨단 패키징(Advanced Packaging) JiShu YanXun YiTi ShiYan Shi 입찰공고",
-      "originalTitle": "先进封装技术研训一体实验室招标公告",
-      "translatedSummary": "ZhuanYong RuanJian",
-      "originalSummary": "专用软件",
-      "org": "Zhao",
-      "originalOrg": "招",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "광둥성",
-      "status": "진행중",
-      "dueDate": null,
-      "postedDate": "2026-06-25",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "ZhuanYong RuanJian",
-      "attachments": [],
-      "url": "http://www.ebnew.com/businessShow/708814721.html",
-      "originalUrl": "http://www.ebnew.com/businessShow/708814721.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "정식입찰",
-      "projectNo": "公",
-      "firstSeenAt": "2026-06-18T23:53:10+00:00"
-    },
-    {
       "id": "ebnew708985933",
       "title": "쑤저우 GuoXian 혁신과학기술 유한공사 신형 디스플레이 기술 개발 연간생산 XR 제품 150만개 프로젝트 재입찰 정정·변경 공고 (1)",
       "translatedTitle": "쑤저우 GuoXian 혁신과학기술 유한공사 신형 디스플레이 기술 개발 연간생산 XR 제품 150만개 프로젝트 재입찰 정정·변경 공고 (1)",
@@ -1339,6 +1391,46 @@
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
     },
     {
+      "id": "mofcomff8080819e429056019f468e5ddb78cf",
+      "title": "제6세대RouXing YouYuan JuZhen YouJi FaGuang 디스플레이 소자 （AMOLED） 모듈 생산라인 프로젝트 낙찰 결과 공고 (1)",
+      "translatedTitle": "제6세대RouXing YouYuan JuZhen YouJi FaGuang 디스플레이 소자 （AMOLED） 모듈 생산라인 프로젝트 낙찰 결과 공고 (1)",
+      "originalTitle": "第6代柔性有源矩阵有机发光显示器件（AMOLED）模组生产线项目中标结果公告(1)",
+      "translatedSummary": "4197-234VISIONOX4/158，제6세대RouXing YouYuan JuZhen YouJi FaGuang 디스플레이 소자 （AMOLED） 모듈 생산라인 프로젝트",
+      "originalSummary": "4197-234VISIONOX4/158，第6代柔性有源矩阵有机发光显示器件（AMOLED）模组生产线项目",
+      "org": "허페이 Visionox(웨이신눠) DianZi 유한공사",
+      "originalOrg": "合肥维信诺电子有限公司",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "ZhongGuo안후이성",
+      "status": "진행중",
+      "dueDate": null,
+      "postedDate": "2026-07-09",
+      "keywords": [
+        "디스플레이 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "4197-234VISIONOX4/158，제6세대RouXing YouYuan JuZhen YouJi FaGuang 디스플레이 소자 （AMOLED） 모듈 생산라인 프로젝트",
+      "attachments": [],
+      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f468e5ddb78cf.html",
+      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f468e5ddb78cf.html",
+      "source": "중국국제초표망(MOFCOM)",
+      "sourceCode": "MOFCOM",
+      "sourceSiteUrl": "https://chinabidding.mofcom.gov.cn/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "정식입찰",
+      "projectNo": "4197-234VISIONOX4/158",
+      "firstSeenAt": "2026-07-10T22:54:03+00:00"
+    },
+    {
       "id": "mofcomff8080819e429056019f41ef85da1e27",
       "title": "DiLiu DaiRou XingYou YuanJu ZhenYou JiFa Guang 디스플레이 소자 （AMOLED） 생산라인 업그레이드 프로젝트 심사결과 공시 공고",
       "translatedTitle": "DiLiu DaiRou XingYou YuanJu ZhenYou JiFa Guang 디스플레이 소자 （AMOLED） 생산라인 업그레이드 프로젝트 심사결과 공시 공고",
@@ -1377,46 +1469,6 @@
       "noticeType": "정식입찰",
       "projectNo": "4197-254YUNGU0002/30",
       "firstSeenAt": "2026-07-09T23:07:55+00:00"
-    },
-    {
-      "id": "mofcomff8080819e429056019f286c24043a1e",
-      "title": "제6세대RouXing YouYuan JuZhen YouJi FaGuang 디스플레이 소자 （AMOLED） 모듈 생산라인 프로젝트 심사결과 공시 공고",
-      "translatedTitle": "제6세대RouXing YouYuan JuZhen YouJi FaGuang 디스플레이 소자 （AMOLED） 모듈 생산라인 프로젝트 심사결과 공시 공고",
-      "originalTitle": "第6代柔性有源矩阵有机发光显示器件（AMOLED）模组生产线项目评标结果公示公告",
-      "translatedSummary": "4197-234VISIONOX4/158，제6세대RouXing YouYuan JuZhen YouJi FaGuang 디스플레이 소자 （AMOLED） 모듈 생산라인 프로젝트",
-      "originalSummary": "4197-234VISIONOX4/158，第6代柔性有源矩阵有机发光显示器件（AMOLED）模组生产线项目",
-      "org": "허페이 Visionox(웨이신눠) DianZi 유한공사",
-      "originalOrg": "合肥维信诺电子有限公司",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "ZhongGuo안후이성",
-      "status": "진행중",
-      "dueDate": null,
-      "postedDate": "2026-07-03",
-      "keywords": [
-        "디스플레이 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "4197-234VISIONOX4/158，제6세대RouXing YouYuan JuZhen YouJi FaGuang 디스플레이 소자 （AMOLED） 모듈 생산라인 프로젝트",
-      "attachments": [],
-      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f286c24043a1e.html",
-      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f286c24043a1e.html",
-      "source": "중국국제초표망(MOFCOM)",
-      "sourceCode": "MOFCOM",
-      "sourceSiteUrl": "https://chinabidding.mofcom.gov.cn/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "정식입찰",
-      "projectNo": "4197-234VISIONOX4/158",
-      "firstSeenAt": "2026-06-18T23:53:10+00:00"
     },
     {
       "id": "mofcomff8080819e429056019f27a837fe153c",
@@ -1497,46 +1549,6 @@
       "noticeType": "정식입찰",
       "projectNo": "4197-234VISIONOX4/157",
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
-    },
-    {
-      "id": "mofcomff8080819e429056019f182a25ae6d34",
-      "title": "BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트 낙찰 결과 공고 (1)",
-      "translatedTitle": "BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트 낙찰 결과 공고 (1)",
-      "originalTitle": "京东方第8.6代AMOLED生产线项目中标结果公告(1)",
-      "translatedSummary": "4197-244BOECDDT01/349， BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트",
-      "originalSummary": "4197-244BOECDDT01/349，京东方第8.6代AMOLED生产线项目",
-      "org": "청두 BOE(징둥팡) 디스플레이 기술 유한공사",
-      "originalOrg": "成都京东方显示技术有限公司",
-      "translationIncomplete": false,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "ZhongGuo쓰촨성",
-      "status": "진행중",
-      "dueDate": null,
-      "postedDate": "2026-06-30",
-      "keywords": [
-        "디스플레이 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "4197-244BOECDDT01/349， BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트",
-      "attachments": [],
-      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202606/ff8080819e429056019f182a25ae6d34.html",
-      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202606/ff8080819e429056019f182a25ae6d34.html",
-      "source": "중국국제초표망(MOFCOM)",
-      "sourceCode": "MOFCOM",
-      "sourceSiteUrl": "https://chinabidding.mofcom.gov.cn/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "정식입찰",
-      "projectNo": "4197-244BOECDDT01/349",
-      "firstSeenAt": "2026-07-09T23:07:55+00:00"
     }
   ]
 }
