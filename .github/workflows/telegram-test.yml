@@ -1,0 +1,81 @@
+name: Telegram TEST Message
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  send-test-message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send one Telegram TEST message
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_PERSONAL_CHAT_ID: ${{ secrets.TELEGRAM_PERSONAL_CHAT_ID }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          import urllib.error
+          import urllib.request
+
+          token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+          chat_id = os.environ.get("TELEGRAM_PERSONAL_CHAT_ID", "").strip()
+
+          if not token or not chat_id:
+              print("Telegram TEST skipped: required personal notification secrets are not configured.")
+              sys.exit(1)
+
+          message_lines = [
+              "[TEST \uc54c\ub9bc]",
+              "- \uc2dc\uc2a4\ud15c: proactive-stock-watcher",
+              "- \uc885\ubaa9: MSTR",
+              "- \uc0c1\ud0dc: Telegram \uac1c\uc778 \uc54c\ub9bc \uc5f0\uacb0 \uac80\uc99d",
+              "- \ud604\uc7ac\uac00: TEST DATA",
+              "- \uc9c4\uc785 \uc870\uac74: TEST DATA",
+              "- \uc190\uc808\uac00: TEST DATA",
+              "- \ubaa9\ud45c\uac00: TEST DATA",
+              "- \uc720\ud6a8\uc2dc\uac04: 15\ubd84",
+              "- \uc2e4\uc81c \uc8fc\ubb38: \uc2e4\ud589\ub418\uc9c0 \uc54a\uc74c",
+              "- \ubcf8 \uba54\uc2dc\uc9c0\ub294 \uac1c\uc778 Telegram \uc5f0\uacb0 \uac80\uc99d\uc6a9 \ud14c\uc2a4\ud2b8\uc784",
+          ]
+          message = "\n".join(message_lines)
+
+          payload = json.dumps({
+              "chat_id": chat_id,
+              "text": message,
+              "disable_web_page_preview": True,
+          }).encode("utf-8")
+
+          request = urllib.request.Request(
+              f"https://api.telegram.org/bot{token}/sendMessage",
+              data=payload,
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+
+          try:
+              with urllib.request.urlopen(request, timeout=15) as response:
+                  data = json.load(response)
+          except urllib.error.HTTPError as exc:
+              description = "Telegram HTTP error"
+              try:
+                  body = json.loads(exc.read().decode("utf-8", "ignore"))
+                  description = body.get("description") or description
+              except Exception:
+                  pass
+              print(f"Telegram TEST failed: HTTP {exc.code} - {description}")
+              sys.exit(1)
+          except urllib.error.URLError:
+              print("Telegram TEST failed: network error")
+              sys.exit(1)
+
+          if not data.get("ok"):
+              print("Telegram TEST failed: Telegram API returned ok=false")
+              sys.exit(1)
+
+          print("Telegram TEST sent successfully.")
+          PY
