@@ -1,0 +1,128 @@
+name: Telegram Personal Chat Discovery
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discover-personal-chat:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discover one private Telegram chat and reply with setup info
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          import urllib.error
+          import urllib.request
+
+          token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+          if not token:
+              print("PERSONAL_CHAT_FOUND=false")
+              print("PRIVATE_CHAT_COUNT=0")
+              print("DELIVERY_SUCCESS=false")
+              print("DISCOVERY_STATUS=MISSING_BOT_TOKEN")
+              sys.exit(1)
+
+          def telegram_api(method, payload):
+              url = f"https://api.telegram.org/bot{token}/{method}"
+              data = json.dumps(payload).encode("utf-8")
+              request = urllib.request.Request(
+                  url,
+                  data=data,
+                  headers={"Content-Type": "application/json"},
+                  method="POST",
+              )
+              with urllib.request.urlopen(request, timeout=15) as response:
+                  return json.load(response)
+
+          try:
+              updates = telegram_api("getUpdates", {"limit": 100})
+          except urllib.error.HTTPError as exc:
+              print("PERSONAL_CHAT_FOUND=false")
+              print("PRIVATE_CHAT_COUNT=0")
+              print("DELIVERY_SUCCESS=false")
+              print(f"DISCOVERY_STATUS=GET_UPDATES_HTTP_{exc.code}")
+              sys.exit(1)
+          except urllib.error.URLError:
+              print("PERSONAL_CHAT_FOUND=false")
+              print("PRIVATE_CHAT_COUNT=0")
+              print("DELIVERY_SUCCESS=false")
+              print("DISCOVERY_STATUS=GET_UPDATES_NETWORK_ERROR")
+              sys.exit(1)
+
+          if not updates.get("ok"):
+              print("PERSONAL_CHAT_FOUND=false")
+              print("PRIVATE_CHAT_COUNT=0")
+              print("DELIVERY_SUCCESS=false")
+              print("DISCOVERY_STATUS=GET_UPDATES_NOT_OK")
+              sys.exit(1)
+
+          private_chat_ids = set()
+          for update in updates.get("result", []):
+              message = update.get("message") or update.get("edited_message")
+              if not isinstance(message, dict):
+                  continue
+
+              chat = message.get("chat") or {}
+              sender = message.get("from") or {}
+
+              if chat.get("type") != "private":
+                  continue
+              if sender.get("is_bot") is True:
+                  continue
+
+              chat_id = chat.get("id")
+              if chat_id is None:
+                  continue
+
+              private_chat_ids.add(str(chat_id))
+
+          private_count = len(private_chat_ids)
+          print(f"PERSONAL_CHAT_FOUND={'true' if private_count == 1 else 'false'}")
+          print(f"PRIVATE_CHAT_COUNT={private_count}")
+
+          if private_count != 1:
+              print("DELIVERY_SUCCESS=false")
+              print("DISCOVERY_STATUS=AMBIGUOUS_PRIVATE_CHAT")
+              sys.exit(1)
+
+          personal_chat_id = next(iter(private_chat_ids))
+
+          message_text = "\n".join([
+              "[개인 알림 연결 정보]",
+              f"개인 Chat ID: {personal_chat_id}",
+              "",
+              "이 값은 GitHub Repository Secret",
+              "TELEGRAM_PERSONAL_CHAT_ID",
+              "에 등록하세요.",
+          ])
+
+          try:
+              sent = telegram_api("sendMessage", {
+                  "chat_id": personal_chat_id,
+                  "text": message_text,
+                  "disable_web_page_preview": True,
+              })
+          except urllib.error.HTTPError as exc:
+              print("DELIVERY_SUCCESS=false")
+              print(f"DISCOVERY_STATUS=SEND_MESSAGE_HTTP_{exc.code}")
+              sys.exit(1)
+          except urllib.error.URLError:
+              print("DELIVERY_SUCCESS=false")
+              print("DISCOVERY_STATUS=SEND_MESSAGE_NETWORK_ERROR")
+              sys.exit(1)
+
+          if not sent.get("ok"):
+              print("DELIVERY_SUCCESS=false")
+              print("DISCOVERY_STATUS=SEND_MESSAGE_NOT_OK")
+              sys.exit(1)
+
+          print("DELIVERY_SUCCESS=true")
+          print("DISCOVERY_STATUS=PRIVATE_CHAT_MESSAGE_SENT")
+          PY
