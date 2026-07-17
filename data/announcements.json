@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-16T22:51:24+00:00",
+  "updatedAt": "2026-07-17T22:43:43+00:00",
   "items": [
     {
       "id": "kotra26EX017",
@@ -113,52 +113,6 @@
       "noticeType": "정식입찰",
       "projectNo": "4197-2140CSOT0008/53",
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
-    },
-    {
-      "id": "nttidB000000006050Pi3cD1",
-      "title": "소액수의계약 견적제출 안내 공고 (제2026-046호) 스펙트로라디오미터",
-      "org": "나노종합기술원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": "2026-07-16",
-      "postedDate": "2026-07-09",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": "81,994,000원",
-      "contractMethod": "소액수의계약 ( 소기업 · 소상공인 제한 )",
-      "deliveryCondition": "나노종합기술원 / 현장설치도 ( 수요자 지정 장소 )",
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 소액수의계약 · 공고번호: 제2026-046호 · 계약방법: 소액수의계약 ( 소기업 · 소상공인 제한 )",
-      "attachments": [
-        {
-          "name": "1. 소액수의계약 공고문_스펙트로라디오미터.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007221Lw7/0/FileDown.do"
-        },
-        {
-          "name": "1. 소액수의계약 공고문_스펙트로라디오미터.pdf",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007221Lw7/1/FileDown.do"
-        },
-        {
-          "name": "2. 일반사양서_스펙트로라디오미터.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007221Lw7/2/FileDown.do"
-        },
-        {
-          "name": "3. 구매사양서_스펙트로라디오미터.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007221Lw7/3/FileDown.do"
-        },
-        {
-          "name": "4. 제안사양(규격) 비교표_스펙트로라디오미터.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007221Lw7/4/FileDown.do"
-        }
-      ],
-      "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006050Pi3cD1",
-      "source": "나노종합기술원",
-      "sourceCode": "NNFC",
-      "noticeType": "소액수의계약",
-      "firstSeenAt": "2026-07-10T22:54:03+00:00"
     },
     {
       "id": "kotra26CN0J7",
@@ -890,46 +844,6 @@
       "firstSeenAt": "2026-07-15T22:51:36+00:00"
     },
     {
-      "id": "mofcomff8080819e429056019f5a83ef605f0f",
-      "title": "BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트 - 국제 입찰공고 (1)",
-      "translatedTitle": "BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트 - 국제 입찰공고 (1)",
-      "originalTitle": "京东方第8.6代AMOLED生产线项目 - 国际招标公告(1)",
-      "translatedSummary": "4197-244BOECDDT01/364, BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트",
-      "originalSummary": "4197-244BOECDDT01/364,京东方第8.6代AMOLED生产线项目",
-      "org": "청두 BOE(징둥팡) 디스플레이 기술 유한공사",
-      "originalOrg": "成都京东方显示技术有限公司",
-      "translationIncomplete": false,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "ZhongGuo쓰촨성",
-      "status": "진행중",
-      "dueDate": "2026-08-04",
-      "postedDate": "2026-07-13",
-      "keywords": [
-        "디스플레이 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "4197-244BOECDDT01/364, BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트",
-      "attachments": [],
-      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f5a83ef605f0f.html",
-      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f5a83ef605f0f.html",
-      "source": "중국국제초표망(MOFCOM)",
-      "sourceCode": "MOFCOM",
-      "sourceSiteUrl": "https://chinabidding.mofcom.gov.cn/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "정식입찰",
-      "projectNo": "4197-244BOECDDT01/364",
-      "firstSeenAt": "2026-07-16T22:51:24+00:00"
-    },
-    {
       "id": "ebnew709089077",
       "title": "TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트 국제 입찰공고 (1)",
       "translatedTitle": "TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트 국제 입찰공고 (1)",
@@ -970,12 +884,12 @@
       "firstSeenAt": "2026-07-15T22:51:36+00:00"
     },
     {
-      "id": "mofcomff8080819e429056019f6462ce0f1085",
+      "id": "mofcomff8080819e429056019f6462ce1110a5",
       "title": "TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트 - 국제 입찰공고",
       "translatedTitle": "TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트 - 국제 입찰공고",
       "originalTitle": "TCL华星第8.6代印刷OLED生产线一期项目 - 国际招标公告",
-      "translatedSummary": "4197-2640CSOTGZT8/75, TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트",
-      "originalSummary": "4197-2640CSOTGZT8/75,TCL华星第8.6代印刷OLED生产线一期项目",
+      "translatedSummary": "4197-2640CSOTGZT8/79, TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트",
+      "originalSummary": "4197-2640CSOTGZT8/79,TCL华星第8.6代印刷OLED生产线一期项目",
       "org": "광저우 화싱광전 YinShua 디스플레이 기술 유한공사",
       "originalOrg": "广州华星光电印刷显示技术有限公司",
       "translationIncomplete": true,
@@ -995,10 +909,10 @@
       "deliveryCondition": null,
       "paymentCondition": null,
       "eligibility": null,
-      "description": "4197-2640CSOTGZT8/75, TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트",
+      "description": "4197-2640CSOTGZT8/79, TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트",
       "attachments": [],
-      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f6462ce0f1085.html",
-      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f6462ce0f1085.html",
+      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f6462ce1110a5.html",
+      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f6462ce1110a5.html",
       "source": "중국국제초표망(MOFCOM)",
       "sourceCode": "MOFCOM",
       "sourceSiteUrl": "https://chinabidding.mofcom.gov.cn/",
@@ -1006,8 +920,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-2640CSOTGZT8/75",
-      "firstSeenAt": "2026-07-15T22:51:36+00:00"
+      "projectNo": "4197-2640CSOTGZT8/79",
+      "firstSeenAt": "2026-07-17T22:43:43+00:00"
     },
     {
       "id": "ebnew709105587",
@@ -1048,6 +962,46 @@
       "noticeType": "정식입찰",
       "projectNo": "4197-244BOECQ0001/122",
       "firstSeenAt": "2026-07-16T22:51:24+00:00"
+    },
+    {
+      "id": "mofcomff8080819e429056019f6ace295d6b0b",
+      "title": "BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트 - 국제 입찰공고",
+      "translatedTitle": "BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트 - 국제 입찰공고",
+      "originalTitle": "京东方第8.6代AMOLED生产线项目 - 国际招标公告",
+      "translatedSummary": "4197-244BOECDDT01/374, BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트",
+      "originalSummary": "4197-244BOECDDT01/374,京东方第8.6代AMOLED生产线项目",
+      "org": "청두 BOE(징둥팡) 디스플레이 기술 유한공사",
+      "originalOrg": "成都京东方显示技术有限公司",
+      "translationIncomplete": false,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "ZhongGuo쓰촨성",
+      "status": "진행중",
+      "dueDate": "2026-08-06",
+      "postedDate": "2026-07-16",
+      "keywords": [
+        "디스플레이 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "4197-244BOECDDT01/374, BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트",
+      "attachments": [],
+      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f6ace295d6b0b.html",
+      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f6ace295d6b0b.html",
+      "source": "중국국제초표망(MOFCOM)",
+      "sourceCode": "MOFCOM",
+      "sourceSiteUrl": "https://chinabidding.mofcom.gov.cn/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "정식입찰",
+      "projectNo": "4197-244BOECDDT01/374",
+      "firstSeenAt": "2026-07-17T22:43:43+00:00"
     },
     {
       "id": "mofcomff8080819e429056019f69c850f10d13",
@@ -1480,6 +1434,46 @@
       "noticeType": "낙찰·수주결과",
       "projectNo": "0655-2640NIT3003N",
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
+    },
+    {
+      "id": "mofcomff8080819e429056019f6dc9b4c05e50",
+      "title": "DiLiu DaiRou XingYou YuanJu ZhenYou JiFa Guang 디스플레이 소자 （AMOLED） 생산라인 업그레이드 프로젝트 낙찰 결과 공고 (1)",
+      "translatedTitle": "DiLiu DaiRou XingYou YuanJu ZhenYou JiFa Guang 디스플레이 소자 （AMOLED） 생산라인 업그레이드 프로젝트 낙찰 결과 공고 (1)",
+      "originalTitle": "第六代柔性有源矩阵有机发光显示器件（AMOLED）生产线升级项目中标结果公告(1)",
+      "translatedSummary": "4197-254YUNGU0002/31，DiLiu DaiRou XingYou YuanJu ZhenYou JiFa Guang 디스플레이 소자 （AMOLED） 생산라인 업그레이드 프로젝트",
+      "originalSummary": "4197-254YUNGU0002/31，第六代柔性有源矩阵有机发光显示器件（AMOLED）生产线升级项目",
+      "org": "YunGu（GuAn） 과학기술 유한공사",
+      "originalOrg": "云谷（固安）科技有限公司",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "ZhongGuo허베이성",
+      "status": "진행중",
+      "dueDate": null,
+      "postedDate": "2026-07-17",
+      "keywords": [
+        "디스플레이 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "4197-254YUNGU0002/31，DiLiu DaiRou XingYou YuanJu ZhenYou JiFa Guang 디스플레이 소자 （AMOLED） 생산라인 업그레이드 프로젝트",
+      "attachments": [],
+      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f6dc9b4c05e50.html",
+      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202607/ff8080819e429056019f6dc9b4c05e50.html",
+      "source": "중국국제초표망(MOFCOM)",
+      "sourceCode": "MOFCOM",
+      "sourceSiteUrl": "https://chinabidding.mofcom.gov.cn/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "정식입찰",
+      "projectNo": "4197-254YUNGU0002/31",
+      "firstSeenAt": "2026-07-17T22:43:43+00:00"
     },
     {
       "id": "mofcomff8080819e429056019f69ceb85512ab",
