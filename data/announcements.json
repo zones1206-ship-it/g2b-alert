@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-31T22:59:16+00:00",
+  "updatedAt": "2026-08-01T22:55:21+00:00",
   "items": [
     {
       "id": "kotra26EX017",
@@ -1353,6 +1353,46 @@
       "noticeType": "수출상담회",
       "eventPeriod": "2026-01-01 ~ 2026-12-31",
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
+    },
+    {
+      "id": "ebnew709326040",
+      "title": "구매 반도체 장비 DiQi ShiBa Pi 재입찰 정정·변경 공고 (1)",
+      "translatedTitle": "구매 반도체 장비 DiQi ShiBa Pi 재입찰 정정·변경 공고 (1)",
+      "originalTitle": "采购半导体设备第七十八批重新招标澄清或变更公告(1)",
+      "translatedSummary": "ZuiZhong PaoGuang Ji",
+      "originalSummary": "最终抛光机",
+      "org": "쑤저우 WeiWei DianZi CaiLiao 유한공사",
+      "originalOrg": "苏州威微电子材料有限公司",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "장쑤성 GouMai BiaoShu",
+      "status": "진행중",
+      "dueDate": null,
+      "postedDate": "2026-08-01",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "ZuiZhong PaoGuang Ji",
+      "attachments": [],
+      "url": "https://www.ebnew.com/businessShow/709326040.html",
+      "originalUrl": "https://www.ebnew.com/businessShow/709326040.html",
+      "source": "중국 비롄왕(EBNEW)",
+      "sourceCode": "EBNEW",
+      "sourceSiteUrl": "https://www.ebnew.com/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "정식입찰",
+      "projectNo": "0722-264FE3456ZB5",
+      "firstSeenAt": "2026-08-01T22:55:21+00:00"
     },
     {
       "id": "ebnew709296748",
