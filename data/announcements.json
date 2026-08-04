@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-03T22:58:32+00:00",
+  "updatedAt": "2026-08-04T22:57:47+00:00",
   "items": [
     {
       "id": "kotra26EX017",
@@ -100,139 +100,6 @@
       "noticeType": "프로젝트 정보",
       "eventPeriod": "2026-08-31 ~ 2026-09-02",
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
-    },
-    {
-      "id": "cid5597",
-      "title": "[사전규격공개] 밀폐성 시험기 1대 구매",
-      "org": "한국나노기술원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": "2026-08-03",
-      "postedDate": "2026-07-28",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": null,
-      "contractMethod": "특정수의계약 (관계법령 : 국가계약법 시행령 제26조 1항2호 자목 및 계약업무규칙 제27조4호 아목)",
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 사전규격 · 계약방법: 특정수의계약 (관계법령 : 국가계약법 시행령 제26조 1항2호 자목 및 계약업무규칙 제27조4호 아목)",
-      "attachments": [
-        {
-          "name": "사전규격공개문.pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5597&filename=5597_202607281000595150.pdf"
-        },
-        {
-          "name": "규격적합조사표_밀폐성 시험기.pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5597&filename=5597_202607281000595311.pdf"
-        },
-        {
-          "name": "상세규격서_밀폐성 시험기.pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5597&filename=5597_202607281000595312.pdf"
-        },
-        {
-          "name": "용도설명서_밀폐성 시험기.pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5597&filename=5597_202607281000595313.pdf"
-        },
-        {
-          "name": "제안요청서_밀폐성 시험기.pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5597&filename=5597_202607281000595464.pdf"
-        },
-        {
-          "name": "사전규격공개 의견서.hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5597&filename=5597_202607281000595465.hwp"
-        }
-      ],
-      "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5597&hcid=38",
-      "source": "한국나노기술원",
-      "sourceCode": "KANC",
-      "noticeType": "사전규격",
-      "firstSeenAt": "2026-07-29T23:08:25+00:00"
-    },
-    {
-      "id": "cid5596",
-      "title": "[사전규격공개] 화합물반도체 전략 파운드리 구축을 위한 법률 자문",
-      "org": "한국나노기술원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": "2026-08-03",
-      "postedDate": "2026-07-28",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": null,
-      "contractMethod": "전자입찰 , 협상에의한계약",
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 사전규격 · 계약방법: 전자입찰 , 협상에의한계약",
-      "attachments": [
-        {
-          "name": "1-1 사전규격공개문_화합물 반도체 전략 파운드리 구축을 위한 벌률자문.hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5596&filename=5596_202607280850040570.hwp"
-        },
-        {
-          "name": "1-2-1 화합물반도체 전략 파운드리 구축을 위한 법률자문_제안요청서_수정.hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5596&filename=5596_202607280850040731.hwp"
-        },
-        {
-          "name": "1-2-2 화합물반도체 전략 파운드리 구축을 위한 법률자문_과업지시서_수정.hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5596&filename=5596_202607280850040732.hwp"
-        },
-        {
-          "name": "1-3  사전규격공개 의견서_화합물반도체 전략 파운드리 구축을 위한 법률자문.hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5596&filename=5596_202607280850040733.hwp"
-        }
-      ],
-      "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5596&hcid=38",
-      "source": "한국나노기술원",
-      "sourceCode": "KANC",
-      "noticeType": "사전규격",
-      "firstSeenAt": "2026-07-29T23:08:25+00:00"
-    },
-    {
-      "id": "ebnew709319600",
-      "title": "쑤저우 GuoXian 혁신과학기술 유한공사 신형 디스플레이 기술 개발 연간생산 XR 제품 150만개 프로젝트 심사결과 공시 공고 (1)",
-      "translatedTitle": "쑤저우 GuoXian 혁신과학기술 유한공사 신형 디스플레이 기술 개발 연간생산 XR 제품 150만개 프로젝트 심사결과 공시 공고 (1)",
-      "originalTitle": "苏州国显创新科技有限公司新型显示技术开发年产XR产品150万件项目评标结果公示公告(1)",
-      "translatedSummary": "QingXi Ji",
-      "originalSummary": "清洗机",
-      "org": "쑤저우 GuoXian 혁신과학기술 유한공사",
-      "originalOrg": "苏州国显创新科技有限公司",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "장쑤성",
-      "status": "진행중",
-      "dueDate": "2026-08-03",
-      "postedDate": "2026-07-31",
-      "keywords": [
-        "반도체 장비",
-        "디스플레이 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "QingXi Ji",
-      "attachments": [],
-      "url": "http://www.ebnew.com/businessShow/709319600.html",
-      "originalUrl": "http://www.ebnew.com/businessShow/709319600.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "낙찰·수주결과",
-      "projectNo": "4197-254VISIONOX6/26",
-      "firstSeenAt": "2026-07-31T22:59:16+00:00"
     },
     {
       "id": "cid5605",
@@ -393,46 +260,6 @@
       "sourceCode": "KANC",
       "noticeType": "정식입찰",
       "firstSeenAt": "2026-07-31T22:59:16+00:00"
-    },
-    {
-      "id": "ebnew709157392",
-      "title": "ReYa 본더(Bonder) 국제 입찰공고 (1)",
-      "translatedTitle": "ReYa 본더(Bonder) 국제 입찰공고 (1)",
-      "originalTitle": "热压键合机国际招标公告(1)",
-      "translatedSummary": "본더(Bonder)",
-      "originalSummary": "键合机",
-      "org": "상하이 XinYuan 혁신센터",
-      "originalOrg": "上海芯源创新中心",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "상하이",
-      "status": "진행중",
-      "dueDate": "2026-08-11",
-      "postedDate": "2026-07-20",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "본더(Bonder)",
-      "attachments": [],
-      "url": "http://www.ebnew.com/businessShow/709157392.html",
-      "originalUrl": "http://www.ebnew.com/businessShow/709157392.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "정식입찰",
-      "projectNo": "0705-264610026199/60",
-      "firstSeenAt": "2026-07-20T22:55:01+00:00"
     },
     {
       "id": "mofcomff8080819e429056019f845e58591809",
@@ -957,6 +784,46 @@
       "firstSeenAt": "2026-08-03T22:58:32+00:00"
     },
     {
+      "id": "ebnew709370139",
+      "title": "YiSi WeiBan Ji 패키징 시스템 JiCheng DianLu 프로젝트 국제 입찰공고 (1)",
+      "translatedTitle": "YiSi WeiBan Ji 패키징 시스템 JiCheng DianLu 프로젝트 국제 입찰공고 (1)",
+      "originalTitle": "奕斯伟板级封装系统集成电路项目国际招标公告(1)",
+      "translatedSummary": "ZhiQiu Ji",
+      "originalSummary": "植球机",
+      "org": "청두 YiCheng JiCheng DianLu 유한공사",
+      "originalOrg": "成都奕成集成电路有限公司",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "쓰촨성",
+      "status": "진행중",
+      "dueDate": "2026-08-25",
+      "postedDate": "2026-08-04",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "ZhiQiu Ji",
+      "attachments": [],
+      "url": "http://www.ebnew.com/businessShow/709370139.html",
+      "originalUrl": "http://www.ebnew.com/businessShow/709370139.html",
+      "source": "중국 비롄왕(EBNEW)",
+      "sourceCode": "EBNEW",
+      "sourceSiteUrl": "https://www.ebnew.com/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "정식입찰",
+      "projectNo": "4197-2340CDECHEN1/68",
+      "firstSeenAt": "2026-08-04T22:57:47+00:00"
+    },
+    {
       "id": "ebnew709354218",
       "title": "쑤저우 화싱광전 XianShi 유한공사 GaoQingMINI LED COB 제품 JiShu 개조 프로젝트 국제 입찰공고 (1)",
       "translatedTitle": "쑤저우 화싱광전 XianShi 유한공사 GaoQingMINI LED COB 제품 JiShu 개조 프로젝트 국제 입찰공고 (1)",
@@ -1395,6 +1262,47 @@
       "noticeType": "수출상담회",
       "eventPeriod": "2026-01-01 ~ 2026-12-31",
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
+    },
+    {
+      "id": "ebnew709367718",
+      "title": "쑤저우 GuoXian 혁신과학기술 유한공사 신형 디스플레이 기술 개발 연간생산 XR 제품 150만개 프로젝트 낙찰 결과 공고 (1)",
+      "translatedTitle": "쑤저우 GuoXian 혁신과학기술 유한공사 신형 디스플레이 기술 개발 연간생산 XR 제품 150만개 프로젝트 낙찰 결과 공고 (1)",
+      "originalTitle": "苏州国显创新科技有限公司新型显示技术开发年产XR产品150万件项目中标结果公告(1)",
+      "translatedSummary": "QingXi Ji",
+      "originalSummary": "清洗机",
+      "org": "쑤저우 GuoXian 혁신과학기술 유한공사",
+      "originalOrg": "苏州国显创新科技有限公司",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "장쑤성",
+      "status": "진행중",
+      "dueDate": null,
+      "postedDate": "2026-08-04",
+      "keywords": [
+        "반도체 장비",
+        "디스플레이 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "QingXi Ji",
+      "attachments": [],
+      "url": "http://www.ebnew.com/businessShow/709367718.html",
+      "originalUrl": "http://www.ebnew.com/businessShow/709367718.html",
+      "source": "중국 비롄왕(EBNEW)",
+      "sourceCode": "EBNEW",
+      "sourceSiteUrl": "https://www.ebnew.com/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "낙찰·수주결과",
+      "projectNo": "4197-254VISIONOX6/26",
+      "firstSeenAt": "2026-08-04T22:57:47+00:00"
     },
     {
       "id": "ebnew709326040",
