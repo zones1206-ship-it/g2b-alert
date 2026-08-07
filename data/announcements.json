@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-07T01:34:34+00:00",
+  "updatedAt": "2026-08-07T22:29:45+00:00",
   "items": [
     {
       "id": "kotra26EX017",
@@ -100,46 +100,6 @@
       "noticeType": "프로젝트 정보",
       "eventPeriod": "2026-08-31 ~ 2026-09-02",
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
-    },
-    {
-      "id": "ebnew709353153",
-      "title": "W2WHunHe 본더(Bonder) 심사결과 공시 공고 (1)",
-      "translatedTitle": "W2WHunHe 본더(Bonder) 심사결과 공시 공고 (1)",
-      "originalTitle": "W2W混合键合机评标结果公示公告(1)",
-      "translatedSummary": "HunHe 본더(Bonder)",
-      "originalSummary": "混合键合机",
-      "org": "상하이 XinYuan 혁신센터",
-      "originalOrg": "上海芯源创新中心",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "상하이",
-      "status": "진행중",
-      "dueDate": "2026-08-06",
-      "postedDate": "2026-08-03",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "HunHe 본더(Bonder)",
-      "attachments": [],
-      "url": "http://www.ebnew.com/businessShow/709353153.html",
-      "originalUrl": "http://www.ebnew.com/businessShow/709353153.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "낙찰·수주결과",
-      "projectNo": "0705-264610026199/53",
-      "firstSeenAt": "2026-08-03T22:58:32+00:00"
     },
     {
       "id": "cid5607",
@@ -908,6 +868,48 @@
       "firstSeenAt": "2026-08-07T01:34:34+00:00"
     },
     {
+      "id": "cid5619",
+      "title": "[공고 제2026-29호] Flat Type ESC(Electrostatic Chuck) 교체 및 설치 (내자)",
+      "org": "한국나노기술원",
+      "country": "국내",
+      "countryCode": "KR",
+      "status": "진행중",
+      "dueDate": null,
+      "postedDate": "2026-08-07",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": null,
+      "contractMethod": null,
+      "deliveryCondition": "현장 설치도 아. 설치장소 : 경기도 수원시 영통구 광교로 109(이의동, 한국나노기술원)내 지정장소 ※",
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고유형: 정식입찰 · 공고번호: 제2026-29호",
+      "attachments": [
+        {
+          "name": "견적(입찰)공고서.pdf",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5619&filename=5619_202608071040186800.pdf"
+        },
+        {
+          "name": "상세규격서.pdf",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5619&filename=5619_202608071040186801.pdf"
+        },
+        {
+          "name": "과업지시서.pdf",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5619&filename=5619_202608071040186962.pdf"
+        },
+        {
+          "name": "입찰관련서식.hwp",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5619&filename=5619_202608071040186963.hwp"
+        }
+      ],
+      "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5619&hcid=38",
+      "source": "한국나노기술원",
+      "sourceCode": "KANC",
+      "noticeType": "정식입찰",
+      "firstSeenAt": "2026-08-07T22:29:45+00:00"
+    },
+    {
       "id": "cid5618",
       "title": "[공고 제2026-28-01호] 스크러버(8인치 금속막 식각설비 용) 1대 구매 (내자)(재공고)",
       "org": "한국나노기술원",
@@ -1266,6 +1268,46 @@
       "noticeType": "수출상담회",
       "eventPeriod": "2026-01-01 ~ 2026-12-31",
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
+    },
+    {
+      "id": "ebnew709408873",
+      "title": "W2WHunHe 본더(Bonder) 낙찰 결과 공고 (1)",
+      "translatedTitle": "W2WHunHe 본더(Bonder) 낙찰 결과 공고 (1)",
+      "originalTitle": "W2W混合键合机中标结果公告(1)",
+      "translatedSummary": "HunHe 본더(Bonder)",
+      "originalSummary": "混合键合机",
+      "org": "상하이 XinYuan 혁신센터",
+      "originalOrg": "上海芯源创新中心",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "상하이",
+      "status": "진행중",
+      "dueDate": null,
+      "postedDate": "2026-08-07",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "HunHe 본더(Bonder)",
+      "attachments": [],
+      "url": "http://www.ebnew.com/businessShow/709408873.html",
+      "originalUrl": "http://www.ebnew.com/businessShow/709408873.html",
+      "source": "중국 비롄왕(EBNEW)",
+      "sourceCode": "EBNEW",
+      "sourceSiteUrl": "https://www.ebnew.com/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "낙찰·수주결과",
+      "projectNo": "0705-264610026199/53",
+      "firstSeenAt": "2026-08-07T22:29:45+00:00"
     },
     {
       "id": "ebnew709399245",
