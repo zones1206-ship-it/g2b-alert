@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-14T22:19:16+00:00",
+  "updatedAt": "2026-08-15T22:12:16+00:00",
   "items": [
     {
       "id": "kotra26EX017",
@@ -219,52 +219,6 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "낙찰·수주결과",
       "projectNo": "0730-264010020001/73",
-      "firstSeenAt": "2026-08-10T22:29:55+00:00"
-    },
-    {
-      "id": "nttidB000000006094Nv2hM4",
-      "title": "소액수의계약 견적제출 안내 공고(제2026-053호) Ansys Lumerical MODE 소프트웨어 라이선스",
-      "org": "나노종합기술원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": "2026-08-14",
-      "postedDate": "2026-08-10",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": "23,000,000원",
-      "contractMethod": "소액수의계약 ( 소기업 · 소상공인 제한 )",
-      "deliveryCondition": "나노종합기술원 / 현장설치도 ( 수요자 지정 장소 )",
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 소액수의계약 · 공고번호: 제2026-053호 · 계약방법: 소액수의계약 ( 소기업 · 소상공인 제한 )",
-      "attachments": [
-        {
-          "name": "1. 소액수의계약 공고문_MODE.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007285Zw4/0/FileDown.do"
-        },
-        {
-          "name": "1. 소액수의계약 공고문_MODE.pdf",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007285Zw4/1/FileDown.do"
-        },
-        {
-          "name": "2. 일반사양서_MODE.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007285Zw4/2/FileDown.do"
-        },
-        {
-          "name": "3. 구매사양서_MODE.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007285Zw4/3/FileDown.do"
-        },
-        {
-          "name": "4. 제출서류기본양식(소액수의계약)_MODE.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007285Zw4/4/FileDown.do"
-        }
-      ],
-      "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006094Nv2hM4",
-      "source": "나노종합기술원",
-      "sourceCode": "NNFC",
-      "noticeType": "소액수의계약",
       "firstSeenAt": "2026-08-10T22:29:55+00:00"
     },
     {
