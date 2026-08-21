@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-20T22:21:07+00:00",
+  "updatedAt": "2026-08-21T22:13:58+00:00",
   "items": [
     {
       "id": "kotra26EX017",
@@ -422,52 +422,6 @@
       "firstSeenAt": "2026-07-30T23:08:43+00:00"
     },
     {
-      "id": "nttidB000000006096Nm6aC3",
-      "title": "소액수의계약 견적제출 안내 공고(제2026-054호) 투과전자현미경 FEG 300kv용 전계방출형 전자총",
-      "org": "나노종합기술원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": "2026-08-20",
-      "postedDate": "2026-08-12",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": "34,650,000원",
-      "contractMethod": "소액수의계약 ( 소기업 · 소상공인 제한 )",
-      "deliveryCondition": "나노종합기술원 / 현장설치도 ( 수요자 지정 장소 )",
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 소액수의계약 · 공고번호: 제2026-054호 · 계약방법: 소액수의계약 ( 소기업 · 소상공인 제한 )",
-      "attachments": [
-        {
-          "name": "1. 소액수의계약 공고문_전계방출형 전자총.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007300Fi8/0/FileDown.do"
-        },
-        {
-          "name": "1. 소액수의계약 공고문_전계방출형 전자총.pdf",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007300Fi8/1/FileDown.do"
-        },
-        {
-          "name": "2. 일반사양서_전계방출형 전자총.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007300Fi8/2/FileDown.do"
-        },
-        {
-          "name": "3. 구매사양서_전계방출형 전자총.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007300Fi8/3/FileDown.do"
-        },
-        {
-          "name": "4. 제출서류기본양식(소액수의계약)_전계방출형 전자총.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007300Fi8/4/FileDown.do"
-        }
-      ],
-      "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006096Nm6aC3",
-      "source": "나노종합기술원",
-      "sourceCode": "NNFC",
-      "noticeType": "소액수의계약",
-      "firstSeenAt": "2026-08-12T22:34:26+00:00"
-    },
-    {
       "id": "mofcomff8080819e429056019fb2bd70721829",
       "title": "광저우 화싱 제8.5세대 박막트랜지스터(TFT) 액정디스플레이(LCD) 소자 （TFT-LCD） 프로젝트 - 국제 입찰공고 (1)",
       "translatedTitle": "광저우 화싱 제8.5세대 박막트랜지스터(TFT) 액정디스플레이(LCD) 소자 （TFT-LCD） 프로젝트 - 국제 입찰공고 (1)",
@@ -778,47 +732,6 @@
       "noticeType": "정식입찰",
       "projectNo": "公",
       "firstSeenAt": "2026-08-19T22:24:31+00:00"
-    },
-    {
-      "id": "ebnew709394257",
-      "title": "BOE(징둥팡) 제6세대XinXing 반도체 디스플레이 소자 생산라인 프로젝트 국제 입찰공고 (2)",
-      "translatedTitle": "BOE(징둥팡) 제6세대XinXing 반도체 디스플레이 소자 생산라인 프로젝트 국제 입찰공고 (2)",
-      "originalTitle": "京东方第6代新型半导体显示器件生产线项目国际招标公告(2)",
-      "translatedSummary": "습식 식각(Wet Etching) Ji",
-      "originalSummary": "湿法刻蚀机",
-      "org": "베이징 BOE(징둥팡) ChuangYuan 과학기술 유한공사",
-      "originalOrg": "北京京东方创元科技有限公司",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "베이징",
-      "status": "진행중",
-      "dueDate": "2026-08-27",
-      "postedDate": "2026-08-06",
-      "keywords": [
-        "반도체 장비",
-        "디스플레이 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "습식 식각(Wet Etching) Ji",
-      "attachments": [],
-      "url": "https://www.ebnew.com/businessShow/709394257.html",
-      "originalUrl": "https://www.ebnew.com/businessShow/709394257.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "정식입찰",
-      "projectNo": "4197-234BOECY0001/203",
-      "firstSeenAt": "2026-08-07T01:34:34+00:00"
     },
     {
       "id": "kriss63833",
@@ -1351,6 +1264,46 @@
       "firstSeenAt": "2026-08-20T22:21:07+00:00"
     },
     {
+      "id": "ebnew709599685",
+      "title": "OLED 모듈 DianDeng JianCha Ji 국제 입찰공고 (1)",
+      "translatedTitle": "OLED 모듈 DianDeng JianCha Ji 국제 입찰공고 (1)",
+      "originalTitle": "OLED模组点灯检查机国际招标公告(1)",
+      "translatedSummary": "JianCha Ji",
+      "originalSummary": "检查机",
+      "org": "우한 Tianma(톈마) 유한공사",
+      "originalOrg": "武汉天马微电子有限公司",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "후베이성",
+      "status": "진행중",
+      "dueDate": "2026-09-11",
+      "postedDate": "2026-08-21",
+      "keywords": [
+        "디스플레이 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "JianCha Ji",
+      "attachments": [],
+      "url": "https://www.ebnew.com/businessShow/709599685.html",
+      "originalUrl": "https://www.ebnew.com/businessShow/709599685.html",
+      "source": "중국 비롄왕(EBNEW)",
+      "sourceCode": "EBNEW",
+      "sourceSiteUrl": "https://www.ebnew.com/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "정식입찰",
+      "projectNo": "0730-264010020019/01",
+      "firstSeenAt": "2026-08-21T22:13:58+00:00"
+    },
+    {
       "id": "ebnew709488702",
       "title": "제11세대ChaoGao Qing 신형 디스플레이 Jian 생산라인 프로젝트 국제 입찰공고 (2)",
       "translatedTitle": "제11세대ChaoGao Qing 신형 디스플레이 Jian 생산라인 프로젝트 국제 입찰공고 (2)",
@@ -1713,48 +1666,6 @@
       "firstSeenAt": "2026-07-27T22:56:23+00:00"
     },
     {
-      "id": "cid5587",
-      "title": "[공고 제2026-18-01호] 8인치 레이저 마커 1식 구매(내자) 재공고",
-      "org": "한국나노기술원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": null,
-      "postedDate": "2026-07-21",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": null,
-      "contractMethod": null,
-      "deliveryCondition": "현장 설치도 사. 납품장소 : 한국나노기술원 내 지정장소 (현장설치 조건 및 폐기물 회수처리 포함) 아.",
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 정식입찰 · 공고번호: 제2026-18-01호",
-      "attachments": [
-        {
-          "name": "2 입찰재공고서_8인치 레이저마커.pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5587&filename=5587_202607211349359260.pdf"
-        },
-        {
-          "name": "3-1 8inch Laser Marker_상세규격서.pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5587&filename=5587_202607211349360361.pdf"
-        },
-        {
-          "name": "3-2 8inch Laser Marker_용도설명서.pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5587&filename=5587_202607211349361142.pdf"
-        },
-        {
-          "name": "4 입찰관련 서식.hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5587&filename=5587_202607211349361293.hwp"
-        }
-      ],
-      "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5587&hcid=38",
-      "source": "한국나노기술원",
-      "sourceCode": "KANC",
-      "noticeType": "정식입찰",
-      "firstSeenAt": "2026-07-21T22:50:08+00:00"
-    },
-    {
       "id": "kotra26CN0C3",
       "title": "2026 서남아 반도체 공급망 진입지원 사업",
       "org": "글로벌공급망사업팀",
@@ -1861,46 +1772,6 @@
       "noticeType": "낙찰·수주결과",
       "projectNo": "0705-264610026199/53",
       "firstSeenAt": "2026-08-07T22:29:45+00:00"
-    },
-    {
-      "id": "ebnew709399245",
-      "title": "RunPeng 반도체 ( 선전 ) 유한공사 RunPeng 반도체 2026NianAMEC 식각 BeiJian 구매 프로젝트 _RP903155DanYuan ZhiJie 구매 결과 GongGao",
-      "translatedTitle": "RunPeng 반도체 ( 선전 ) 유한공사 RunPeng 반도체 2026NianAMEC 식각 BeiJian 구매 프로젝트 _RP903155DanYuan ZhiJie 구매 결과 GongGao",
-      "originalTitle": "润鹏半导体(深圳)有限公司润鹏半导体2026年AMEC 刻蚀备件采购项目_RP903155单源直接采购结果公告",
-      "translatedSummary": "반도체 장비",
-      "originalSummary": "半导体设备",
-      "org": "HuaRun ShouZheng 입찰 유한공사",
-      "originalOrg": "华润守正招标有限公司",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "선전 NinDang QianWei DengLu ，“***”HaoNei RongQing DengLu HouCha Kan。 CaiGou JieGuo Gong Gao",
-      "status": "진행중",
-      "dueDate": null,
-      "postedDate": "2026-08-06",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "반도체 장비",
-      "attachments": [],
-      "url": "https://www.ebnew.com/businessShow/709399245.html",
-      "originalUrl": "https://www.ebnew.com/businessShow/709399245.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "낙찰·수주결과",
-      "projectNo": "公",
-      "firstSeenAt": "2026-08-07T01:34:34+00:00"
     },
     {
       "id": "ebnew709567156",
@@ -2184,47 +2055,6 @@
       "noticeType": "정식입찰",
       "projectNo": "4197-2240CSOTT007/38",
       "firstSeenAt": "2026-08-12T22:34:26+00:00"
-    },
-    {
-      "id": "ebnew709393886",
-      "title": "BOE(징둥팡) 제6세대XinXing 반도체 디스플레이 소자 생산라인 프로젝트 재입찰 정정·변경 공고 (1)",
-      "translatedTitle": "BOE(징둥팡) 제6세대XinXing 반도체 디스플레이 소자 생산라인 프로젝트 재입찰 정정·변경 공고 (1)",
-      "originalTitle": "京东方第6代新型半导体显示器件生产线项目重新招标澄清或变更公告(1)",
-      "translatedSummary": "습식 식각(Wet Etching) Ji",
-      "originalSummary": "湿法刻蚀机",
-      "org": "베이징 BOE(징둥팡) ChuangYuan 과학기술 유한공사",
-      "originalOrg": "北京京东方创元科技有限公司",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "베이징 GouMai BiaoShu",
-      "status": "진행중",
-      "dueDate": null,
-      "postedDate": "2026-08-06",
-      "keywords": [
-        "반도체 장비",
-        "디스플레이 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "습식 식각(Wet Etching) Ji",
-      "attachments": [],
-      "url": "https://www.ebnew.com/businessShow/709393886.html",
-      "originalUrl": "https://www.ebnew.com/businessShow/709393886.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "정식입찰",
-      "projectNo": "4197-234BOECY0001/203",
-      "firstSeenAt": "2026-08-07T01:34:34+00:00"
     },
     {
       "id": "mofcomff8080819e429056019f885fbd636de3",
