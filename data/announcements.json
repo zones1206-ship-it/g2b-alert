@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-21T22:13:58+00:00",
+  "updatedAt": "2026-08-22T22:19:01+00:00",
   "items": [
     {
       "id": "kotra26EX017",
@@ -462,112 +462,6 @@
       "firstSeenAt": "2026-07-31T22:59:16+00:00"
     },
     {
-      "id": "nttidB000000006100Xf3pC4",
-      "title": "(재)소액수의계약 견적제출 안내 공고(제2026-055호) Ansys Lumerical MODE 소프트웨어 라이선스",
-      "org": "나노종합기술원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": "2026-08-21",
-      "postedDate": "2026-08-14",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": "23,000,000원",
-      "contractMethod": "소액수의계약 ( 소기업 · 소상공인 제한 )",
-      "deliveryCondition": "나노종합기술원 / 현장설치도 ( 수요자 지정 장소 )",
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 소액수의계약 · 공고번호: 제2026-055호 · 계약방법: 소액수의계약 ( 소기업 · 소상공인 제한 )",
-      "attachments": [
-        {
-          "name": "1. 소액수의계약 공고문_MODE.pdf",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007305Ex5/0/FileDown.do"
-        },
-        {
-          "name": "2. 일반사양서_MODE.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007305Ex5/1/FileDown.do"
-        },
-        {
-          "name": "3. 구매사양서_MODE.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007305Ex5/2/FileDown.do"
-        },
-        {
-          "name": "4. 제출서류기본양식(소액수의계약)_MODE.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007305Ex5/3/FileDown.do"
-        }
-      ],
-      "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006100Xf3pC4",
-      "source": "나노종합기술원",
-      "sourceCode": "NNFC",
-      "noticeType": "소액수의계약",
-      "firstSeenAt": "2026-08-14T22:19:16+00:00"
-    },
-    {
-      "id": "kriss63824",
-      "title": "연속적으로 파장가변한 레이저",
-      "org": "한국표준과학연구원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": "2026-08-21",
-      "postedDate": "2026-08-13",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 정식입찰 · 공고번호: 제26-01-035호",
-      "attachments": [
-        {
-          "name": "4.구매규격서.hwp",
-          "url": "https://www.kriss.re.kr/boardDownload.es?bid=0005&list_no=63824&seq=1"
-        }
-      ],
-      "url": "https://www.kriss.re.kr/board.es?mid=a10506000000&bid=0005&act=view&list_no=63824",
-      "source": "한국표준과학연구원",
-      "sourceCode": "KRISS",
-      "noticeType": "정식입찰",
-      "projectNo": "제26-01-035호",
-      "g2bBidNo": null,
-      "firstSeenAt": "2026-08-13T22:35:29+00:00"
-    },
-    {
-      "id": "kriss63823",
-      "title": "파장가변 레이저",
-      "org": "한국표준과학연구원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": "2026-08-21",
-      "postedDate": "2026-08-13",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 정식입찰 · 공고번호: 제26-01-034호",
-      "attachments": [
-        {
-          "name": "4.구매규격서.hwp",
-          "url": "https://www.kriss.re.kr/boardDownload.es?bid=0005&list_no=63823&seq=1"
-        }
-      ],
-      "url": "https://www.kriss.re.kr/board.es?mid=a10506000000&bid=0005&act=view&list_no=63823",
-      "source": "한국표준과학연구원",
-      "sourceCode": "KRISS",
-      "noticeType": "정식입찰",
-      "projectNo": "제26-01-034호",
-      "g2bBidNo": null,
-      "firstSeenAt": "2026-08-13T22:35:29+00:00"
-    },
-    {
       "id": "ebnew709585906",
       "title": "습식 식각(Wet Etching) Ji 장비 구매 프로젝트 ZhongBiao HouXuan Ren 공시",
       "translatedTitle": "습식 식각(Wet Etching) Ji 장비 구매 프로젝트 ZhongBiao HouXuan Ren 공시",
@@ -694,6 +588,44 @@
       "sourceCode": "NNFC",
       "noticeType": "소액수의계약",
       "firstSeenAt": "2026-08-20T22:21:07+00:00"
+    },
+    {
+      "id": "ebnew709616667",
+      "title": "선양 TieLu XinHao YouXian ZeRen GongSi3D 자동광학검사(AOI) JiTan Pan 구매 공고",
+      "translatedTitle": "선양 TieLu XinHao YouXian ZeRen GongSi3D 자동광학검사(AOI) JiTan Pan 구매 공고",
+      "originalTitle": "沈阳铁路信号有限责任公司3D自动光学检测机谈判采购公告",
+      "translatedSummary": "자동광학검사(AOI) Ji",
+      "originalSummary": "自动光学检测机",
+      "org": "Zhao",
+      "originalOrg": "招",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "베이징 NinDang QianWei DengLu ，“***”HaoNei RongQing DengLu HouCha Kan。 ShenYang TieLu XinHao YouXian ZeRen GongSi**ZiDong GuangXue JianCe JiTan PanCai GouGong Gao",
+      "status": "진행중",
+      "dueDate": "2026-08-27",
+      "postedDate": "2026-08-21",
+      "keywords": [],
+      "classificationStatus": "미분류/검토 필요",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "자동광학검사(AOI) Ji",
+      "attachments": [],
+      "url": "https://www.ebnew.com/businessShow/709616667.html",
+      "originalUrl": "https://www.ebnew.com/businessShow/709616667.html",
+      "source": "중국 비롄왕(EBNEW)",
+      "sourceCode": "EBNEW",
+      "sourceSiteUrl": "https://www.ebnew.com/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "정식입찰",
+      "projectNo": "公",
+      "firstSeenAt": "2026-08-22T22:19:01+00:00"
     },
     {
       "id": "ebnew709578149",
@@ -1732,46 +1664,6 @@
       "noticeType": "낙찰·수주결과",
       "projectNo": "0730-264010020001/73",
       "firstSeenAt": "2026-08-17T22:20:22+00:00"
-    },
-    {
-      "id": "ebnew709408873",
-      "title": "W2WHunHe 본더(Bonder) 낙찰 결과 공고 (1)",
-      "translatedTitle": "W2WHunHe 본더(Bonder) 낙찰 결과 공고 (1)",
-      "originalTitle": "W2W混合键合机中标结果公告(1)",
-      "translatedSummary": "HunHe 본더(Bonder)",
-      "originalSummary": "混合键合机",
-      "org": "상하이 XinYuan 혁신센터",
-      "originalOrg": "上海芯源创新中心",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "상하이",
-      "status": "진행중",
-      "dueDate": null,
-      "postedDate": "2026-08-07",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "HunHe 본더(Bonder)",
-      "attachments": [],
-      "url": "https://www.ebnew.com/businessShow/709408873.html",
-      "originalUrl": "https://www.ebnew.com/businessShow/709408873.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "낙찰·수주결과",
-      "projectNo": "0705-264610026199/53",
-      "firstSeenAt": "2026-08-07T22:29:45+00:00"
     },
     {
       "id": "ebnew709567156",
