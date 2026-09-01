@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-31T00:03:11+00:00",
+  "updatedAt": "2026-09-01T00:53:52+00:00",
   "items": [
     {
       "id": "kotra26EX017",
@@ -578,100 +578,6 @@
       "firstSeenAt": "2026-08-19T22:24:31+00:00"
     },
     {
-      "id": "ebnew709647191",
-      "title": "산시성(ShanXi) DianZi XinYe ShiDai 과학기술 유한공사 8YingCun GaoXing NengTe SeGong Yi 반도체 XinPian 생산라인 프로젝트 8CunD-PolyLuGuan 장비 구매 심사결과 공시 공고 (1)",
-      "translatedTitle": "산시성(ShanXi) DianZi XinYe ShiDai 과학기술 유한공사 8YingCun GaoXing NengTe SeGong Yi 반도체 XinPian 생산라인 프로젝트 8CunD-PolyLuGuan 장비 구매 심사결과 공시 공고 (1)",
-      "originalTitle": "陕西电子芯业时代科技有限公司8英寸高性能特色工艺半导体芯片生产线项目8吋D-Poly炉管设备采购评标结果公示公告(1)",
-      "translatedSummary": "8CunD-POLYLuGuan 장비 , 반도체 XinPian",
-      "originalSummary": "8吋D-POLY炉管设备,半导体芯片",
-      "org": "산시성(ShanXi) DianZi XinYe ShiDai 과학기술 유한공사",
-      "originalOrg": "陕西电子芯业时代科技有限公司",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "산시성(ShanXi)",
-      "status": "진행중",
-      "dueDate": "2026-08-28",
-      "postedDate": "2026-08-25",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "8CunD-POLYLuGuan 장비 , 반도체 XinPian",
-      "attachments": [],
-      "url": "https://www.ebnew.com/businessShow/709647191.html",
-      "originalUrl": "https://www.ebnew.com/businessShow/709647191.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "낙찰·수주결과",
-      "projectNo": "1143-2640ZRGJ0055",
-      "firstSeenAt": "2026-08-25T22:15:56+00:00"
-    },
-    {
-      "id": "nttidB000000006106Ab3xE1",
-      "title": "(외자) 입찰공고(제2026–056호) 200mm 수직형 산질화막 성장로",
-      "org": "나노종합기술원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": "2026-08-31",
-      "postedDate": "2026-08-20",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": "JPY 150,000,000",
-      "contractMethod": "일반경쟁",
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 정식입찰 · 공고번호: 제2026–056호 · 계약방법: 일반경쟁",
-      "attachments": [
-        {
-          "name": "1. 입찰공고문_성장로.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007322Jp2/0/FileDown.do"
-        },
-        {
-          "name": "1. 입찰공고문_성장로.pdf",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007322Jp2/1/FileDown.do"
-        },
-        {
-          "name": "2. 제안요청서_성장로.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007322Jp2/2/FileDown.do"
-        },
-        {
-          "name": "3. 구매사양서_성장로.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007322Jp2/3/FileDown.do"
-        },
-        {
-          "name": "4. 구매사양비교표(Requirement Spec.)_Oxynitride Furnace.xls",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007322Jp2/4/FileDown.do"
-        },
-        {
-          "name": "5. 외자입찰유의서 및 입찰서류서식.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007322Jp2/5/FileDown.do"
-        },
-        {
-          "name": "6. Summary of BIDDING.pdf",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007322Jp2/6/FileDown.do"
-        }
-      ],
-      "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006106Ab3xE1",
-      "source": "나노종합기술원",
-      "sourceCode": "NNFC",
-      "noticeType": "정식입찰",
-      "firstSeenAt": "2026-08-20T22:21:07+00:00"
-    },
-    {
       "id": "ebnew709690066",
       "title": "충칭 XinLian WeiDian Zi 유한공사 QianDuan JingBei 세정 장비(Cleaning Equipment) 심사결과 공시 공고 (1)",
       "translatedTitle": "충칭 XinLian WeiDian Zi 유한공사 QianDuan JingBei 세정 장비(Cleaning Equipment) 심사결과 공시 공고 (1)",
@@ -752,6 +658,101 @@
       "firstSeenAt": "2026-08-29T03:31:05+00:00"
     },
     {
+      "id": "ebnew709723397",
+      "title": "BOE(징둥팡) 제6세대XinXing 반도체 디스플레이 소자 생산라인 프로젝트 심사결과 공시 공고 (1)",
+      "translatedTitle": "BOE(징둥팡) 제6세대XinXing 반도체 디스플레이 소자 생산라인 프로젝트 심사결과 공시 공고 (1)",
+      "originalTitle": "京东方第6代新型半导体显示器件生产线项目评标结果公示公告(1)",
+      "translatedSummary": "습식 식각(Wet Etching) Ji",
+      "originalSummary": "湿法刻蚀机",
+      "org": "베이징 BOE(징둥팡) ChuangYuan 과학기술 유한공사",
+      "originalOrg": "北京京东方创元科技有限公司",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "베이징",
+      "status": "진행중",
+      "dueDate": "2026-09-03",
+      "postedDate": "2026-08-31",
+      "keywords": [
+        "반도체 장비",
+        "디스플레이 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "습식 식각(Wet Etching) Ji",
+      "attachments": [],
+      "url": "https://www.ebnew.com/businessShow/709723397.html",
+      "originalUrl": "https://www.ebnew.com/businessShow/709723397.html",
+      "source": "중국 비롄왕(EBNEW)",
+      "sourceCode": "EBNEW",
+      "sourceSiteUrl": "https://www.ebnew.com/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "낙찰·수주결과",
+      "projectNo": "4197-234BOECY0001/203",
+      "firstSeenAt": "2026-09-01T00:53:52+00:00"
+    },
+    {
+      "id": "nttidB000000006124Jl2qZ4",
+      "title": "(재)(외자)입찰공고(제2026–059호) 200mm 수직형 산질화막 성장로",
+      "org": "나노종합기술원",
+      "country": "국내",
+      "countryCode": "KR",
+      "status": "진행중",
+      "dueDate": "2026-09-07",
+      "postedDate": "2026-08-31",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "JPY 150,000,000",
+      "contractMethod": "일반경쟁",
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고유형: 정식입찰 · 공고번호: 제2026–059호 · 계약방법: 일반경쟁",
+      "attachments": [
+        {
+          "name": "1. (재)입찰공고문_성장로.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007347Qj7/0/FileDown.do"
+        },
+        {
+          "name": "1. (재)입찰공고문_성장로.pdf",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007347Qj7/1/FileDown.do"
+        },
+        {
+          "name": "2. 제안요청서_성장로.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007347Qj7/2/FileDown.do"
+        },
+        {
+          "name": "3. 구매사양서_성장로.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007347Qj7/3/FileDown.do"
+        },
+        {
+          "name": "4. 구매사양비교표(Requirement Spec.)_Oxynitride Furnace.xls",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007347Qj7/4/FileDown.do"
+        },
+        {
+          "name": "5. 외자입찰유의서 및 입찰서류서식.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007347Qj7/5/FileDown.do"
+        },
+        {
+          "name": "6. Summary of BIDDING.pdf",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007347Qj7/6/FileDown.do"
+        }
+      ],
+      "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006124Jl2qZ4",
+      "source": "나노종합기술원",
+      "sourceCode": "NNFC",
+      "noticeType": "정식입찰",
+      "firstSeenAt": "2026-09-01T00:53:52+00:00"
+    },
+    {
       "id": "nttidB000000006120Ri9iP9",
       "title": "입찰공고(제2026–058호) 팹 비상전력 공급용 버스(부스) 덕트 제작 설치",
       "org": "나노종합기술원",
@@ -800,6 +801,42 @@
       "sourceCode": "NNFC",
       "noticeType": "정식입찰",
       "firstSeenAt": "2026-08-28T05:54:00+00:00"
+    },
+    {
+      "id": "kriss63846",
+      "title": "새글 중적외선 레이저 시스템",
+      "org": "한국표준과학연구원",
+      "country": "국내",
+      "countryCode": "KR",
+      "status": "진행중",
+      "dueDate": "2026-09-08",
+      "postedDate": "2026-08-31",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고유형: 정식입찰 · 공고번호: 제26-01-038-01호",
+      "attachments": [
+        {
+          "name": "5.입찰공고문(안).hwp",
+          "url": "https://www.kriss.re.kr/boardDownload.es?bid=0005&list_no=63846&seq=1"
+        },
+        {
+          "name": "6.구매규격서.hwp",
+          "url": "https://www.kriss.re.kr/boardDownload.es?bid=0005&list_no=63846&seq=2"
+        }
+      ],
+      "url": "https://www.kriss.re.kr/board.es?mid=a10506000000&bid=0005&act=view&list_no=63846",
+      "source": "한국표준과학연구원",
+      "sourceCode": "KRISS",
+      "noticeType": "정식입찰",
+      "projectNo": "제26-01-038-01호",
+      "g2bBidNo": "R26BK01690519-000",
+      "firstSeenAt": "2026-09-01T00:53:52+00:00"
     },
     {
       "id": "ebnew709572110",
@@ -1491,6 +1528,46 @@
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
     },
     {
+      "id": "ebnew709728930",
+      "title": "산시성(ShanXi) DianZi XinYe ShiDai 과학기술 유한공사 8YingCun GaoXing NengTe SeGong Yi 반도체 XinPian 생산라인 프로젝트 8CunD-PolyLuGuan 장비 구매 낙찰 결과 공고 (1)",
+      "translatedTitle": "산시성(ShanXi) DianZi XinYe ShiDai 과학기술 유한공사 8YingCun GaoXing NengTe SeGong Yi 반도체 XinPian 생산라인 프로젝트 8CunD-PolyLuGuan 장비 구매 낙찰 결과 공고 (1)",
+      "originalTitle": "陕西电子芯业时代科技有限公司8英寸高性能特色工艺半导体芯片生产线项目8吋D-Poly炉管设备采购中标结果公告(1)",
+      "translatedSummary": "8CunD-POLYLuGuan 장비 , 반도체 XinPian",
+      "originalSummary": "8吋D-POLY炉管设备,半导体芯片",
+      "org": "산시성(ShanXi) DianZi XinYe ShiDai 과학기술 유한공사",
+      "originalOrg": "陕西电子芯业时代科技有限公司",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "산시성(ShanXi)",
+      "status": "진행중",
+      "dueDate": null,
+      "postedDate": "2026-08-31",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "8CunD-POLYLuGuan 장비 , 반도체 XinPian",
+      "attachments": [],
+      "url": "https://www.ebnew.com/businessShow/709728930.html",
+      "originalUrl": "https://www.ebnew.com/businessShow/709728930.html",
+      "source": "중국 비롄왕(EBNEW)",
+      "sourceCode": "EBNEW",
+      "sourceSiteUrl": "https://www.ebnew.com/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "낙찰·수주결과",
+      "projectNo": "1143-2640ZRGJ0055",
+      "firstSeenAt": "2026-09-01T00:53:52+00:00"
+    },
+    {
       "id": "ebnew709691798",
       "title": "반도체 장비 DiEr Pi 재입찰 정정·변경 공고 (1)",
       "translatedTitle": "반도체 장비 DiEr Pi 재입찰 정정·변경 공고 (1)",
@@ -1609,46 +1686,6 @@
       "noticeType": "정식입찰",
       "projectNo": "公",
       "firstSeenAt": "2026-08-24T22:16:29+00:00"
-    },
-    {
-      "id": "ebnew709541589",
-      "title": "JiCheng DianLu 첨단 패키징(Advanced Packaging) 장비 ChanYe Hua 프로젝트 KanCha SheJi 프로젝트 DaYi ChengQing GongGao Di1Ci",
-      "translatedTitle": "JiCheng DianLu 첨단 패키징(Advanced Packaging) 장비 ChanYe Hua 프로젝트 KanCha SheJi 프로젝트 DaYi ChengQing GongGao Di1Ci",
-      "originalTitle": "集成电路先进封装设备产业化项目勘察设计项目答疑澄清公告第1次",
-      "translatedSummary": "JiCheng DianLu",
-      "originalSummary": "集成电路",
-      "org": "Zhao",
-      "originalOrg": "招",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "허페이 NinDang QianWei DengLu ，“***”HaoNei RongQing DengLu HouCha Kan。",
-      "status": "진행중",
-      "dueDate": null,
-      "postedDate": "2026-08-17",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "JiCheng DianLu",
-      "attachments": [],
-      "url": "https://www.ebnew.com/businessShow/709541589.html",
-      "originalUrl": "https://www.ebnew.com/businessShow/709541589.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "정식입찰",
-      "projectNo": "公",
-      "firstSeenAt": "2026-08-17T22:20:22+00:00"
     },
     {
       "id": "ebnew709633705",
