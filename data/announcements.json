@@ -1,106 +1,6 @@
 {
-  "updatedAt": "2026-09-01T00:53:52+00:00",
+  "updatedAt": "2026-09-01T23:40:28+00:00",
   "items": [
-    {
-      "id": "kotra26EX017",
-      "title": "2026 대만 타이베이 반도체 전시회(Semicon Taiwan 2026)",
-      "org": "해외전시팀",
-      "country": "대만",
-      "countryCode": "TW",
-      "status": "마감임박",
-      "dueDate": "2026-07-10",
-      "postedDate": "2026-03-17",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "KOTRA와 한국산업지능화협회는 2026년 9월 2일 ~ 9월 4일 (3일간) 대만 TaiNEX에서 개최되는 ‘2026 타이베이 세미콘 반도체 전시회(SEMICON TAIWAN)’ 한국관 참가기업을 아래와 같이 모집하오니 관심 기업들의 많은 신청 바랍니다.",
-      "attachments": [
-        {
-          "name": "2. 붙임서류(2026년 개정).zip",
-          "url": "https://www.kotra.or.kr/kmodule/file/fileDown.do?storFileId=BM202603160000090126&fileSn=0"
-        }
-      ],
-      "url": "https://www.kotra.or.kr/subList/20000020753/subhome/bizAply/selectBizMntInfoDetail.do?dtlBizMntNo=26EX017&cpbizYn=N",
-      "source": "대한무역투자진흥공사",
-      "sourceCode": "KOTRA",
-      "sourceSiteUrl": "https://www.kotra.or.kr/",
-      "noticeType": "프로젝트 정보",
-      "eventPeriod": "2026-09-02 ~ 2026-09-04",
-      "firstSeenAt": "2026-07-09T09:18:45+09:00"
-    },
-    {
-      "id": "kotra26CN0J7",
-      "title": "(2026 세미콘 인디아 연계) 한-인도 반도체 파트너십 데이",
-      "org": "글로벌공급망사업팀,경제협력지원팀",
-      "country": "인도",
-      "countryCode": "IN",
-      "status": "진행중",
-      "dueDate": "2026-07-17",
-      "postedDate": "2026-06-29",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "ㅇ 일시/장소 : 2026.9.15(화)~9.19(토) / 인도 뉴델리 \n * 전시회 기간 : 9.17(목)~9.19(토)\nㅇ 프로그램 : 1) 인도 유망 바이어 초청 B2B 상담회, 인도 시장 진출전략 세미나 등\nㅇ 모집분야 : 반도체소부장, AIoT 및 응용 솔루션기업 등(10개사 내외)\nㅇ 참가비 : 무료 \n *항공, 숙박 등 출장비용 기업 자부담\nㅇ 지원사항 : 바이어 발굴 및 1:1 비즈니스 상담 지원(통역포함), 숙소-전시장 이동버스 제공, 전시회 입장 및 공식 오만찬 등\nㅇ 신청방법 : 무투24를 통한 온라인 신청\n * 참가신청서 양식 1부, 기업소개서 또는 카탈로그 1부 첨부하여, 웹사이트로 신청 필요\n * 신청양식 내 국가 및 무역관 정보 : '인도' > '뉴델리무역관' 으로 선택\nㅇ 상세일정 : 첨부 참고 (추천 일정으로, 개별 기업의 상황에 따라 조율 가능)\nㅇ 문의처 : KOTRA 글로벌공급망사업팀(heesoo5@kotra.or.kr/02-3460-3323)\n KOTRA 경제협력지원팀(kevinkim@kotra.or.kr/02-3460-7669)",
-      "attachments": [
-        {
-          "name": "2026 세미콘인디아 참가신청서.xlsx",
-          "url": "https://www.kotra.or.kr/kmodule/file/fileDown.do?storFileId=BM202606290000100697&fileSn=0"
-        }
-      ],
-      "url": "https://www.kotra.or.kr/subList/20000020753/subhome/bizAply/selectBizMntInfoDetail.do?dtlBizMntNo=26CN0J7&cpbizYn=N",
-      "source": "대한무역투자진흥공사",
-      "sourceCode": "KOTRA",
-      "sourceSiteUrl": "https://www.kotra.or.kr/",
-      "noticeType": "프로젝트 정보",
-      "eventPeriod": "2026-09-15 ~ 2026-09-19",
-      "firstSeenAt": "2026-06-18T23:53:10+00:00"
-    },
-    {
-      "id": "kotra26CN0GR",
-      "title": "(CSEAC 연계) 2026 우시  반도체 소·부·장 GP사업",
-      "org": "글로벌공급망사업팀",
-      "country": "중국",
-      "countryCode": "CN",
-      "status": "진행중",
-      "dueDate": "2026-07-30",
-      "postedDate": "2026-05-29",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "ㅇ 사업명 : 2026 우시 반도체 소·부·장 GP사업\nㅇ 일시/장소 : '26.8.31(월)-'26.9.2(수) / 우시태호국제박람중심\nㅇ 품목 : 반도체 장비 및 핵심부품·소재 전반\nㅇ 주요내용 : 제14회 반도체장비 및 핵심부품·소재 전시회(CSEAC)* 참가 및 참관기업 대상 1:1 상담 매칭 지원\nㅇ 규모 : 국내 8개사 내외\nㅇ 참고 : 통역 외 전시부스 등 기타 지원사항 없음\n * 전시회 참관에 필요한 현장 통역원만 제공함\n\nㅇ 참가기업 선정일정\n - (모집공고 및 접수) '26.5.29(금)~ '26.7.30(목)\n - (선정기업 발표 통보) '26.7.31(금) 예정\nㅇ 신청방법 : KOTRA 무역투자24 시스템 내 신청하기 클릭-> 신청\nㅇ 기타문의 : KOTRA 난징무역관 장려평 총감\n - 이메일 : jiangliping@kotra.or.kr\n - 위챗 : applejung",
-      "attachments": [
-        {
-          "name": "1. 2026 (우시) 반도체 소부장 GP사업 참가신청서_기업명.xlsx",
-          "url": "https://www.kotra.or.kr/kmodule/file/fileDown.do?storFileId=BM202605280000097839&fileSn=4"
-        },
-        {
-          "name": "2. 2026 (우시) 반도체 소부장 GP사업_ 출장자 정보 회신양식.xlsx",
-          "url": "https://www.kotra.or.kr/kmodule/file/fileDown.do?storFileId=BM202605280000097839&fileSn=5"
-        }
-      ],
-      "url": "https://www.kotra.or.kr/subList/20000020753/subhome/bizAply/selectBizMntInfoDetail.do?dtlBizMntNo=26CN0GR&cpbizYn=N",
-      "source": "대한무역투자진흥공사",
-      "sourceCode": "KOTRA",
-      "sourceSiteUrl": "https://www.kotra.or.kr/",
-      "noticeType": "프로젝트 정보",
-      "eventPeriod": "2026-08-31 ~ 2026-09-02",
-      "firstSeenAt": "2026-06-18T23:53:10+00:00"
-    },
     {
       "id": "mofcomff8080819e429056019f845e58591809",
       "title": "BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트 - 국제 입찰공고 (2)",
@@ -578,46 +478,6 @@
       "firstSeenAt": "2026-08-19T22:24:31+00:00"
     },
     {
-      "id": "ebnew709690066",
-      "title": "충칭 XinLian WeiDian Zi 유한공사 QianDuan JingBei 세정 장비(Cleaning Equipment) 심사결과 공시 공고 (1)",
-      "translatedTitle": "충칭 XinLian WeiDian Zi 유한공사 QianDuan JingBei 세정 장비(Cleaning Equipment) 심사결과 공시 공고 (1)",
-      "originalTitle": "重庆芯联微电子有限公司前段晶背清洗设备评标结果公示公告(1)",
-      "translatedSummary": "JingBei 세정 장비(Cleaning Equipment)",
-      "originalSummary": "晶背清洗设备",
-      "org": "충칭 XinLian WeiDian Zi 유한공사",
-      "originalOrg": "重庆芯联微电子有限公司",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "충칭",
-      "status": "진행중",
-      "dueDate": "2026-08-31",
-      "postedDate": "2026-08-28",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "JingBei 세정 장비(Cleaning Equipment)",
-      "attachments": [],
-      "url": "https://www.ebnew.com/businessShow/709690066.html",
-      "originalUrl": "https://www.ebnew.com/businessShow/709690066.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "낙찰·수주결과",
-      "projectNo": "0613-264025124055",
-      "firstSeenAt": "2026-08-29T03:31:05+00:00"
-    },
-    {
       "id": "ebnew709693561",
       "title": "TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트 심사결과 공시 공고 (1)",
       "translatedTitle": "TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트 심사결과 공시 공고 (1)",
@@ -697,6 +557,48 @@
       "noticeType": "낙찰·수주결과",
       "projectNo": "4197-234BOECY0001/203",
       "firstSeenAt": "2026-09-01T00:53:52+00:00"
+    },
+    {
+      "id": "cid5659",
+      "title": "[사전규격공개] 신뢰성 시험 체계 구축용 U사 GaN 통신 소자 구매",
+      "org": "한국나노기술원",
+      "country": "국내",
+      "countryCode": "KR",
+      "status": "진행중",
+      "dueDate": "2026-09-06",
+      "postedDate": "2026-09-01",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": null,
+      "contractMethod": "전자입찰(총액), 소액수의-2인이상 견적제출(낙찰하한율 88%)",
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고유형: 사전규격 · 공고번호: 제2026-35호 · 계약방법: 전자입찰(총액), 소액수의-2인이상 견적제출(낙찰하한율 88%)",
+      "attachments": [
+        {
+          "name": "사전규격공개_신뢰성 시험 체계 구축용 U사 GaN 통신 소자 (100EA) 구매.pdf",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5659&filename=5659_202609011113421890.pdf"
+        },
+        {
+          "name": "CHK8101-SYC_물품상세규격서.pdf",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5659&filename=5659_202609011113422051.pdf"
+        },
+        {
+          "name": "참가자격제한사유서(CHK8101-SYC).pdf",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5659&filename=5659_202609011113422212.pdf"
+        },
+        {
+          "name": "(양식) 사전규격공개 의견서.hwp",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5659&filename=5659_202609011113422213.hwp"
+        }
+      ],
+      "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5659&hcid=38",
+      "source": "한국나노기술원",
+      "sourceCode": "KANC",
+      "noticeType": "사전규격",
+      "firstSeenAt": "2026-09-01T23:40:28+00:00"
     },
     {
       "id": "nttidB000000006124Jl2qZ4",
@@ -877,6 +779,64 @@
       "noticeType": "정식입찰",
       "projectNo": "4197-244BOECQ0001/125",
       "firstSeenAt": "2026-08-19T22:24:31+00:00"
+    },
+    {
+      "id": "nttidB000000006134Br2lZ6",
+      "title": "입찰공고(제2026–060호) 200mm 클러스터 ALD 장비 외 11종 유틸리티 연결 공사",
+      "org": "나노종합기술원",
+      "country": "국내",
+      "countryCode": "KR",
+      "status": "진행중",
+      "dueDate": "2026-09-10",
+      "postedDate": "2026-09-01",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": null,
+      "contractMethod": "제한경쟁입찰 ( 실적제한 )",
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고유형: 정식입찰 · 공고번호: 제2026–060호 · 계약방법: 제한경쟁입찰 ( 실적제한 )",
+      "attachments": [
+        {
+          "name": "1. 입찰공고서_200mm 유틸리티.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007356Xx3/0/FileDown.do"
+        },
+        {
+          "name": "1. 입찰공고서_200mm 유틸리티.pdf",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007356Xx3/1/FileDown.do"
+        },
+        {
+          "name": "2. 계약유의서.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007356Xx3/2/FileDown.do"
+        },
+        {
+          "name": "3. 공사원가계산서.pdf",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007356Xx3/3/FileDown.do"
+        },
+        {
+          "name": "4. 시방서.xls [1,522 KB]",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007356Xx3/4/FileDown.do"
+        },
+        {
+          "name": "5. 공내역서.xls",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007356Xx3/5/FileDown.do"
+        },
+        {
+          "name": "6. 제출서류서식.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007356Xx3/6/FileDown.do"
+        },
+        {
+          "name": "7. 안전보건관리계획서 작성 안내_적격심사대상자 제출.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007356Xx3/7/FileDown.do"
+        }
+      ],
+      "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006134Br2lZ6",
+      "source": "나노종합기술원",
+      "sourceCode": "NNFC",
+      "noticeType": "정식입찰",
+      "firstSeenAt": "2026-09-01T23:40:28+00:00"
     },
     {
       "id": "ebnew709582888",
@@ -1242,46 +1202,6 @@
       "firstSeenAt": "2026-08-29T03:31:05+00:00"
     },
     {
-      "id": "ebnew709649881",
-      "title": "TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트 국제입찰 정정·변경 공고 (2)",
-      "translatedTitle": "TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트 국제입찰 정정·변경 공고 (2)",
-      "originalTitle": "TCL华星第8.6代印刷OLED生产线一期项目国际招标澄清或变更公告(2)",
-      "translatedSummary": "DuiZhan Ji",
-      "originalSummary": "堆栈机",
-      "org": "광저우 화싱광전 YinShua 디스플레이 기술 유한공사",
-      "originalOrg": "广州华星光电印刷显示技术有限公司",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "광둥성 GouMai BiaoShu",
-      "status": "진행중",
-      "dueDate": "2026-09-22",
-      "postedDate": "2026-08-25",
-      "keywords": [
-        "디스플레이 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "DuiZhan Ji",
-      "attachments": [],
-      "url": "https://www.ebnew.com/businessShow/709649881.html",
-      "originalUrl": "https://www.ebnew.com/businessShow/709649881.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "정식입찰",
-      "projectNo": "4197-2640CSOTGZT8/111",
-      "firstSeenAt": "2026-08-25T22:15:56+00:00"
-    },
-    {
       "id": "cid5654",
       "title": "[공고 제2026-34호] 입자충격잡음검출시험기 1식 구매 입찰 공고(내자)",
       "org": "한국나노기술원",
@@ -1526,6 +1446,46 @@
       "noticeType": "수출상담회",
       "eventPeriod": "2026-01-01 ~ 2026-12-31",
       "firstSeenAt": "2026-06-18T23:53:10+00:00"
+    },
+    {
+      "id": "ebnew709735431",
+      "title": "충칭 XinLian WeiDian Zi 유한공사 QianDuan JingBei 세정 장비(Cleaning Equipment) 낙찰 결과 공고 (1)",
+      "translatedTitle": "충칭 XinLian WeiDian Zi 유한공사 QianDuan JingBei 세정 장비(Cleaning Equipment) 낙찰 결과 공고 (1)",
+      "originalTitle": "重庆芯联微电子有限公司前段晶背清洗设备中标结果公告(1)",
+      "translatedSummary": "JingBei 세정 장비(Cleaning Equipment)",
+      "originalSummary": "晶背清洗设备",
+      "org": "충칭 XinLian WeiDian Zi 유한공사",
+      "originalOrg": "重庆芯联微电子有限公司",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "충칭",
+      "status": "진행중",
+      "dueDate": null,
+      "postedDate": "2026-09-01",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "JingBei 세정 장비(Cleaning Equipment)",
+      "attachments": [],
+      "url": "https://www.ebnew.com/businessShow/709735431.html",
+      "originalUrl": "https://www.ebnew.com/businessShow/709735431.html",
+      "source": "중국 비롄왕(EBNEW)",
+      "sourceCode": "EBNEW",
+      "sourceSiteUrl": "https://www.ebnew.com/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "낙찰·수주결과",
+      "projectNo": "0613-264025124055",
+      "firstSeenAt": "2026-09-01T23:40:28+00:00"
     },
     {
       "id": "ebnew709728930",
