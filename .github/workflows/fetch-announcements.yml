@@ -23,6 +23,21 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # JETRO 영문 제목 번역용 en→ko 모델(약 130MB)을 캐시해 매 실행마다
+      # 다시 받지 않는다. 모델 파일은 저장소에 커밋하지 않는다.
+      # 캐시가 없거나 복원에 실패해도 아래 설치 스크립트가 조용히 처리하고,
+      # 그마저 실패하면 수집기가 기존 용어집 방식으로 폴백한다.
+      - name: Restore Argos en→ko model cache
+        id: argos-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/argos-translate/packages
+          key: argos-en-ko-v1
+
+      - name: Ensure Argos en→ko model
+        continue-on-error: true
+        run: python scripts/install_translation_model.py
+
       - name: Snapshot previous data (신규 공고 판별용)
         run: cp data/announcements.json data/announcements.before.json
 

@@ -40,7 +40,7 @@ import urllib.request
 from datetime import datetime, timedelta
 
 from .common import TGV_STRONG_TERMS
-from . import en_translate
+from . import en_ko_argos, en_translate
 
 SOURCE_NAME = "JETRO (일본)"
 SOURCE_CODE = "JETRO"
@@ -287,7 +287,9 @@ def build_item(row, detail_fields, detail_url):
     original_org = normalize(html_lib.unescape(
         detail_fields.get("procurement entity") or row.get("agency") or ""))
 
-    ko_title, title_ok = en_translate.translate_title(original_title)
+    # 제목은 Argos(en→ko 직접 모델) + 전문용어 보호 방식으로 옮기고, 검증에
+    # 실패하거나 Argos를 쓸 수 없는 환경이면 기존 용어집 결과로 자동 폴백한다.
+    ko_title, title_ok, _info = en_ko_argos.translate_title(original_title)
     ko_org, _ = en_translate.translate_org(original_org)
 
     summary = detail_fields.get("summay of notice") or detail_fields.get("summary of notice") or ""
