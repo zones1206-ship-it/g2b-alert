@@ -78,8 +78,10 @@
 KOTRA는 연속 실패 3회에 도달해 **장애 알림 1회 발송**(정책대로).
 
 **확인된 것**
-- DGIST의 `ConnectionResetError` 복구는 No.011에서 고친 `NETWORK_EXCEPTIONS`가
-  실제 운영에서 동작한 사례다. 이전 코드였다면 이 예외를 잡지 못해 장애로 빠졌다.
+- DGIST의 `Connection reset by peer`는 `<urlopen error ...>` 형태, 즉 urllib이
+  `URLError`로 감싸서 올린 것이라 No.011 이전 코드도 잡을 수 있었다. 이 건은
+  기존에도 정상 처리되던 경우다.
+  (No.011 수정이 실제로 필요한 것은 KOTRA 쪽이다 — 4회차 기록 참조.)
 - KAIST는 재시도를 다 쓰고 실패했는데, 0건으로 조용히 넘어가지 않고 "장애"로
   기록하고 기존 1건을 유지했다. 정상 0건과 장애를 구분하는 로직이 맞게 동작한다.
 
@@ -155,3 +157,20 @@ TCP 연결 자체가 거부됐고(0%), 실행 2의 러너에서는 `RemoteDiscon
 **데이터**: 67건 → 67건, 장비 45건 → 45건. items 변경 0건.
 
 **Telegram**: 신규 0건, 장애/복구 알림 없음(KOTRA가 계속 정상이므로 보낼 것이 없다).
+
+**No.011 수정이 실제로 필요했던 지점 — 4회 실행으로 확인**
+
+두 예외는 로그 형태부터 다르고, 그 차이가 곧 No.011에서 고친 부분이다.
+
+| 출처 | 로그에 찍힌 형태 | 정체 | 구 코드(`except (URLError, TimeoutError)`)로 잡혔나 |
+|---|---|---|---|
+| DGIST | `<urlopen error [Errno 104] Connection reset by peer>` | urllib이 `URLError`로 감싼 것 | **잡혔다** — 원래도 정상 처리 |
+| KOTRA | `Remote end closed connection without response` | `http.client.RemoteDisconnected` 그대로 | **못 잡았다** |
+
+`RemoteDisconnected`는 `ConnectionResetError → OSError` 계열이라 `URLError`의
+하위 클래스가 아니다. 그래서 구 코드에서는 재시도 로직에 도달하지도 못하고
+그대로 터졌다. 실행 2와 실행 4에서 KOTRA가 이 예외를 각각 4회·2회 만나고도
+재시도로 정상 수집한 것이 No.011 수정의 실제 효과다.
+
+DGIST는 4회 실행 **전부** 첫 요청에서 연결이 끊기고 재시도 1회로 성공했다.
+서버 쪽의 일관된 동작으로 보이며, 재시도가 흡수하고 있어 조치할 것은 없다.
