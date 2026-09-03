@@ -29,9 +29,14 @@
 > cipher 수준을 낮춰(`DEFAULT@SECLEVEL=1`) 연결한다 — 인증서 검증은 그대로
 > 유지하며, 로그인/CAPTCHA 등 접근 제한을 우회하는 것이 아니다.
 
-> KOTRA는 로컬에서는 정상 응답하지만 GitHub Actions 러너에서는 timeout이
-> 반복 관측된다(지수 백오프 재시도 적용 후에도 발생). 실패 시에는 이전에
-> 수집된 데이터를 유지하고, 아래 Health Check로 실패 사실을 노출한다.
+> KOTRA는 로컬에서는 0.4초에 정상 응답하지만 **GitHub Actions 러너에서는
+> TCP 443 연결 자체가 차단된다.** 러너에서 직접 진단한 결과: DNS는 정상
+> 해석되나 TCP 연결 실패, `curl`은 `http=000`, User-Agent/Accept/Referer/
+> XHR/GET 등 5가지 요청 조합이 모두 timeout, 비-AJAX 공개 HTML 페이지도
+> 동일하게 실패했다. 애플리케이션 레벨(헤더·요청 방식) 문제가 아니라
+> Actions(Azure) IP 대역 차단으로 판단되며, 차단 우회는 하지 않는다.
+> 따라서 Actions 실행분에서는 KOTRA가 계속 실패하고, 이전에 수집된
+> 데이터를 유지한 채 아래 Health Check로 실패 사실을 노출한다.
 
 KIMM/KITECH/KETI/EBIZ4U는 추가 예정 (구조 분석 후 실제 수집 코드가
 검증된 것만 `COLLECTORS`에 등록한다 — UI에 이름만 먼저 올리지 않는다).
@@ -340,8 +345,9 @@ python -m http.server 8080
 
 ## 아직 안 된 것 / 알려진 한계
 
-- **KOTRA 수집이 GitHub Actions에서 실패한다** — 로컬에서는 정상 응답한다.
-  실패 시 이전 데이터를 유지하고 Health Check 경고로 표시된다.
+- **KOTRA 수집이 GitHub Actions에서 실패한다** — Actions(Azure) IP 대역에서
+  TCP 연결이 차단되는 것으로 확인됐다(위 수집 출처 항목 참고). 로컬 실행은
+  정상이며, 실패 시 이전 데이터를 유지하고 Health Check 경고로 표시된다.
 - **중국어 번역 품질** — 번역 API가 연결돼 있지 않아 용어집 치환 + 로마자
   폴백이라, 상당수 공고가 `translationIncomplete`로 표시된다. 원문 제목과
   원문 링크는 항상 보존된다.
