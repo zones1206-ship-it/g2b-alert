@@ -16,6 +16,10 @@ jobs:
           python-version: "3.12"
       - name: KOTRA 계층별 진단 (Python)
         run: python scripts/diagnose_kotra.py --actions
+      - name: KOTRA 요청 성공률 측정
+        continue-on-error: true
+        run: python scripts/diagnose_kotra_rate.py --actions
+
       - name: curl 상세 타이밍 (계층 확인 보강)
         continue-on-error: true
         run: |
