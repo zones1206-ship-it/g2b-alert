@@ -1,8 +1,7 @@
 name: New Source Reachability Check (temporary)
 
-# 신규 수집원 후보 6곳이 GitHub Actions 러너에서 실제로 접근 가능한지
-# 확인하기 위한 임시 워크플로. KOTRA처럼 로컬에서는 되고 Actions에서는
-# 차단되는 경우를 수집기 구현 전에 걸러내기 위함. 확인 후 삭제한다.
+# 1차 확인에서 나온 실패 3건(JETRO 403 / MIMOS 인증서 / DGIST·KAIST 연결)의
+# 실제 원인을 좁히기 위한 2차 진단. 확인 후 삭제한다.
 on:
   workflow_dispatch:
 
@@ -16,34 +15,69 @@ jobs:
       - name: Runner egress IP
         run: curl -s --max-time 20 https://api.ipify.org || echo "(IP 확인 실패)"
 
-      - name: Reachability matrix
+      - name: Detailed diagnosis
         run: |
           python - <<'PY'
-          import time, urllib.request, urllib.error
+          import ssl, time, urllib.request, urllib.error
 
-          UA = "Mozilla/5.0 (compatible; g2b-alert-bot/1.0)"
-          TARGETS = [
-            ("JETRO 목록 JSON", "https://www.jetro.go.jp/view_interface.php?blockId=27911119&keyword=semiconductor&deadline=00"),
-            ("JETRO 상세", "https://www.jetro.go.jp/en/database/procurement/national/articles/402008/2026090200110001.html"),
-            ("ITRI 홈", "https://www.itri.org.tw/english/"),
-            ("대만 정부전자조달망", "https://web.pcc.gov.tw/prkms/tender/common/basic/readTenderBasic"),
-            ("MIMOS 홈", "https://www.mimos.my/"),
-            ("GeBIZ 홈", "https://www.gebiz.gov.sg/"),
-            ("GeBIZ 공고목록", "https://www.gebiz.gov.sg/ptn/opportunity/BOListing.xhtml"),
-            ("DGIST 홈", "https://www.dgist.ac.kr/"),
-            ("KAIST 홈", "https://www.kaist.ac.kr/"),
-          ]
+          BOT = "Mozilla/5.0 (compatible; g2b-alert-bot/1.0)"
+          BROWSER = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                     "(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
+          JETRO_API = "https://www.jetro.go.jp/view_interface.php?blockId=27911119&keyword=semiconductor&deadline=00"
 
-          for name, url in TARGETS:
+          def probe(name, url, headers=None, ctx=None, timeout=30):
               start = time.time()
               try:
-                  req = urllib.request.Request(url, headers={"User-Agent": UA})
-                  with urllib.request.urlopen(req, timeout=30) as res:
+                  req = urllib.request.Request(url, headers=headers or {"User-Agent": BOT})
+                  with urllib.request.urlopen(req, timeout=timeout, context=ctx) as res:
                       body = res.read()
                   print(f"[OK]   {name}: HTTP {res.status}, {len(body)} bytes, {time.time()-start:.1f}s")
+                  return True
               except urllib.error.HTTPError as e:
                   print(f"[HTTP] {name}: HTTP {e.code}, {time.time()-start:.1f}s")
               except Exception as e:
-                  print(f"[FAIL] {name}: {type(e).__name__} {str(e)[:90]}, {time.time()-start:.1f}s")
-              time.sleep(1)
+                  print(f"[FAIL] {name}: {type(e).__name__} {str(e)[:95]}, {time.time()-start:.1f}s")
+              return False
+
+          print("=== JETRO 403 원인 좁히기 ===")
+          probe("JETRO API + bot UA", JETRO_API)
+          probe("JETRO API + 브라우저 UA", JETRO_API, {"User-Agent": BROWSER})
+          probe("JETRO API + 브라우저 UA + Referer", JETRO_API, {
+              "User-Agent": BROWSER,
+              "Referer": "https://www.jetro.go.jp/en/database/procurement/national/list.html",
+              "Accept": "application/json, text/javascript, */*; q=0.01",
+              "X-Requested-With": "XMLHttpRequest",
+              "Accept-Language": "en-US,en;q=0.9"})
+
+          print()
+          print("=== MIMOS 인증서 문제 확인 ===")
+          probe("MIMOS 기본 검증", "https://www.mimos.my/")
+          try:
+              import certifi
+              ctx = ssl.create_default_context(cafile=certifi.where())
+              probe("MIMOS certifi 번들", "https://www.mimos.my/", ctx=ctx)
+          except ImportError:
+              print("(certifi 미설치 — pip install 후 재확인 필요)")
+
+          print()
+          print("=== DGIST / KAIST 재확인 (일시 오류인지 상시 차단인지) ===")
+          for i in (1, 2):
+              probe(f"DGIST 시도{i}", "https://www.dgist.ac.kr/", {"User-Agent": BROWSER}, timeout=25)
+              probe(f"KAIST 시도{i}", "https://www.kaist.ac.kr/", {"User-Agent": BROWSER}, timeout=25)
+              time.sleep(3)
+          PY
+
+      - name: Install certifi and retry MIMOS
+        run: |
+          pip install --quiet certifi
+          python - <<'PY'
+          import ssl, certifi, urllib.request, urllib.error, time
+          ctx = ssl.create_default_context(cafile=certifi.where())
+          start = time.time()
+          try:
+              req = urllib.request.Request("https://www.mimos.my/", headers={"User-Agent": "Mozilla/5.0"})
+              with urllib.request.urlopen(req, timeout=30, context=ctx) as res:
+                  print(f"[OK]   MIMOS + certifi: HTTP {res.status}, {len(res.read())} bytes, {time.time()-start:.1f}s")
+          except Exception as e:
+              print(f"[FAIL] MIMOS + certifi: {type(e).__name__} {str(e)[:95]}")
           PY
