@@ -1,8 +1,8 @@
 name: Diagnose KOTRA connectivity
 
 # 수동 실행 전용 진단 워크플로. 운영 수집/데이터에는 전혀 관여하지 않는다.
-# GitHub Actions 러너에서 KOTRA 공개 경로가 DNS/TCP/TLS/HTTP 중 어디서
-# 끊기는지 확인하려고 만들었다(로컬 결과와 1:1 비교용).
+# 러너마다 외부 IP가 달라지므로, IP를 먼저 찍고 같은 요청의 성공률을 잰다
+# (IP에 따라 결과가 갈리는지 확인하기 위함).
 on:
   workflow_dispatch: {}
 
@@ -14,21 +14,23 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - name: KOTRA 계층별 진단 (Python)
-        run: python scripts/diagnose_kotra.py --actions
-      - name: KOTRA 요청 성공률 측정
-        continue-on-error: true
-        run: python scripts/diagnose_kotra_rate.py --actions
 
-      - name: curl 상세 타이밍 (계층 확인 보강)
+      - name: 러너 외부 IP
+        run: |
+          echo "runner_ip=$(curl -sS --max-time 15 https://api.ipify.org)"
+
+      - name: KOTRA 목록 요청 8회 (curl, 재시도 없음)
         continue-on-error: true
         run: |
-          for u in https://www.kotra.or.kr/index.do https://dream.kotra.or.kr/kotranews/index.do; do
-            echo "--- $u"
-            curl -sS -o /dev/null --max-time 20 \
-              -w 'http=%{http_code} dns=%{time_namelookup}s connect=%{time_connect}s tls=%{time_appconnect}s total=%{time_total}s size=%{size_download}\n' \
-              "$u" || echo "curl exit=$?"
+          ok=0
+          for i in $(seq 1 8); do
+            out=$(curl -sS -o /dev/null --max-time 20 -X POST               -H 'User-Agent: Mozilla/5.0 (compatible; g2b-alert-bot/1.0)'               -H 'Content-Type: application/x-www-form-urlencoded'               --data 'pageNo=1&pageNo2=1&pageNoA=1&pageSize=20&listCount=20&query=&collection=business_application&sch_biz_name=&schwrdVal=&sch_appl_yn=N&sch_nation_cd=Y&startCount=0'               -w 'http=%{http_code} connect=%{time_connect}s tls=%{time_appconnect}s total=%{time_total}s size=%{size_download}'               'https://www.kotra.or.kr/module/subhome/bizAply/selectBmBizRcritYListNewAjax.do' 2>&1) || true
+            echo "  $i/8 $out"
+            case "$out" in *"http=200"*) ok=$((ok+1));; esac
+            sleep 3
           done
-      - name: 러너 외부 IP 확인
+          echo "  => 성공 $ok/8"
+
+      - name: KOTRA 계층별 진단 (Python)
         continue-on-error: true
-        run: curl -sS --max-time 15 https://api.ipify.org || true
+        run: python scripts/diagnose_kotra.py --actions
