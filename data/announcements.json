@@ -1,13 +1,13 @@
 {
-  "updatedAt": "2026-09-03T14:44:02+00:00",
+  "updatedAt": "2026-09-03T15:28:06+00:00",
   "sourceHealth": {
     "KANC": {
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 11,
-      "lastRunAt": "2026-09-03T14:44:02+00:00",
-      "lastSuccessAt": "2026-09-03T14:44:02+00:00",
+      "lastRunAt": "2026-09-03T15:28:06+00:00",
+      "lastSuccessAt": "2026-09-03T15:28:06+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -16,8 +16,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 8,
-      "lastRunAt": "2026-09-03T14:44:02+00:00",
-      "lastSuccessAt": "2026-09-03T14:44:02+00:00",
+      "lastRunAt": "2026-09-03T15:28:06+00:00",
+      "lastSuccessAt": "2026-09-03T15:28:06+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -26,18 +26,18 @@
       "lastStatus": "오류",
       "lastError": "이 GitHub Actions 러너 IP에서 KOTRA(www.kotra.or.kr:443)에 TCP 연결이 되지 않습니다 — 러너 IP 대역 차단으로 보입니다.",
       "collectedThisRun": 0,
-      "lastRunAt": "2026-09-03T14:44:02+00:00",
+      "lastRunAt": "2026-09-03T15:28:06+00:00",
       "lastSuccessAt": "2026-09-03T13:35:31+00:00",
-      "consecutiveFailures": 2,
-      "failureAlertSent": false
+      "consecutiveFailures": 3,
+      "failureAlertSent": true
     },
     "EBNEW": {
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 20,
-      "lastRunAt": "2026-09-03T14:44:02+00:00",
-      "lastSuccessAt": "2026-09-03T14:44:02+00:00",
+      "lastRunAt": "2026-09-03T15:28:06+00:00",
+      "lastSuccessAt": "2026-09-03T15:28:06+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -46,8 +46,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 8,
-      "lastRunAt": "2026-09-03T14:44:02+00:00",
-      "lastSuccessAt": "2026-09-03T14:44:02+00:00",
+      "lastRunAt": "2026-09-03T15:28:06+00:00",
+      "lastSuccessAt": "2026-09-03T15:28:06+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -56,8 +56,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 3,
-      "lastRunAt": "2026-09-03T14:44:02+00:00",
-      "lastSuccessAt": "2026-09-03T14:44:02+00:00",
+      "lastRunAt": "2026-09-03T15:28:06+00:00",
+      "lastSuccessAt": "2026-09-03T15:28:06+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -66,8 +66,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 23,
-      "lastRunAt": "2026-09-03T14:44:02+00:00",
-      "lastSuccessAt": "2026-09-03T14:44:02+00:00",
+      "lastRunAt": "2026-09-03T15:28:06+00:00",
+      "lastSuccessAt": "2026-09-03T15:28:06+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -76,8 +76,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 1,
-      "lastRunAt": "2026-09-03T14:44:02+00:00",
-      "lastSuccessAt": "2026-09-03T14:44:02+00:00",
+      "lastRunAt": "2026-09-03T15:28:06+00:00",
+      "lastSuccessAt": "2026-09-03T15:28:06+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -86,19 +86,19 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 0,
-      "lastRunAt": "2026-09-03T14:44:02+00:00",
-      "lastSuccessAt": "2026-09-03T14:44:02+00:00",
+      "lastRunAt": "2026-09-03T15:28:06+00:00",
+      "lastSuccessAt": "2026-09-03T15:28:06+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
     "KAIST": {
-      "ok": true,
-      "lastStatus": "정상",
-      "lastError": null,
-      "collectedThisRun": 1,
-      "lastRunAt": "2026-09-03T14:44:02+00:00",
+      "ok": false,
+      "lastStatus": "오류",
+      "lastError": "KAIST 요청이 4회 실패했습니다: <urlopen error timed out>",
+      "collectedThisRun": 0,
+      "lastRunAt": "2026-09-03T15:28:06+00:00",
       "lastSuccessAt": "2026-09-03T14:44:02+00:00",
-      "consecutiveFailures": 0,
+      "consecutiveFailures": 1,
       "failureAlertSent": false
     }
   },
