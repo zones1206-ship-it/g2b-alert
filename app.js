@@ -24,6 +24,8 @@ const SOURCE_LINK_LABELS = {
   EBNEW: "비롄왕(EBNEW) 원문 보기",
   JETRO: "JETRO(일본 정부조달) 원문 보기",
   DGIST: "DGIST 원문 보기",
+  ITRI: "ITRI 採購資訊 원문 보기",
+  KAIST: "나라장터 공고 원문 보기",
 };
 
 const NOTICE_TYPE_LABELS = {

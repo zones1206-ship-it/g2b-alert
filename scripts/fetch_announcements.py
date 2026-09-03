@@ -18,6 +18,11 @@
 - collectors.dgist  : 대구경북과학기술원(DGIST) 입찰정보 게시판
                      (국내 공고라 번역 불필요. Actions에서 간헐적 연결
                       끊김이 있어 재시도로 커버한다)
+- collectors.itri   : ITRI(대만 산업기술연구원) 採購資訊 詢價案 목록
+                     (번체 중국어 — 수집기 내부 번체 용어집으로 한국어
+                      표기 후 남은 한자는 zh_translate 로마자 폴백)
+- collectors.kaist  : 한국과학기술원(KAIST) 입찰/구매 공고 게시판
+                     (상세가 나라장터 링크로 바로 연결돼 g2bBidNo를 함께 저장)
 
 (과거 나라장터(G2B) 오픈API 수집기가 있었으나, 전체 공고 대비 실제
 장비 구매 공고 비율이 낮고 502 오류·복잡한 필터링 문제로 제거했다.
@@ -52,7 +57,7 @@ for _stream in (sys.stdout, sys.stderr):
     if hasattr(_stream, "reconfigure"):
         _stream.reconfigure(encoding="utf-8", errors="replace")
 
-from collectors import kanc, nnfc, kotra, ebnew, mofcom, kriss, jetro, dgist
+from collectors import kanc, nnfc, kotra, ebnew, mofcom, kriss, jetro, dgist, itri, kaist
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "announcements.json")
 
@@ -65,6 +70,8 @@ COLLECTORS = [
     ("KRISS", kriss),
     ("JETRO", jetro),
     ("DGIST", dgist),
+    ("ITRI", itri),
+    ("KAIST", kaist),
 ]
 
 # 마감돼도 삭제하지 않고 계속 보여줄 출처 (영업 정보로서 가치가 있는 경우)

@@ -82,6 +82,8 @@ SOURCES = [
     {"code": "KRISS", "name": "한국표준과학연구원"},
     {"code": "JETRO", "name": "JETRO (일본)"},
     {"code": "DGIST", "name": "DGIST (한국)"},
+    {"code": "ITRI", "name": "ITRI (대만)"},
+    {"code": "KAIST", "name": "KAIST (한국)"},
 ]
 
 # 실제로 접근을 시도했으나 현재 수집이 불가능해 미구현 상태로 남겨둔

@@ -13,7 +13,7 @@
 
 ## 수집 출처
 
-현재 `scripts/fetch_announcements.py`의 `COLLECTORS`에 등록돼 실제로 도는 수집원은 6곳이다.
+현재 `scripts/fetch_announcements.py`의 `COLLECTORS`에 등록돼 실제로 도는 수집원은 10곳이다.
 
 | 출처 | sourceCode | 국가 | 방식 |
 |---|---|---|---|
@@ -23,6 +23,10 @@
 | 대한무역투자진흥공사 (KOTRA) | `KOTRA` | 해외(프로젝트 대상국 기준) | "사업신청" 목록 중 반도체/디스플레이/TGV 관련 프로젝트만 HTML 수집 |
 | 중국 비롄왕(必联网/EBNEW) | `EBNEW` | 중국(China Site) | 로그인 불필요, 실제 검색 API(POST) 확인 후 반도체/디스플레이/TGV 키워드로 수집. 용어집 기반 최선노력 한국어 번역, 원문 보존 |
 | 중국국제초표망 (MOFCOM) | `MOFCOM` | 중국(China Site) | `chinabidding.mofcom.gov.cn` 검색 API(POST). EBNEW의 번역/관련성 판정 로직 재사용 |
+| JETRO (일본) | `JETRO` | 일본 | 일본 정부조달 데이터베이스의 공개 JSON 목록 + 상세 HTML. AIST/RIKEN/NIMS/일본 대학 공고가 여기 모인다 |
+| DGIST (한국) | `DGIST` | 국내 | 입찰정보 게시판 HTML 수집 (상세는 버튼의 `data-key-no` 값으로 열림) |
+| ITRI (대만) | `ITRI` | 대만 | 採購資訊系統 詢價案 공개 목록 HTML. 번체 중국어라 수집기 내부 번체 용어집으로 한국어 표기 |
+| KAIST (한국) | `KAIST` | 국내 | 입찰/구매 공고 게시판 HTML. 상세가 나라장터로 바로 연결돼 `g2bBidNo`를 함께 저장 |
 
 > MOFCOM 서버는 OpenSSL 3.x의 기본 보안수준(SECLEVEL=2)이 요구하는 cipher를
 > 제공하지 않아 TLS handshake 자체가 실패한다. 이 수집기만 SSL 컨텍스트에서
@@ -37,6 +41,13 @@
 > Actions(Azure) IP 대역 차단으로 판단되며, 차단 우회는 하지 않는다.
 > 따라서 Actions 실행분에서는 KOTRA가 계속 실패하고, 이전에 수집된
 > 데이터를 유지한 채 아래 Health Check로 실패 사실을 노출한다.
+
+### 조사했으나 보류한 신규 후보 (2026-09 조사)
+
+| 후보 | 상태 | 이유 |
+|---|---|---|
+| GeBIZ (싱가포르) | 보류 | 로그인 없이 목록은 보이지만 JSF(ViewState) 앱이라 검색·페이징이 POST 부분요청으로만 동작하고, 컴포넌트 ID(`j_idt179` 등)가 배포마다 바뀌어 안정적인 수집이 어렵다. 실제로 검색 POST를 시도했으나 키워드가 적용되지 않았다(700건 그대로) |
+| MIMOS (말레이시아) | 보류 | 입찰 목록이 AJAX로 로드돼 공개 HTML에 없고, **Actions에서 TLS 인증서 체인 검증 실패**(서버가 중간 인증서를 보내지 않음, certifi로도 실패). 인증서 검증 비활성화는 하지 않는다 |
 
 KIMM/KITECH/KETI/EBIZ4U는 추가 예정 (구조 분석 후 실제 수집 코드가
 검증된 것만 `COLLECTORS`에 등록한다 — UI에 이름만 먼저 올리지 않는다).
