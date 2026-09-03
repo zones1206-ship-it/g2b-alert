@@ -55,6 +55,13 @@ jobs:
         # 장애처럼 보이는 문구가 300줄 넘게 섞인다.
         run: python -m unittest discover -s tests -b
 
+      # KOTRA 접속 성공 여부가 러너 IP에 따라 갈린다(docs/OPERATIONS.md 5절).
+      # 실패한 실행의 IP를 나중에 대조할 수 있게 남긴다. 진단용이므로 실패해도
+      # 수집을 막지 않는다.
+      - name: 러너 외부 IP 기록 (KOTRA 접속 통계용)
+        continue-on-error: true
+        run: echo "runner_ip=$(curl -sS --max-time 10 https://api.ipify.org || echo unknown)"
+
       - name: Snapshot previous data (신규 공고 판별용)
         run: cp data/announcements.json data/announcements.before.json
 
