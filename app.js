@@ -340,6 +340,26 @@ function renderCard(item, kw) {
     </details>`;
 }
 
+// 수집기가 분야를 하나도 확정하지 못한 공고(classificationStatus:
+// "미분류/검토 필요"). 분류 로직 자체는 건드리지 않고, 화면에서만 별도
+// 그룹으로 노출한다.
+const UNCLASSIFIED_LABEL = "기타 / 미분류";
+function isUnclassified(item) {
+  return !(item.keywords && item.keywords.length > 0);
+}
+
+// 분야 외 공통 필터(정보유형/신규/마감임박/지역). 분야 그룹과 미분류 그룹이
+// 같은 기준으로 걸러지도록 한 곳에 모아둔다.
+function passesCommonFilters(item) {
+  if (state.selectedNoticeTypes.size > 0 && !state.selectedNoticeTypes.has(item.noticeType)) return false;
+  if (state.showOnlyNew && !isNewItem(item)) return false;
+  if (state.dueSoonOnly) {
+    const d = item.dueDate ? daysUntil(item.dueDate) : null;
+    if (d === null || d < 0 || d > 7) return false;
+  }
+  return matchesRegion(item);
+}
+
 function computeNewCount() {
   // 신규 공고 바에 표시할 건수 — 현재 선택된 분야/정보유형 필터는 그대로
   // 반영하고(그래야 바를 눌렀을 때 실제로 보이는 건수와 일치한다),
@@ -348,12 +368,20 @@ function computeNewCount() {
   let count = 0;
   for (const kw of selectedList) {
     count += state.data.items.filter((item) =>
-      item.keywords.includes(kw) &&
+      (item.keywords || []).includes(kw) &&
       (state.selectedNoticeTypes.size === 0 || state.selectedNoticeTypes.has(item.noticeType)) &&
       matchesRegion(item) &&
       isNewItem(item)
     ).length;
   }
+  // 미분류 그룹도 목록에 함께 표시되므로, 바에 적힌 건수와 실제로 보이는
+  // 건수가 어긋나지 않게 여기서도 같이 센다.
+  count += state.data.items.filter((item) =>
+    isUnclassified(item) &&
+    (state.selectedNoticeTypes.size === 0 || state.selectedNoticeTypes.has(item.noticeType)) &&
+    matchesRegion(item) &&
+    isNewItem(item)
+  ).length;
   return count;
 }
 
@@ -381,14 +409,24 @@ function renderResults() {
 
   const groups = selectedList.map((kw) => {
     const items = state.data.items
-      .filter((item) => item.keywords.includes(kw))
-      .filter((item) => state.selectedNoticeTypes.size === 0 || state.selectedNoticeTypes.has(item.noticeType))
-      .filter((item) => !state.showOnlyNew || isNewItem(item))
-      .filter((item) => !state.dueSoonOnly || (item.dueDate && daysUntil(item.dueDate) >= 0 && daysUntil(item.dueDate) <= 7))
-      .filter((item) => matchesRegion(item))
+      .filter((item) => (item.keywords || []).includes(kw))
+      .filter(passesCommonFilters)
       .sort((a, b) => daysUntil(a.dueDate) - daysUntil(b.dueDate));
     return { kw, items };
   }).filter((g) => g.items.length > 0);
+
+  // 분야가 하나도 매칭되지 않은 공고(수집기가 "미분류/검토 필요"로 남긴 건)는
+  // 어떤 분야 그룹에도 속하지 못해 화면에서 통째로 사라졌었다. 별도 그룹으로
+  // 항상 마지막에 붙여, 모든 공고가 최소 한 번은 목록에 나오도록 한다.
+  // (분야 칩 선택과 무관하게 표시한다 — 애초에 분야로 걸러낼 수 없는 항목이라
+  //  분야 선택에 연동하면 다시 사라지기 때문이다.)
+  const unclassified = state.data.items
+    .filter(isUnclassified)
+    .filter(passesCommonFilters)
+    .sort((a, b) => daysUntil(a.dueDate) - daysUntil(b.dueDate));
+  if (unclassified.length > 0) {
+    groups.push({ kw: UNCLASSIFIED_LABEL, items: unclassified });
+  }
 
   const totalCount = groups.reduce((sum, g) => sum + g.items.length, 0);
   document.getElementById("totalCount").textContent = `총 ${totalCount}건`;

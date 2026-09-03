@@ -13,21 +13,32 @@
 
 ## 수집 출처
 
+현재 `scripts/fetch_announcements.py`의 `COLLECTORS`에 등록돼 실제로 도는 수집원은 6곳이다.
+
 | 출처 | sourceCode | 국가 | 방식 |
 |---|---|---|---|
 | 한국나노기술원 (KANC) | `KANC` | 국내 | 공개 입찰공고 게시판 HTML 수집 (공식 API/RSS 없음) |
 | 나노종합기술원 (NNFC) | `NNFC` | 국내 | 공개 입찰공고 게시판 HTML 수집 (공식 API/RSS 없음) |
+| 한국표준과학연구원 (KRISS) | `KRISS` | 국내 | 공개 입찰공고 게시판 HTML 수집. KANC와 같은 4단계 관련성 판정 로직 재사용 |
 | 대한무역투자진흥공사 (KOTRA) | `KOTRA` | 해외(프로젝트 대상국 기준) | "사업신청" 목록 중 반도체/디스플레이/TGV 관련 프로젝트만 HTML 수집 |
 | 중국 비롄왕(必联网/EBNEW) | `EBNEW` | 중국(China Site) | 로그인 불필요, 실제 검색 API(POST) 확인 후 반도체/디스플레이/TGV 키워드로 수집. 용어집 기반 최선노력 한국어 번역, 원문 보존 |
+| 중국국제초표망 (MOFCOM) | `MOFCOM` | 중국(China Site) | `chinabidding.mofcom.gov.cn` 검색 API(POST). EBNEW의 번역/관련성 판정 로직 재사용 |
+
+> MOFCOM 서버는 OpenSSL 3.x의 기본 보안수준(SECLEVEL=2)이 요구하는 cipher를
+> 제공하지 않아 TLS handshake 자체가 실패한다. 이 수집기만 SSL 컨텍스트에서
+> cipher 수준을 낮춰(`DEFAULT@SECLEVEL=1`) 연결한다 — 인증서 검증은 그대로
+> 유지하며, 로그인/CAPTCHA 등 접근 제한을 우회하는 것이 아니다.
+
+> KOTRA는 로컬에서는 정상 응답하지만 GitHub Actions 러너에서는 timeout이
+> 반복 관측된다(지수 백오프 재시도 적용 후에도 발생). 실패 시에는 이전에
+> 수집된 데이터를 유지하고, 아래 Health Check로 실패 사실을 노출한다.
 
 KIMM/KITECH/KETI/EBIZ4U는 추가 예정 (구조 분석 후 실제 수집 코드가
 검증된 것만 `COLLECTORS`에 등록한다 — UI에 이름만 먼저 올리지 않는다).
 
 KDIA(한국디스플레이산업협회)는 중국 디스플레이 비딩정보 출처로 검토했으나,
 조사 결과 월간 산업동향 리포트 게시판만 있고 입찰/비딩 게시판이 없어
-보류 중이다. 중국 국제입찰망(MOFCOM, chinabidding.mofcom.gov.cn)은
-접근 자체는 가능함을 확인했으나 실제 목록이 별도 AJAX로 로드되는 구조라
-아직 미구현이다. cebpubservice.cn(중국 입찰투찰 공공서비스 플랫폼)과
+보류 중이다. cebpubservice.cn(중국 입찰투찰 공공서비스 플랫폼)과
 chinabidding.com.cn(중국 구매·입찰망)은 알리바바 클라우드 WAF/CDN이
 자동화 요청을 명시적으로 차단하고, CXMT SRM 공급사 포털은 로그인이
 필요해 — 로그인/CAPTCHA/접근제한 우회를 하지 않는다는 원칙에 따라
@@ -40,36 +51,62 @@ chinabidding.com.cn(중국 구매·입찰망)은 알리바바 클라우드 WAF/C
 
 ```
 g2b-alert/
-├── index.html                          화면 (분야 선택 / 프로젝트 리스트)
+├── index.html                          화면 (홈/공고/통계/일정/설정 5탭 + 하단 네비)
 ├── style.css
-├── app.js                               필터링(분야/유형), D-day/국가/출처/유형 뱃지, localStorage 저장
-├── data/announcements.json              수집된 데이터 (Actions가 매일 갱신)
+├── app.js                               필터링(분야/유형/지역/신규), D-day·국가·출처·유형·번역미완료 뱃지,
+│                                        수집 실패 경고 표시, localStorage 저장
+├── data/announcements.json              수집된 데이터 + 수집원 상태(sourceHealth). Actions가 매일 갱신
+├── requirements.txt                     pypinyin (중국어 로마자 표기 폴백용)
+├── copy.md                              화면에 실제로 쓰이는 문구 정리 문서
 ├── scripts/
-│   ├── fetch_announcements.py           수집기를 실행하는 orchestrator (수집원이 하나뿐이어도 동일 구조 유지)
+│   ├── fetch_announcements.py           수집기를 실행하는 orchestrator + Health Check 기록
+│   ├── notify_telegram.py               신규 공고만 Telegram으로 발송 (Actions에서 별도 스텝으로 실행)
 │   └── collectors/
-│       ├── common.py                    공유 상수(카테고리, 출처 목록 등)
-│       └── kanc.py                      한국나노기술원 수집기
-└── .github/workflows/fetch-announcements.yml   매일 1회 자동 수집
+│       ├── common.py                    공유 상수(카테고리, 출처 목록, TGV 키워드 등)
+│       ├── kanc.py / nnfc.py / kriss.py   국내 기관 입찰공고 게시판 수집기
+│       ├── kotra.py                     KOTRA 사업신청 목록 수집기
+│       ├── ebnew.py / mofcom.py         중국 사이트 수집기 (China Site)
+│       └── zh_translate.py              용어집 기반 최선노력 중국어 번역
+├── security/cloudflare-worker/          접속 게이트(비밀번호) Worker 코드 + 배포 안내
+└── .github/workflows/
+    ├── fetch-announcements.yml          매일 1회 자동 수집 + Telegram 알림 + 데이터 커밋
+    ├── telegram-test.yml                Telegram 개인 알림 수동 테스트 (workflow_dispatch)
+    └── telegram-personal-chat-discovery.yml   개인 Chat ID 확인용 (workflow_dispatch)
 ```
 
-## 데이터 스키마
+## 데이터 구조
 
-각 공고/프로젝트 아이템은 아래 필드를 가진다 (수집원이 늘어나도 동일한 스키마 유지).
-**원문에서 확인되지 않는 값은 전부 `null`이며, 화면은 이를 "확인 필요"/
-"정보 없음"으로 표시할 뿐 임의로 값을 만들어내지 않는다.**
+`data/announcements.json`의 최상위는 아래 3개 키다.
 
 ```json
 {
-  "id": "출처 내 고유 ID",
-  "title": "공고명/프로젝트명",
+  "updatedAt": "마지막 수집 실행 시각 (ISO 8601)",
+  "sourceHealth": { "KANC": { "...": "수집원별 상태, 아래 Health Check 참고" } },
+  "items": [ { "...": "공고 1건" } ]
+}
+```
+
+각 공고 아이템의 필드다. **원문에서 확인되지 않는 값은 전부 `null`이며,
+화면은 이를 "확인 필요"/"정보 없음"으로 표시할 뿐 임의로 값을 만들어내지 않는다.**
+출처에 따라 채워지지 않는 필드가 있고(예: 중국 사이트만 번역 관련 필드를 가짐),
+프론트엔드는 없는 필드를 만나면 표시를 생략한다.
+
+```json
+{
+  "id": "출처 내 고유 ID (sourceCode 접두사 포함, 예: kriss123)",
+  "title": "공고명/프로젝트명 (중국 출처는 번역된 제목)",
   "org": "발주기관/수요기업",
   "country": "국내 | 중국 | ...",
   "countryCode": "KR | CN | ...",
-  "status": "진행중 (원문에서 확인 가능한 경우만)",
+  "region": "지역 또는 null",
+  "status": "진행중 등 원문에서 확인 가능한 경우만 (화면은 마감일이 지났으면 '마감'으로 표시)",
   "dueDate": "YYYY-MM-DD 또는 null (없으면 화면에 '마감일 확인 필요')",
   "postedDate": "YYYY-MM-DD 또는 null",
-  "keywords": ["반도체 장비", "..."],
+  "eventPeriod": "행사 기간 또는 null (KOTRA 등)",
+  "keywords": ["반도체 장비", "디스플레이 장비", "TGV 장비"],
+  "classificationStatus": "미분류/검토 필요 (분야를 확정하지 못한 경우만)",
   "budget": "예산 문자열 또는 null",
+  "currency": "통화 (외화는 임의 환산하지 않고 원래 통화 유지)",
   "contractMethod": "계약방식 또는 null",
   "deliveryCondition": "인도조건/납품장소 또는 null",
   "paymentCondition": "지급조건 또는 null",
@@ -77,11 +114,32 @@ g2b-alert/
   "description": "핵심 요약(원문 기반, 지어내지 않음) 또는 null",
   "attachments": [{ "name": "파일명", "url": "다운로드 URL" }],
   "url": "원문 공고 URL",
+  "originalUrl": "원문 URL(명시적 보관)",
   "source": "한국나노기술원 | ...",
-  "sourceCode": "KANC | ...",
-  "noticeType": "사전규격 | 정식입찰 | null"
+  "sourceCode": "KANC | NNFC | KRISS | KOTRA | EBNEW | MOFCOM",
+  "sourceSiteUrl": "출처 사이트 URL",
+  "sourceCountry": "출처 사이트의 국가 코드 (예: CN — 프로젝트 대상국과 다른 개념)",
+  "sourceType": "China Site 등",
+  "detectedLanguage": "zh-CN 등",
+  "noticeType": "사전규격 | 정식입찰 | 프로젝트 정보 | 공급사 모집 | 수출상담회 | 구매상담회 | 낙찰·수주결과 | null",
+  "projectNo": "공고번호 또는 null",
+  "g2bBidNo": "본문에 나라장터 공고번호가 있으면 추출 (KRISS 등)",
+  "firstSeenAt": "우리 시스템이 처음 발견한 시각 — NEW 배지(48시간)와 Telegram 발송 기준",
+  "translatedTitle": "번역 제목 (중국 출처)",
+  "originalTitle": "원문 제목 (항상 보존)",
+  "translatedSummary": "번역 요약",
+  "originalSummary": "원문 요약",
+  "originalOrg": "원문 발주기관명",
+  "translationIncomplete": "true면 번역이 불완전(로마자 폴백) — 화면에 '번역 미완료' 배지 표시"
 }
 ```
+
+### 분야가 확정되지 않은 공고
+
+수집기가 분야를 하나도 확정하지 못하면 `keywords`가 빈 배열이 되고
+`classificationStatus`에 `"미분류/검토 필요"`가 들어간다. 화면에서는 이런
+공고를 **"기타 / 미분류" 그룹**으로 목록 맨 아래에 따로 보여준다 —
+분야 그룹에만 의존하면 이 공고들이 화면에서 통째로 사라지기 때문이다.
 
 ## 1. GitHub Pages 활성화
 
@@ -92,14 +150,56 @@ g2b-alert/
 
 ## 2. GitHub Actions 자동 수집
 
-- `.github/workflows/fetch-announcements.yml`이 매일 07:00(KST)에 실행되어
+- `.github/workflows/fetch-announcements.yml`(워크플로 이름: **Fetch Project
+  Radar Announcements**)이 매일 07:00(KST)에 실행되어
   `scripts/fetch_announcements.py`(orchestrator)가 등록된 모든 수집기를
   실행하고 결과를 합쳐 `data/announcements.json`에 저장한다.
-- **수집기 하나가 실패해도 다른 수집기와 기존 데이터에 영향을 주지 않는다.**
-  실패한 수집원은 이번 실행분을 건너뛰고 이전에 저장된 해당 출처(`sourceCode`)의
-  데이터를 그대로 유지한다.
+- 실행 순서: 이전 데이터 스냅샷 → 수집 → Telegram 신규 알림 → 데이터 커밋.
 - 저장소 Actions 탭에서 `Run workflow`로 즉시 수동 실행도 가능하다 (workflow_dispatch).
-- 인증키나 secrets 설정이 필요 없다 (KANC는 공개 게시판이라 별도 키 발급 절차 없음).
+- 수집 자체에는 인증키가 필요 없다(전부 공개 게시판/공개 검색). Telegram
+  알림에만 Repository Secret이 필요하다(아래 참고).
+
+### 수집 실패 시 동작 (기존 데이터 유지)
+
+**수집기 하나가 실패해도 다른 수집기와 기존 데이터에 영향을 주지 않는다.**
+실패한 수집원은 이번 실행분을 건너뛰고, 이전에 저장된 해당 출처(`sourceCode`)의
+데이터를 그대로 유지한다. 이 방식은 일시적 장애로 데이터가 사라지는 것을
+막아주지만, **아무 표시가 없으면 낡은 데이터를 최신으로 오인하게 되므로**
+아래 Health Check로 실패 사실을 함께 남긴다.
+
+### 수집원 Health Check
+
+매 실행마다 수집원별 상태를 `data/announcements.json`의 `sourceHealth`에 기록한다.
+
+| 필드 | 의미 |
+|---|---|
+| `ok` | 이번 실행에서 새로 수집됐는지 |
+| `lastStatus` | `정상` / `오류` / `결과 없음(기존 유지)` |
+| `lastError` | 오류 요약(있는 경우) |
+| `collectedThisRun` | 이번 실행 수집 건수 |
+| `lastRunAt` | 이번 실행 시각 |
+| `lastSuccessAt` | 마지막으로 정상 수집된 시각 (실패해도 이전 값 유지) |
+| `consecutiveFailures` | 연속 실패 횟수 (성공하면 0) |
+
+- **Actions 로그**: 실패한 수집원은 `::warning::`으로 출력돼 실행 화면 상단
+  주석으로 뜬다. 워크플로 자체는 계속 성공으로 끝나되(다른 수집원까지 막지
+  않기 위해) 장애는 눈에 보이게 한다.
+- **화면**: 실패 중인 수집원이 있으면 헤더에 경고가 표시된다
+  (예: `⚠ 수집 실패 중: KOTRA(마지막 정상 수집 …) — 해당 출처는 이전에
+  수집된 공고가 그대로 표시됩니다.`). 전부 정상이면 아무것도 표시하지 않는다.
+
+### Telegram 알림 (실제 운영 중)
+
+- `scripts/notify_telegram.py`가 수집 직후 별도 스텝으로 실행돼, 이전 스냅샷과
+  비교해 **새로 추가된 공고만** 발송한다. "신규"의 기준은 공고 `id`가 이전
+  스냅샷에 없던 경우다(내용이 바뀐 기존 공고는 신규로 보지 않는다).
+- 1회 실행당 최대 20건까지만 보낸다(연동 첫날 등 대량 발송 방지).
+- Repository Secret `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`가 필요하며,
+  둘 중 하나라도 없으면 아무것도 보내지 않고 조용히 종료한다(파이프라인은
+  실패하지 않는다).
+- 이 스크립트는 검색/필터/UI 로직과 완전히 분리돼 있다.
+- 설정 화면의 "텔레그램으로 알림 받기" 버튼은 이미 연결돼 있다는 안내만
+  띄운다(구독 설정 UI가 아니라 안내용이다).
 
 ### KANC (한국나노기술원)
 
@@ -220,8 +320,13 @@ g2b-alert/
 1. `scripts/collectors/<이름>.py`에 `collect() -> list[dict]` 함수 구현
    (반환 스키마는 `scripts/collectors/common.py` 상단 docstring 참고)
 2. `scripts/fetch_announcements.py`의 `COLLECTORS` 리스트에 추가
-3. `app.js`의 `SOURCE_LINK_LABELS`에 `{ 코드: "OO 원문 보기" }` 한 줄 추가
-4. `index.html`의 "수집 출처" 칩 목록에 추가
+   (마감된 공고도 계속 보여줄 출처라면 `KEEP_EXPIRED_SOURCES`에도 추가)
+3. `scripts/collectors/common.py`의 `SOURCES` 목록에 추가
+4. `app.js`의 `SOURCE_LINK_LABELS`에 `{ 코드: "OO 원문 보기" }` 한 줄 추가
+   (없으면 `"{source} 원문 보기"`로 자동 처리되므로 필수는 아니다)
+5. `index.html`의 "수집 출처" 칩 목록과 개수 표기를 갱신
+
+Health Check(`sourceHealth`)는 `COLLECTORS`에 등록만 하면 자동으로 따라온다.
 
 ## 3. 로컬 미리보기
 
@@ -233,8 +338,16 @@ python -m http.server 8080
 # http://localhost:8080 접속
 ```
 
-## 다음 단계 (제외 범위)
+## 아직 안 된 것 / 알려진 한계
 
-- 텔레그램 봇 연동 ("텔레그램으로 알림 받기" 버튼은 현재 안내 문구만 표시)
-- KDIA/KOTRA 등 추가 수집원 (실제 공개 게시판이 확인되면 추가)
-- 낙찰 결과 정보(낙찰업체/낙찰금액/낙찰률) 수집
+- **KOTRA 수집이 GitHub Actions에서 실패한다** — 로컬에서는 정상 응답한다.
+  실패 시 이전 데이터를 유지하고 Health Check 경고로 표시된다.
+- **중국어 번역 품질** — 번역 API가 연결돼 있지 않아 용어집 치환 + 로마자
+  폴백이라, 상당수 공고가 `translationIncomplete`로 표시된다. 원문 제목과
+  원문 링크는 항상 보존된다.
+- **접속 게이트(Cloudflare Worker)** — 코드와 배포 안내는 있지만 실제 배포
+  여부는 이 저장소에서 확인할 수 없다. 미배포 상태에서 헤더의 "로그아웃"
+  링크는 아무 동작도 하지 않는 무해한 링크다.
+- **자동화 테스트 코드 없음.**
+- 추가 예정: KIMM/KITECH/KETI/EBIZ4U 수집원, 낙찰 결과 정보(낙찰업체/
+  낙찰금액/낙찰률) 수집.

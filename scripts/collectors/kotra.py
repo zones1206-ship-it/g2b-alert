@@ -65,11 +65,15 @@ LIST_ENDPOINTS = [
 
 PAGE_SIZE = 20
 MAX_LIST_PAGES = 6  # 리스트당 최대 120건까지 확인 (실측 총량 71~104건 커버)
-# GitHub Actions 러너에서 timeout/연결종료가 반복 관측돼(로컬에서는 0.4초에
-# 응답) 대기 시간을 늘리고 재시도를 1회 추가했다. 백오프는 지수(4/8/16초),
-# 총 시도 횟수는 아래 값으로 상한이 있어 무한 재시도는 발생하지 않는다.
-REQUEST_TIMEOUT = 30
-MAX_RETRY_ATTEMPTS = 4
+# GitHub Actions 러너에서는 KOTRA가 TCP 443 연결 자체를 거부한다(러너에서
+# 직접 진단: DNS는 27.101.224.93로 정상 해석되지만 TCP 연결 실패, curl은
+# http=000, User-Agent/Accept/Referer/XHR/GET 등 5가지 요청 조합 모두 timeout,
+# 비-AJAX 공개 HTML 페이지도 동일). 로컬에서는 0.4초에 정상 응답하므로
+# 애플리케이션 레벨 문제가 아니라 Actions(Azure) IP 대역 차단으로 판단된다.
+# 차단은 재시도로 뚫리지 않으므로, 매 실행마다 몇 분씩 대기만 하지 않도록
+# 타임아웃과 시도 횟수를 짧게 둔다. 차단이 풀리면 그대로 정상 수집된다.
+REQUEST_TIMEOUT = 15
+MAX_RETRY_ATTEMPTS = 2
 RETRY_DELAY_SECONDS = 4
 PAGE_DELAY_SECONDS = 2.0  # 짧은 간격 연속 요청 시 500 에러가 나는 것을 확인해 넉넉히 대기
 
