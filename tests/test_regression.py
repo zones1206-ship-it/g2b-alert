@@ -27,6 +27,7 @@ import urllib.request
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scripts"))
 
 from collectors import equipment_filter as EF                      # noqa: E402
+from collectors import zh_translate as ZT                          # noqa: E402
 from collectors import kanc, nnfc, ebnew, mofcom, kriss            # noqa: E402
 from collectors import jetro, dgist, itri, kaist, kotra            # noqa: E402
 from collectors.common import (FetchState, NETWORK_EXCEPTIONS,     # noqa: E402
@@ -610,6 +611,31 @@ class DataDriftTest(unittest.TestCase):
         self.assertEqual(
             self._check(self._sample(10, 6), self._sample(10, 6, keep_seen=False)), 1)
 
+    def test_id_mass_loss_is_blocked(self):
+        """CASE E — 건수는 비슷한데 ID가 전부 갈리면 전부 신규로 재발송된다."""
+        before = self._sample(20, 12)
+        after = self._sample(20, 12)
+        for n, i in enumerate(after["items"]):
+            i["id"] = "y%d" % n            # ID 체계가 통째로 바뀐 상황
+        self.assertEqual(self._check(before, after), 1)
+
+    def test_partial_id_turnover_still_passes(self):
+        """검색형 수집원은 결과가 절반쯤 바뀌는 날이 있다 — 막으면 안 된다."""
+        before = self._sample(20, 12)
+        after = self._sample(20, 12)
+        for i in after["items"][:8]:
+            i["id"] = i["id"] + "-new"
+        self.assertEqual(self._check(before, after), 0)
+
+    def test_small_dataset_is_not_over_policed(self):
+        """표본이 작을 때(10건 미만) 비율 검사로 정상 수집을 막지 않는다."""
+        self.assertEqual(self._check(self._sample(6, 4), self._sample(2, 1)), 0)
+
+    def test_ratio_rule_is_not_hardcoded_to_current_size(self):
+        """지금이 67건이라는 사실에 기대지 않는다 — 300건이어도 같게 동작한다."""
+        self.assertEqual(self._check(self._sample(300, 200), self._sample(280, 190)), 0)
+        self.assertEqual(self._check(self._sample(300, 200), self._sample(20, 10)), 1)
+
     def test_missing_before_still_checks_after(self):
         """최초 실행이라 이전 상태가 없어도 결과 자체는 검사한다."""
         missing = os.path.join(self.dir, "없음.json")
@@ -617,6 +643,145 @@ class DataDriftTest(unittest.TestCase):
         dead = self._sample(all_ok=False)
         dead["sourceHealth"]["NNFC"]["ok"] = False
         self.assertEqual(DRIFT.main(missing, self._write("a2.json", dead)), 1)
+
+
+class ResearchInstrumentTest(unittest.TestCase):
+    """G. 연구기관의 일반 계측장비 — 기관·부서명만으로 포함하지 않는다.
+
+    지시문 No.013 2·4번. "반도체 관련 부서가 산 연구장비"와 "반도체용
+    장비"는 다르다. 산업·공정 근거 없이 장비 신호만 있으면 제외한다.
+    """
+
+    def _classify(self, title, source="KRISS", description=None):
+        return EF.classify({"sourceCode": source, "title": title,
+                            "originalTitle": None, "description": description,
+                            "keywords": []})
+
+    # 산업·공정 근거 없는 연구·계측 장비 — 전부 제외되어야 한다.
+    GENERAL_INSTRUMENTS = [
+        ("KRISS 중적외선 레이저", "중적외선 레이저 시스템", "KRISS"),
+        ("열분석기", "동시열분석기(TGA/DSC) 1식 구매", "KRISS"),
+        ("가스분석기", "FTIR 적외선 가스 분광 분석기 1대", "KRISS"),
+        ("항법장치", "초고정밀 관성항법 시스템 구매", "DGIST"),
+        ("전원장치", "고전압 직류 전원공급장치 1식", "KAIST"),
+    ]
+
+    def test_general_research_instruments_are_excluded(self):
+        for label, title, source in self.GENERAL_INSTRUMENTS:
+            with self.subTest(rule=label):
+                verdict, reason = self._classify(title, source=source)
+                self.assertEqual(verdict, "제외",
+                                 f"{label}[{source}]: {title} → {verdict} ({reason})")
+
+    def test_kriss_mid_ir_laser_is_excluded(self):
+        """실제 운영 공고 그대로 — 검토 필요가 아니라 제외여야 한다."""
+        verdict, reason = self._classify("새글 중적외선 레이저 시스템")
+        self.assertEqual(verdict, "제외")
+        self.assertIn("일반 연구·계측 장비", reason)
+
+    # 같은 연구기관이 사더라도 반도체 공정·계측 근거가 있으면 장비다.
+    # 이 규칙 때문에 정상 장비가 빠지면 안 된다.
+    SEMICONDUCTOR_INSTRUMENTS = [
+        ("웨이퍼 계측", "반도체 웨이퍼 박막 두께 계측기 1식 구매", "KRISS"),
+        ("공정 분광", "식각 공정 모니터링용 플라즈마 발광분광 분석기", "KRISS"),
+        ("현미경", "8inch 웨이퍼 검사를 위한 레이저 공초점 현미경 1식", "JETRO"),
+        ("프로버", "반도체 검출기의 개발을 위한 반자동 프로버 1식", "JETRO"),
+        ("증착", "MOCVD 장비 1식 구매", "KANC"),
+        ("노광", "반도체 웨이퍼 노광장비 구매_260270", "KAIST"),
+    ]
+
+    def test_semiconductor_instruments_still_included(self):
+        for label, title, source in self.SEMICONDUCTOR_INSTRUMENTS:
+            with self.subTest(rule=label):
+                verdict, reason = self._classify(title, source=source)
+                self.assertEqual(verdict, "장비",
+                                 f"{label}[{source}]: {title} → {verdict} ({reason})")
+
+    def test_monitoring_is_not_mistaken_for_office_monitor(self):
+        """한글은 부분 문자열로 맞으므로 "모니터링"이 시설 신호 "모니터"에
+        걸리면 안 된다. 그래도 사무용 모니터 구매는 여전히 제외돼야 한다."""
+        verdict, _ = self._classify(
+            "반도체 식각 공정 실시간 모니터링 장비 1식", source="KANC")
+        self.assertEqual(verdict, "장비")
+        verdict, _ = self._classify("사무용 27인치 모니터 30대 구매", source="KANC")
+        self.assertEqual(verdict, "제외")
+
+    def test_industry_signal_may_come_from_description(self):
+        """제목에 없어도 본문에 산업 근거가 있으면 인정한다 — 과잉 제외 방지."""
+        verdict, _ = self._classify(
+            "레이저 공초점 현미경 1식", source="KRISS",
+            description="반도체 웨이퍼 표면 결함 검사에 사용한다.")
+        self.assertEqual(verdict, "장비")
+
+
+class ChineseGlossaryTest(unittest.TestCase):
+    """H. 중국어 용어집 — 반복 기술용어가 pinyin으로 남지 않는지.
+
+    지시문 No.013 5·6번. 번역 엔진은 그대로 두고, 실제 운영 제목에서
+    로마자로 남던 용어만 용어집으로 처리한다.
+    """
+
+    # (원문 조각, 결과에 있어야 할 한국어, 남으면 안 되는 pinyin)
+    CASES = [
+        ("技术改造", "기술", "JiShu"),
+        ("产线", "생산라인", "ChanXian"),
+        ("光电", "광전", "GuangDian"),
+        ("显示", "디스플레이", "XianShi"),
+        ("印刷OLED", "인쇄", "YinShua"),
+        ("高清", "고화질", "GaoQing"),
+        ("一期", "1기", "YiQi"),
+        ("板级封装", "패널레벨 패키징", "WeiBan"),
+    ]
+
+    def test_repeated_terms_are_translated(self):
+        for zh, ko, _pinyin in self.CASES:
+            with self.subTest(term=zh):
+                out = ZT._apply_glossary(zh)
+                self.assertIn(ko, out, f"{zh} → {out}")
+                self.assertNotIn(zh, out, f"{zh}가 그대로 남음: {out}")
+
+    def test_year_keeps_its_number(self):
+        """"2026年" 이 "년" 만 남거나 " 년 "으로 벌어지면 안 된다."""
+        self.assertIn("2026년", ZT._apply_glossary("2026年"))
+
+    def test_year_does_not_break_annual_output(self):
+        """年产(연간생산) 패턴이 연도 패턴에 먹히면 안 된다."""
+        self.assertIn("연산100만장", ZT._apply_glossary("年产100万片"))
+
+    def test_longer_terms_win(self):
+        """짧은 용어가 긴 용어 안을 갉아먹으면 안 된다."""
+        # 生产线(3자)이 产线(2자)보다 먼저 적용돼야 "生"이 남지 않는다.
+        out = ZT._apply_glossary("OLED生产线")
+        self.assertIn("생산라인", out)
+        self.assertNotIn("生", out)
+        # 面板级封装 / 显示技术 같은 기존 조합어도 그대로 유지된다.
+        self.assertIn("패널레벨패키징(PLP)", ZT._apply_glossary("面板级封装"))
+        self.assertIn("디스플레이 기술", ZT._apply_glossary("显示技术"))
+
+    def test_real_titles(self):
+        """실제 운영 공고 원문 — pinyin 잔여가 없어야 한다."""
+        cases = [
+            ("成都京东方光电2026年第4.5代TFT-LCD产线技术改造项目",
+             ["광전", "2026년", "생산라인", "기술", "개조"]),
+            ("第8.6代印刷OLED生产线一期项目",
+             ["제8.6세대", "인쇄", "생산라인", "1기"]),
+            ("苏州华星光电显示有限公司高清MINI LED COB产品技术改造项目",
+             ["화싱광전", "디스플레이", "고화질", "기술"]),
+        ]
+        for zh, expected in cases:
+            with self.subTest(title=zh[:20]):
+                out = ZT._apply_glossary(zh)
+                for e in expected:
+                    self.assertIn(e, out, f"{e} 없음 → {out}")
+
+    def test_company_names_are_not_invented(self):
+        """근거 없는 고유명사는 한국어로 창작하지 않는다(지시문 No.013 7번).
+
+        奕斯伟는 용어집에 없으므로 뜻을 지어내지 않고 그대로 남는다.
+        """
+        out = ZT._apply_glossary("奕斯伟板级封装")
+        self.assertIn("패널레벨 패키징", out)
+        self.assertIn("奕斯伟", out)
 
 
 if __name__ == "__main__":

@@ -564,8 +564,8 @@
       "noticeType": "정식입찰",
       "projectNo": "제26-01-038-01호",
       "g2bBidNo": "R26BK01690519-000",
-      "equipmentStatus": "검토 필요",
-      "equipmentReason": "장비(시스템)이지만 반도체/디스플레이/TGV 산업 신호를 확인하지 못함",
+      "equipmentStatus": "제외",
+      "equipmentReason": "장비(시스템)이지만 반도체/디스플레이/TGV 공정·산업 근거 없음 — 일반 연구·계측 장비",
       "industry": "반도체",
       "firstSeenAt": "2026-09-01T00:53:52+00:00"
     },

@@ -91,19 +91,31 @@ python -m unittest discover -s tests -v
 
 공고 몇 건의 증감이나 한 수집원의 일시적 장애는 정상 변동이라 통과시킨다.
 
-## 5. KOTRA — 알려진 IP 의존 장애
+## 5. KOTRA — 러너 IP에 따른 선택적·부분적 접속 차단
 
 **증상**: Actions에서만 `RemoteDisconnected` 또는 TCP 연결 거부가 난다.
 로컬에서는 정상이다.
 
-**원인**: KOTRA 쪽에서 일부 Azure(GitHub Actions) 러너 IP 대역을 막고 있다.
-러너 IP에 따라 결과가 갈린다 — 측정값:
+**정확한 성격**: "전면 차단"도 "차단 없음"도 아니다. **GitHub Actions 러너
+IP에 따라 선택적·부분적으로 차단**된다. 러너 IP에 따라 셋 중 하나가 된다.
 
-| 러너 IP | 목록 요청 성공률 |
-|---|---|
-| 13.83.107.129 | 83% |
-| 134.33.70.62 | 50% |
-| 20.59.242.3 | 0% (TCP 연결 자체 거부) |
+- **통과 IP** — 정상 수집된다.
+- **불안정 IP** — `RemoteDisconnected`가 자주 나지만 재시도로 회복된다.
+- **차단 IP** — TCP 443 단계에서 timeout이며 재시도로도 회복되지 않는다.
+
+측정값:
+
+| 러너 IP | 관측 | 결과 |
+|---|---|---|
+| 13.83.107.129 | No.010 진단 | 목록 요청 83% 성공 |
+| 134.33.70.62 | No.010 진단 | 목록 요청 50% 성공 |
+| 20.59.242.3 | No.010 진단 | 0% — TCP 연결 거부 |
+| 64.236.201.51 | No.012 야간 실행 3 | 0% — TCP 연결 거부 |
+| 64.236.140.169 | No.012 야간 실행 4 | 성공 (`RemoteDisconnected` 2회를 재시도로 흡수) |
+| 52.161.182.113 | No.012 야간 실행 5 | 성공 (`RemoteDisconnected` 3회를 재시도로 흡수) |
+
+야간 5회 반복 실행 기준 **3회 성공(60%)**. 하루 1회 배치에서는 가끔 하루치를
+건너뛰는 수준이다.
 
 **대응**: `kotra.py`의 `can_reach_kotra()`가 수집 시작 전에 TCP 443을 8초
 타임아웃 2회로 찔러본다. 막힌 러너면 재시도로 시간을 쓰지 않고 바로
@@ -203,6 +215,20 @@ Argos Translate 오프라인 모델(en→ko, zh→en)을 Actions에서 캐시해
 - 수집기에서 `except Exception:`을 쓰지 않는다. 파싱 오류나 코드 버그가
   네트워크 재시도로 숨는다. 네트워크 예외는 `common.py`의
   `NETWORK_EXCEPTIONS`를 쓴다.
+
+  이게 왜 필요한지는 로그 형태로 구분된다. `urllib`이 감싸 주는 예외는
+  `<urlopen error [Errno 104] Connection reset by peer>`처럼 찍히고 이것은
+  `URLError`라서 예전 `except (URLError, TimeoutError)`로도 잡혔다(DGIST가
+  매 실행 이 형태로 한 번 끊긴다 — 재시도가 흡수하므로 문제 없다).
+  반면 `Remote end closed connection without response`는 `http.client`가
+  올리는 `RemoteDisconnected`가 감싸지지 않고 그대로 나온 것이며,
+  `ConnectionResetError → OSError` 계열이라 `URLError`가 아니다. 예전
+  코드는 이걸 못 잡고 그대로 터졌다(KOTRA에서 실제로 발생했다).
+
+  **No.011이 한 일은 두 가지다** — ① 재시도 범위를 `URLError`로 감싸지지
+  않는 네트워크 예외(`RemoteDisconnected` 등)까지 넓힌 것, ② 그 예외 처리
+  규칙을 9개 수집기에 동일하게 표준화한 것. DGIST 쪽 `Connection reset`이
+  No.011 덕분에 해결된 것은 아니다.
 - 재시도는 최대 3~4회다. 403·404처럼 서버가 명확히 답한 오류는 재시도하지
   않고, 429·5xx만 재시도하며 `Retry-After`를 존중하되 30초로 자른다.
 

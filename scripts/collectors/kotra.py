@@ -407,7 +407,8 @@ def collect():
         # 않고 바로 장애로 알린다(기존 데이터는 orchestrator가 유지한다).
         raise RuntimeError(
             "이 GitHub Actions 러너 IP에서 KOTRA(www.kotra.or.kr:443)에 "
-            "TCP 연결이 되지 않습니다 — 러너 IP 대역 차단으로 보입니다.")
+            "TCP 연결이 되지 않습니다 — 러너 IP에 따른 선택적 차단으로 "
+            "보입니다(다른 러너에서는 정상 수집되는 실행이 있다).")
 
     items = []
     seen_ids = set()

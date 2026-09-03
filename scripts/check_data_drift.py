@@ -27,6 +27,19 @@ for _stream in (sys.stdout, sys.stderr):
         _stream.reconfigure(encoding="utf-8", errors="replace")
 
 
+# 판정 기준은 건수를 박아 두지 않는다 — 공고가 300건이 되든 20건이 되든
+# 그대로 동작해야 한다. 비율로 보되, 표본이 작을 때는 아예 보지 않는다.
+#
+# SMALL_DATASET_FLOOR: 이보다 적으면 비율 검사를 하지 않는다. 8건에서 3건이
+#   되는 것은 마감이 겹친 평범한 날에도 일어난다. 그런 날 수집을 막으면
+#   보호장치가 아니라 방해물이 된다.
+# ID_SURVIVAL_MIN: 기존 ID 중 최소 이만큼은 남아 있어야 한다. 검색형 수집원
+#   (KOTRA·EBNEW·MOFCOM)은 검색 결과가 크게 바뀌는 날이 있어 여유를 뒀다.
+#   목록을 통째로 잘못 읽은 경우(대개 0~10%만 생존)를 잡는 것이 목적이다.
+SMALL_DATASET_FLOOR = 10
+ID_SURVIVAL_MIN = 0.30
+
+
 def load(path):
     raw = io.open(path, encoding="utf-8").read()
     if not raw.strip():
@@ -66,16 +79,31 @@ def main(before_path, after_path):
         old_items = before["items"]
         print(f"[DRIFT] 이전 {len(old_items)}건 → 현재 {len(items)}건")
 
-        if old_items and len(items) * 2 < len(old_items):
+        if len(old_items) >= SMALL_DATASET_FLOOR and len(items) * 2 < len(old_items):
             problems.append(f"전체 건수가 {len(old_items)}건에서 {len(items)}건으로 "
                             f"절반 미만으로 줄었습니다")
+
+        # 건수는 유지되는데 **알맹이가 통째로 갈린** 경우를 잡는다. 수집기가
+        # 엉뚱한 목록을 읽어 오면 건수는 비슷한데 ID가 전부 바뀌고, 그러면
+        # 기존 공고 전부가 "신규"로 재발송된다. 건수 검사만으로는 못 잡는다.
+        old_ids = {i.get("id") for i in old_items if i.get("id")}
+        kept = old_ids & {i.get("id") for i in items}
+        if len(old_ids) >= SMALL_DATASET_FLOOR:
+            survival = len(kept) / len(old_ids)
+            print(f"[DRIFT] 기존 ID 유지 {len(kept)}/{len(old_ids)}건 "
+                  f"({survival * 100:.0f}%)")
+            if survival < ID_SURVIVAL_MIN:
+                problems.append(
+                    f"기존 공고 ID가 {len(old_ids)}건 중 {len(kept)}건만 남았습니다 "
+                    f"({survival * 100:.0f}%) — 목록을 잘못 읽었거나 ID 체계가 "
+                    f"바뀐 것으로 보이며, 남은 공고 전부가 신규로 재발송됩니다")
 
         def equip(rows):
             return sum(1 for i in rows if i.get("equipmentStatus") == "장비")
 
         old_eq, new_eq = equip(old_items), equip(items)
         print(f"[DRIFT] 장비 판정 {old_eq}건 → {new_eq}건")
-        if old_eq and new_eq * 2 < old_eq:
+        if old_eq >= SMALL_DATASET_FLOOR and new_eq * 2 < old_eq:
             problems.append(f"장비 판정이 {old_eq}건에서 {new_eq}건으로 "
                             f"절반 미만으로 줄었습니다")
 
