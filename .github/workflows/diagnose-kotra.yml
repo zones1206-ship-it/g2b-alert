@@ -1,0 +1,30 @@
+name: Diagnose KOTRA connectivity
+
+# 수동 실행 전용 진단 워크플로. 운영 수집/데이터에는 전혀 관여하지 않는다.
+# GitHub Actions 러너에서 KOTRA 공개 경로가 DNS/TCP/TLS/HTTP 중 어디서
+# 끊기는지 확인하려고 만들었다(로컬 결과와 1:1 비교용).
+on:
+  workflow_dispatch: {}
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: KOTRA 계층별 진단 (Python)
+        run: python scripts/diagnose_kotra.py --actions
+      - name: curl 상세 타이밍 (계층 확인 보강)
+        continue-on-error: true
+        run: |
+          for u in https://www.kotra.or.kr/index.do https://dream.kotra.or.kr/kotranews/index.do; do
+            echo "--- $u"
+            curl -sS -o /dev/null --max-time 20 \
+              -w 'http=%{http_code} dns=%{time_namelookup}s connect=%{time_connect}s tls=%{time_appconnect}s total=%{time_total}s size=%{size_download}\n' \
+              "$u" || echo "curl exit=$?"
+          done
+      - name: 러너 외부 IP 확인
+        continue-on-error: true
+        run: curl -sS --max-time 15 https://api.ipify.org || true
