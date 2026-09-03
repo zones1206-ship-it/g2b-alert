@@ -58,6 +58,8 @@ for _stream in (sys.stdout, sys.stderr):
         _stream.reconfigure(encoding="utf-8", errors="replace")
 
 from collectors import kanc, nnfc, kotra, ebnew, mofcom, kriss, jetro, dgist, itri, kaist
+from collectors import equipment_filter
+from collectors.common import normalize_text
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "announcements.json")
 
@@ -173,6 +175,21 @@ def sort_key(item):
     return (0, due)
 
 
+def announcement_signature(item):
+    """같은 공고인지 판단하는 지문. 사이트가 내부 id를 새로 부여해 재색인해도
+    (MOFCOM에서 실제로 발생) 같은 공고임을 알아보기 위한 것이다.
+    마감일·공고유형이 바뀌면 다른 지문이 되므로, 정정·변경·재공고 같은 실제
+    새 정보는 그대로 신규로 잡힌다."""
+    return (
+        item.get("sourceCode"),
+        normalize_text(item.get("originalTitle") or item.get("title") or ""),
+        normalize_text(item.get("originalOrg") or item.get("org") or ""),
+        item.get("postedDate"),
+        item.get("dueDate"),
+        item.get("noticeType"),
+    )
+
+
 def stamp_first_seen(all_items, existing_items):
     """각 공고에 firstSeenAt(우리 시스템이 실제로 처음 발견한 시각, ISO 8601)을
     부여한다. 공고 자체의 등록일/마감일과는 무관하다 — 이전 실행에서 같은
@@ -185,9 +202,18 @@ def stamp_first_seen(all_items, existing_items):
         for item in existing_items
         if item.get("id") and item.get("firstSeenAt")
     }
+    # id가 바뀌어도 같은 공고면 최초 발견 시각을 이어받는다 — 그러지 않으면
+    # 사이트 재색인만으로 NEW 배지가 다시 뜬다.
+    previous_by_signature = {
+        announcement_signature(item): item.get("firstSeenAt")
+        for item in existing_items
+        if item.get("firstSeenAt")
+    }
     now_iso = datetime.now().astimezone().isoformat(timespec="seconds")
     for item in all_items:
-        item["firstSeenAt"] = previous_first_seen.get(item.get("id")) or now_iso
+        item["firstSeenAt"] = (previous_first_seen.get(item.get("id"))
+                               or previous_by_signature.get(announcement_signature(item))
+                               or now_iso)
 
 
 def is_still_open(item):
@@ -212,6 +238,11 @@ def main():
         all_items.extend(run_collector(name, module, existing_items, log))
 
     all_items = [item for item in all_items if is_still_open(item)]
+    # 출처별 1차 필터를 통과한 뒤, 공통 기준으로 "실제 장비 공고인가"를 한 번 더
+    # 본다(equipmentStatus: 장비 / 검토 필요 / 제외). 데이터는 지우지 않고
+    # 상태만 남긴다 — 지우면 id가 사라져 나중에 다시 신규로 잡히기 때문이다.
+    for item in all_items:
+        equipment_filter.annotate(item)
     stamp_first_seen(all_items, existing_items)
     all_items.sort(key=sort_key)
 

@@ -85,6 +85,10 @@ g2b-alert/
 │       ├── zh_translate.py              용어집 기반 최선노력 중국어 번역(MOFCOM·발주처·요약)
 │       └── zh_ko_argos.py               EBNEW 제목 전용 C″ 번역(용어집 보호 → 필요한 구간만
 │                                        zh→en→ko → 검증 → 실패 시 zh_translate 결과 유지)
+│       └── equipment_filter.py         전 출처 공통 "실제 장비 공고인가" 최종 판정
+│                                        (산업 신호 + 장비 신호를 모두 요구.
+│                                         장비 / 검토 필요 / 제외로 표시하고
+│                                         제외·검토 필요는 Telegram에서 뺀다)
 ├── security/cloudflare-worker/          접속 게이트(비밀번호) Worker 코드 + 배포 안내
 └── .github/workflows/
     ├── fetch-announcements.yml          매일 1회 자동 수집 + Telegram 알림 + 데이터 커밋

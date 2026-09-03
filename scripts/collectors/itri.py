@@ -76,15 +76,43 @@ TW_TERMS = {
     "及": " 및 ", "與": " 및 ", "之": " ",
 }
 
-# 관련성: 아래 신호가 있어야 포함(번체/영문 모두 확인)
+# 관련성 판정은 두 조건을 **모두** 요구한다(지시문 No.007).
+#   조건 A 산업 신호 : 반도체/디스플레이/TGV 관련인가
+#   조건 B 장비 신호 : 실제로 장비·설비·시스템을 사는가
+# 예전에는 아래 산업 신호 하나만 있어도 통과시켜서, 실리콘웨이퍼(재료)·
+# 연마비즈(소모품)·전력증폭기 패키징프레임(부품)·반도체 산업연감(책)까지
+# "반도체 장비"로 들어왔다.
+INDUSTRY_TERMS = [
+    "半導體", "晶圓", "晶片", "面板", "顯示", "玻璃基板", "積體電路",
+    "薄膜", "封裝", "堆疊", "光電",
+    "semiconductor", "wafer", "oled", "lcd", "panel", "display", "tgv",
+]
+
+# 공정 고유 신호도 산업 신호로 인정한다(공정 이름만 적힌 공고가 있다).
+PROCESS_TERMS = [
+    "濺鍍", "鍍膜", "蒸鍍", "沉積", "蝕刻", "電漿", "曝光", "黃光", "光罩",
+    "微影", "研磨", "拋光", "退火", "熱處理", "電鍍", "金屬化", "鍵合",
+    "sputter", "cvd", "pvd", "ald", "etch", "cmp", "lithography",
+]
+
+# 조건 B — 실제 장비를 사는지 나타내는 신호(번체)
 EQUIPMENT_TERMS = [
-    "半導體", "晶圓", "晶片", "面板", "顯示", "玻璃基板",
-    "濺鍍", "鍍膜", "蒸鍍", "薄膜", "沉積", "蝕刻", "電漿",
-    "曝光", "黃光", "光罩", "微影", "光阻",
-    "研磨", "拋光", "退火", "熱處理", "電鍍", "金屬化",
-    "封裝", "接合", "鍵合", "堆疊", "後端", "真空", "腔體",
-    "semiconductor", "wafer", "oled", "lcd", "panel", "sputter", "cvd",
-    "pvd", "ald", "etch", "cmp", "lithography", "tgv",
+    "設備", "機台", "系統", "裝置", "儀器", "機器",
+    "分析儀", "檢測機", "檢測設備", "量測設備", "量測儀",
+    "蝕刻機", "清洗機", "鍍膜機", "濺鍍設備", "真空設備", "曝光機",
+    "研磨設備", "拋光機", "爐管", "熱處理爐", "鍵合機", "探針台",
+    "顯微鏡", "光譜儀", "測試機", "製程設備", "生產線", "產線",
+    "equipment", "system", "machine", "analyzer", "prober", "furnace",
+    "etcher", "sputtering system", "inspection system",
+]
+
+# 비장비 신호 — 재료·소모품·부품·용역·자료
+NON_EQUIPMENT_TERMS = [
+    "材料", "晶圓片", "原料", "耗材", "珠", "研磨珠",
+    "元件", "零件", "框架", "底板", "模組", "承載盤",
+    "年鑑", "手冊", "報告", "書",
+    "服務", "委託", "代工", "製作", "試製", "實作", "驗證",
+    "維修", "更換", "保養", "工程", "施工",
 ]
 
 # 장비 신호가 있어도 이 신호가 함께 있으면 우리 대상이 아니다
@@ -155,13 +183,26 @@ def contains(text, term):
 
 
 def is_relevant(title):
+    """산업 신호 + 장비 신호가 **둘 다** 있어야 통과시킨다."""
     for term in HARD_EXCLUDE_TERMS:
         if contains(title, term):
             return False, f"제외 신호({term})"
-    for term in EQUIPMENT_TERMS:
-        if contains(title, term):
-            return True, None
-    return False, "장비 신호 없음"
+
+    industry = next((t for t in INDUSTRY_TERMS + PROCESS_TERMS if contains(title, t)), None)
+    if not industry:
+        return False, "반도체/디스플레이/TGV 산업 신호 없음"
+
+    equipment = next((t for t in EQUIPMENT_TERMS if contains(title, t)), None)
+    if not equipment:
+        non_equipment = next((t for t in NON_EQUIPMENT_TERMS if contains(title, t)), None)
+        if non_equipment:
+            return False, f"장비가 아님 — 재료/부품/용역 신호({non_equipment})"
+        return False, f"산업 신호({industry})만 있고 장비 신호 없음"
+
+    non_equipment = next((t for t in NON_EQUIPMENT_TERMS if contains(title, t)), None)
+    if non_equipment:
+        return False, f"장비 신호({equipment})가 있으나 재료/부품/용역 신호({non_equipment})가 함께 있음"
+    return True, None
 
 
 def match_categories(title):
@@ -247,11 +288,11 @@ def build_item(row):
         "keywords": categories,
         "classificationStatus": None if categories else "미분류/검토 필요",
         "budget": None,
-        "contractMethod": "詢價案(견적 요청)",
-        "deliveryCondition": f"履約期限 {row['deliveryDue']}" if row.get("deliveryDue") else None,
+        "contractMethod": "견적 요청(詢價案)",
+        "deliveryCondition": f"이행기한 {row['deliveryDue']}" if row.get("deliveryDue") else None,
         "paymentCondition": None,
         "eligibility": None,
-        "description": f"수량 {row['qty']} · 案號 {row['caseNo']} (항목 {row['seq']})" if row.get("qty") else None,
+        "description": f"수량 {row['qty']} · 공고번호 {row['caseNo']} (항목 {row['seq']})" if row.get("qty") else None,
         "attachments": [],
         "url": DETAIL_URL,
         "originalUrl": DETAIL_URL,

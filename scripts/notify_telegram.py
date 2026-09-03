@@ -25,6 +25,7 @@ data/announcements.json이 갱신될 때, 이전 스냅샷과 비교해 새로 �
 
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -100,6 +101,18 @@ def format_message(item):
     return "\n".join(lines)
 
 
+def announcement_signature(item):
+    """같은 공고인지 판단하는 지문(scripts/fetch_announcements.py와 같은 기준)."""
+    return (
+        item.get("sourceCode"),
+        re.sub(r"\s+", " ", (item.get("originalTitle") or item.get("title") or "")).strip(),
+        re.sub(r"\s+", " ", (item.get("originalOrg") or item.get("org") or "")).strip(),
+        item.get("postedDate"),
+        item.get("dueDate"),
+        item.get("noticeType"),
+    )
+
+
 def main():
     if len(sys.argv) != 3:
         print("사용법: python scripts/notify_telegram.py <이전 json> <최신 json>")
@@ -113,9 +126,35 @@ def main():
         print("TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID가 설정돼 있지 않아 알림을 건너뜁니다.")
         return
 
-    before_ids = {item.get("id") for item in load_items(before_path) if item.get("id")}
+    before_items = load_items(before_path)
+    before_ids = {item.get("id") for item in before_items if item.get("id")}
+    # 사이트가 같은 공고에 새 내부 id를 부여해 재색인하는 경우가 있다
+    # (MOFCOM에서 중복 알림 3건이 실제로 발생). id뿐 아니라 "같은 공고 지문"
+    # 으로도 확인해 재색인만으로 다시 발송하지 않는다. 마감일·공고유형이
+    # 바뀌면 지문이 달라지므로 실제 정정·재공고는 그대로 알린다.
+    before_signatures = {announcement_signature(item) for item in before_items}
     after_items = load_items(after_path)
-    new_items = [item for item in after_items if item.get("id") and item["id"] not in before_ids]
+
+    new_items = []
+    reindexed = 0
+    not_equipment = 0
+    for item in after_items:
+        if not item.get("id") or item["id"] in before_ids:
+            continue
+        if announcement_signature(item) in before_signatures:
+            reindexed += 1
+            continue
+        # 재료·부품·용역·공사처럼 장비가 아닌 공고는 알리지 않는다.
+        if item.get("equipmentStatus") not in (None, "장비"):
+            not_equipment += 1
+            continue
+        new_items.append(item)
+
+    if reindexed:
+        print(f"사이트 재색인으로 id만 바뀐 공고 {reindexed}건은 알리지 않습니다.")
+    if not_equipment:
+        print(f"장비 공고가 아니어서 제외한 신규 공고 {not_equipment}건"
+              f"(재료/부품/용역/공사/검토 필요).")
 
     if not new_items:
         print("신규 공고 없음 — 알림을 보내지 않습니다.")

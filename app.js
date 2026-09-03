@@ -24,7 +24,7 @@ const SOURCE_LINK_LABELS = {
   EBNEW: "비롄왕(EBNEW) 원문 보기",
   JETRO: "JETRO(일본 정부조달) 원문 보기",
   DGIST: "DGIST 원문 보기",
-  ITRI: "ITRI 採購資訊 원문 보기",
+  ITRI: "ITRI (대만) 원문 보기",
   KAIST: "나라장터 공고 원문 보기",
 };
 
@@ -238,6 +238,11 @@ function topTags(item) {
   if (item.translationIncomplete) {
     tags.push(`<span class="translation-badge" title="자동 번역이 불완전합니다. 상세의 원문(중국어)과 원문 링크를 확인하세요.">번역 미완료</span>`);
   }
+  // 장비인지 확정하지 못한 공고 — 홈 "지금 확인할 공고"와 Telegram에서는
+  // 빠지고, 목록에서는 이 배지를 달아 사용자가 직접 판단할 수 있게 한다.
+  if (item.equipmentStatus === "검토 필요") {
+    tags.push(`<span class="review-badge" title="${escapeHtml(item.equipmentReason || "장비 여부 확인이 필요합니다.")}">장비 여부 검토 필요</span>`);
+  }
   if (isNewItem(item)) {
     tags.push(`<span class="new-badge">NEW</span>`);
   }
@@ -269,6 +274,14 @@ function renderAttachments(item) {
     </div>`;
 }
 
+// 상세의 "원문" 영역 제목. 기본 정보는 한국어, 원문 영역은 원어로 통일한다.
+const ORIGINAL_TEXT_LABELS = {
+  EBNEW: "원문(중국어)",
+  MOFCOM: "원문(중국어)",
+  ITRI: "원문(번체 중국어)",
+  JETRO: "원문(영어)",
+};
+
 function originalTextBlock(item) {
   const rows = [];
   if (item.originalTitle && item.originalTitle !== item.title) {
@@ -278,23 +291,26 @@ function originalTextBlock(item) {
     rows.push(`<p class="original-text-block"><b>발주처</b><br>${escapeHtml(item.originalOrg)}</p>`);
   }
   if (rows.length === 0) return "";
+  const lang = ORIGINAL_TEXT_LABELS[item.sourceCode] || "원문";
   return `
     <div class="detail-section">
-      <h4>원문(중국어)</h4>
+      <h4>${escapeHtml(lang)}</h4>
       ${rows.join("")}
     </div>`;
 }
 
 function renderCard(item, kw) {
   const businessRows = [
+    detailRow("공고번호", item.projectNo || item.g2bBidNo),
+    detailRow("수량", item.quantity),
     detailRowWithFallback("예산", item.budget, "예산 정보 없음"),
     detailRow("계약방식", item.contractMethod),
-    detailRow("인도조건", item.deliveryCondition),
     detailRow("지급조건", item.paymentCondition),
+    detailRow("자격조건", item.eligibility),
   ].join("");
 
   return `
-    <details class="notice-card">
+    <details class="notice-card" data-notice-id="${escapeHtml(item.id || "")}">
       <summary class="notice-summary">
         <span class="notice-icon">${iconSvg(kw, 18)}</span>
         <span class="notice-body">
@@ -312,6 +328,9 @@ function renderCard(item, kw) {
         <div class="detail-section">
           <h4>기본 정보</h4>
           <dl class="notice-detail-list">
+            ${detailRow("산업", item.industry)}
+            ${detailRow("공정", item.process)}
+            ${detailRow("장비명", item.equipmentName)}
             ${detailRow("국가", item.country)}
             ${detailRow("지역", item.region)}
             ${detailRow("출처", item.source)}
@@ -326,11 +345,12 @@ function renderCard(item, kw) {
           <dl class="notice-detail-list">
             ${detailRow("등록일", item.postedDate || "확인 필요")}
             ${detailRow("마감일", item.dueDate || "마감일 확인 필요")}
+            ${detailRow("이행기한 / 납기", item.deliveryCondition)}
             ${detailRow("행사 기간", item.eventPeriod)}
             ${detailRow("상태", displayStatus(item))}
           </dl>
         </div>
-        ${businessRows ? `<div class="detail-section"><h4>사업 정보</h4><dl class="notice-detail-list">${businessRows}</dl></div>` : ""}
+        ${businessRows ? `<div class="detail-section"><h4>공고 정보</h4><dl class="notice-detail-list">${businessRows}</dl></div>` : ""}
         <div class="detail-section">
           <h4>핵심 요약</h4>
           <p class="notice-detail-desc">${escapeHtml(item.description || "상세 설명이 제공되지 않았습니다.")}</p>
@@ -598,7 +618,11 @@ function renderRegionBar(domestic, overseas) {
 }
 
 function computeSpotlightItems(validItems, limit = 5) {
-  const scored = validItems.map((item) => {
+  // "검토 필요"(장비인지 확정하지 못한 공고)는 홈 상단에 올리지 않는다.
+  // 공고 탭에서는 배지를 달아 그대로 볼 수 있다.
+  const scored = validItems
+    .filter((item) => item.equipmentStatus !== "검토 필요")
+    .map((item) => {
     let priority = 3; // 일반 공고
     const d = item.dueDate ? daysUntil(item.dueDate) : null;
     if (isNewItem(item)) priority = 0;
@@ -613,15 +637,49 @@ function computeSpotlightItems(validItems, limit = 5) {
 function renderSpotlightCard(item) {
   const flag = COUNTRY_FLAGS[item.country] || "";
   const kw = (item.keywords && item.keywords[0]) || "";
+  // 예전에는 이 카드가 외부 원문 사이트로 바로 이동했다. 사용자가 우리
+  // 레이더의 상세 정보를 보지 못하고 나가버려서, 공고 탭의 같은 상세보기로
+  // 들어가도록 바꿨다(원문 이동은 상세 하단의 "원문 보기" 버튼에서 한다).
   return `
-    <a class="spotlight-card" href="${item.url || "#"}" target="_blank" rel="noopener">
+    <button type="button" class="spotlight-card" data-notice-id="${escapeHtml(item.id || "")}">
       <span class="spotlight-badges">
         ${isNewItem(item) ? '<span class="new-badge">NEW</span>' : ""}
         ${ddayBadge(item.dueDate)}
       </span>
       <span class="spotlight-title">${escapeHtml(item.title)}</span>
       <span class="spotlight-meta">${escapeHtml(flag ? `${flag} ${item.country}` : (item.country || "국가 미상"))} · ${escapeHtml(kw || "분야 미상")}</span>
-    </a>`;
+    </button>`;
+}
+
+// 홈/일정 화면의 카드에서 공고 탭의 해당 상세로 이동한다.
+// 현재 필터 때문에 목록에 없으면 필터를 풀고 다시 그린 뒤 찾아간다.
+function openNoticeDetail(noticeId) {
+  if (!noticeId) return;
+  showTab("tenders");
+  const reveal = () => {
+    const card = document.querySelector(`.notice-card[data-notice-id="${CSS.escape(noticeId)}"]`);
+    if (!card) return false;
+    card.open = true;
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+    card.classList.add("notice-card-focus");
+    setTimeout(() => card.classList.remove("notice-card-focus"), 2000);
+    return true;
+  };
+  if (reveal()) return;
+  // 현재 필터(분야/지역/유형/신규/마감임박) 때문에 목록에 없을 수 있다.
+  // 그 공고가 보이도록 필터를 풀고 다시 그린 뒤 찾아간다.
+  const target = (state.data.items || []).find((i) => i.id === noticeId);
+  if (target) {
+    (target.keywords || []).forEach((kw) => state.selected.add(kw));
+  }
+  state.region = "all";
+  state.showOnlyNew = false;
+  state.dueSoonOnly = false;
+  state.selectedNoticeTypes.clear();
+  renderCategoryChips();
+  renderTypeChips();
+  renderResults();
+  setTimeout(reveal, 0);
 }
 
 function renderHome() {
@@ -858,18 +916,25 @@ function renderSourceHealth() {
     el.textContent = "";
     return;
   }
-  const parts = failing.map(([code, h]) => {
+  const rows = failing.map(([code, h]) => {
     const last = h.lastSuccessAt ? formatUpdatedAt(h.lastSuccessAt).replace("마지막 업데이트 ", "") : "기록 없음";
-    return `${code}(마지막 정상 수집 ${last})`;
-  });
+    return `<span class="health-row"><b>${escapeHtml(code)}</b> 마지막 정상 수집: ${escapeHtml(last)}</span>`;
+  }).join("");
   el.hidden = false;
-  el.textContent = `⚠ 수집 실패 중: ${parts.join(", ")} — 해당 출처는 이전에 수집된 공고가 그대로 표시됩니다.`;
+  el.innerHTML = `<span class="health-head">⚠ 수집 장애 ${failing.length}곳</span>${rows}`
+    + `<span class="health-note">※ 해당 출처는 기존 수집 데이터를 표시 중입니다.</span>`;
 }
 
 async function loadData() {
   try {
     const res = await fetch("data/announcements.json", { cache: "no-store" });
     state.data = await res.json();
+    // 공통 장비 판정에서 "제외"로 분류된 공고(재료·부품·소모품·용역·공사 등)는
+    // 화면에 올리지 않는다. 데이터 파일에는 남겨 둔다 — 지우면 id가 사라져
+    // 다음 수집에서 다시 신규 공고로 잡히기 때문이다.
+    const rawItems = state.data.items || [];
+    state.data.excludedItems = rawItems.filter((i) => i.equipmentStatus === "제외");
+    state.data.items = rawItems.filter((i) => i.equipmentStatus !== "제외");
   } catch (e) {
     console.error("공고 데이터를 불러오지 못했습니다.", e);
     state.data = { updatedAt: null, items: [] };
@@ -923,6 +988,11 @@ function init() {
     state.calendarMonth = new Date(c.getFullYear(), c.getMonth() + 1, 1);
     state.calendarSelectedDate = null;
     renderCalendar();
+  });
+
+  document.addEventListener("click", (e) => {
+    const card = e.target.closest(".spotlight-card[data-notice-id]");
+    if (card) openNoticeDetail(card.dataset.noticeId);
   });
 
   showTab("home");

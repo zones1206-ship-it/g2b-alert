@@ -661,6 +661,8 @@ body {
 
 /* 지금 확인할 공고(스포트라이트) */
 .spotlight-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+/* 홈 카드는 외부 링크(a)가 아니라 내부 상세로 들어가는 버튼(button)이다.
+   버튼 기본 스타일을 지워 기존 카드 모양을 그대로 유지한다. */
 .spotlight-card {
   display: flex; flex-direction: column; gap: 4px;
   padding: 12px;
@@ -668,6 +670,11 @@ body {
   border-radius: 10px;
   text-decoration: none;
   color: inherit;
+  background: none;
+  font: inherit;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
   transition: border-color .15s ease, background .15s ease;
 }
 .spotlight-card:hover { border-color: var(--navy-soft); background: var(--bg); }
@@ -718,3 +725,27 @@ body {
 .cal-selected { background: var(--navy); }
 .cal-selected .cal-day-num { color: var(--white); }
 .calendar-day-list { margin-top: 4px; }
+
+
+/* 장비 여부를 확정하지 못한 공고 배지 (번역 미완료 배지와 같은 톤) */
+.review-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #8a6d1f;
+  background: #fdf3d7;
+  border: 1px solid #f0dfa8;
+}
+
+/* 수집 장애 배너 — 한 줄로 길게 늘어지지 않도록 줄바꿈해 보여준다 */
+.source-health { display: block; }
+.source-health .health-head { display: block; font-weight: 700; margin-bottom: 4px; }
+.source-health .health-row { display: block; padding-left: 2px; }
+.source-health .health-row b { font-weight: 600; }
+.source-health .health-note { display: block; margin-top: 4px; opacity: 0.8; }
+
+/* 홈에서 들어온 공고를 잠시 강조해 어디로 이동했는지 알려준다 */
+.notice-card-focus { box-shadow: 0 0 0 2px var(--accent-soft, #9db7d8); transition: box-shadow .3s ease; }

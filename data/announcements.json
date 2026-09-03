@@ -139,7 +139,11 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": null,
-      "firstSeenAt": "2026-08-22T22:19:01+00:00"
+      "firstSeenAt": "2026-08-22T22:19:01+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(자동광학검사) + 장비(장비)",
+      "process": "검사",
+      "equipmentName": "자동광학검사"
     },
     {
       "id": "ebnew709723397",
@@ -180,7 +184,12 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "낙찰·수주결과",
       "projectNo": "4197-234BOECY0001/203",
-      "firstSeenAt": "2026-09-01T00:53:52+00:00"
+      "firstSeenAt": "2026-09-01T00:53:52+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(반도체) + 장비(刻蚀机)",
+      "industry": "반도체",
+      "process": "습식 식각",
+      "equipmentName": "생산라인"
     },
     {
       "id": "itriA542005987-10",
@@ -217,7 +226,10 @@
       "detectedLanguage": "zh-TW",
       "noticeType": "정식입찰",
       "projectNo": "A542005987",
-      "firstSeenAt": "2026-09-03T11:03:49+09:00"
+      "firstSeenAt": "2026-09-03T11:03:49+09:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "재료 구매 / 장비 아님 (신호: 晶圓片)",
+      "industry": "반도체"
     },
     {
       "id": "itriA562003276-10",
@@ -254,7 +266,10 @@
       "detectedLanguage": "zh-TW",
       "noticeType": "정식입찰",
       "projectNo": "A562003276",
-      "firstSeenAt": "2026-09-03T11:03:49+09:00"
+      "firstSeenAt": "2026-09-03T11:03:49+09:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "소모품 구매 / 장비 아님 (신호: 연마비즈)",
+      "industry": "반도체"
     },
     {
       "id": "itriA512004041-10",
@@ -291,7 +306,10 @@
       "detectedLanguage": "zh-TW",
       "noticeType": "정식입찰",
       "projectNo": "A512004041",
-      "firstSeenAt": "2026-09-03T11:03:49+09:00"
+      "firstSeenAt": "2026-09-03T11:03:49+09:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "용역·서비스 구매 / 장비 아님 (신호: 實作)",
+      "industry": "반도체"
     },
     {
       "id": "itriA512004126-10",
@@ -328,7 +346,11 @@
       "detectedLanguage": "zh-TW",
       "noticeType": "정식입찰",
       "projectNo": "A512004126",
-      "firstSeenAt": "2026-09-03T11:03:49+09:00"
+      "firstSeenAt": "2026-09-03T11:03:49+09:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "용역·서비스 구매 / 장비 아님 (신호: 製作材料)",
+      "industry": "반도체",
+      "process": "계측"
     },
     {
       "id": "itriA522001838-10",
@@ -365,7 +387,11 @@
       "detectedLanguage": "zh-TW",
       "noticeType": "정식입찰",
       "projectNo": "A522001838",
-      "firstSeenAt": "2026-09-03T11:03:49+09:00"
+      "firstSeenAt": "2026-09-03T11:03:49+09:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "부품 구매 / 장비 아님 (신호: 프레임)",
+      "industry": "반도체",
+      "process": "패키징"
     },
     {
       "id": "itriA512004138-10",
@@ -402,7 +428,12 @@
       "detectedLanguage": "zh-TW",
       "noticeType": "정식입찰",
       "projectNo": "A512004138",
-      "firstSeenAt": "2026-09-03T11:03:49+09:00"
+      "firstSeenAt": "2026-09-03T11:03:49+09:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "장비 구매가 아님이 분명함 (신호: 위탁)",
+      "industry": "반도체",
+      "process": "스퍼터링",
+      "equipmentName": "스퍼터"
     },
     {
       "id": "itriA142001379-10",
@@ -439,7 +470,10 @@
       "detectedLanguage": "zh-TW",
       "noticeType": "정식입찰",
       "projectNo": "A142001379",
-      "firstSeenAt": "2026-09-03T07:16:02+00:00"
+      "firstSeenAt": "2026-09-03T07:16:02+00:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "공사·시설 구매 / 장비 아님 (신호: 更換)",
+      "industry": "디스플레이"
     },
     {
       "id": "itriA532005042-10",
@@ -476,7 +510,10 @@
       "detectedLanguage": "zh-TW",
       "noticeType": "정식입찰",
       "projectNo": "A532005042",
-      "firstSeenAt": "2026-09-03T11:03:49+09:00"
+      "firstSeenAt": "2026-09-03T11:03:49+09:00",
+      "equipmentStatus": "검토 필요",
+      "equipmentReason": "장비인지 부품인지 확정 불가 (신호: 承載盤)",
+      "industry": "반도체"
     },
     {
       "id": "cid5659",
@@ -518,7 +555,10 @@
       "source": "한국나노기술원",
       "sourceCode": "KANC",
       "noticeType": "사전규격",
-      "firstSeenAt": "2026-09-01T23:40:28+00:00"
+      "firstSeenAt": "2026-09-01T23:40:28+00:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "부품 구매 / 장비 아님 (신호: 소자 구매)",
+      "industry": "반도체"
     },
     {
       "id": "cid5662",
@@ -560,7 +600,10 @@
       "source": "한국나노기술원",
       "sourceCode": "KANC",
       "noticeType": "사전규격",
-      "firstSeenAt": "2026-09-02T23:43:33+00:00"
+      "firstSeenAt": "2026-09-02T23:43:33+00:00",
+      "equipmentStatus": "검토 필요",
+      "equipmentReason": "장비인지 부품인지 확정 불가 (신호: 검출기)",
+      "industry": "반도체"
     },
     {
       "id": "nttidB000000006124Jl2qZ4",
@@ -614,7 +657,12 @@
       "source": "나노종합기술원",
       "sourceCode": "NNFC",
       "noticeType": "정식입찰",
-      "firstSeenAt": "2026-09-01T00:53:52+00:00"
+      "firstSeenAt": "2026-09-01T00:53:52+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(성장로) + 장비(성장로)",
+      "industry": "반도체",
+      "process": "열처리 / Annealing",
+      "equipmentName": "성장로"
     },
     {
       "id": "nttidB000000006120Ri9iP9",
@@ -664,7 +712,10 @@
       "source": "나노종합기술원",
       "sourceCode": "NNFC",
       "noticeType": "정식입찰",
-      "firstSeenAt": "2026-08-28T05:54:00+00:00"
+      "firstSeenAt": "2026-08-28T05:54:00+00:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "공사·시설 구매 / 장비 아님 (신호: 제작 설치)",
+      "industry": "반도체"
     },
     {
       "id": "ebnew709771492",
@@ -704,7 +755,11 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "낙찰·수주결과",
       "projectNo": "4197-2340CDECHEN1/66",
-      "firstSeenAt": "2026-09-03T10:27:54+00:00"
+      "firstSeenAt": "2026-09-03T10:27:54+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(집적회로) + 장비(시스템)",
+      "industry": "반도체",
+      "process": "패키징"
     },
     {
       "id": "itriA692001225-10",
@@ -741,7 +796,10 @@
       "detectedLanguage": "zh-TW",
       "noticeType": "정식입찰",
       "projectNo": "A692001225",
-      "firstSeenAt": "2026-09-03T13:25:26+09:00"
+      "firstSeenAt": "2026-09-03T13:25:26+09:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "부품 구매 / 장비 아님 (신호: 感測晶片)",
+      "industry": "반도체"
     },
     {
       "id": "itriA572000704-10",
@@ -778,7 +836,10 @@
       "detectedLanguage": "zh-TW",
       "noticeType": "정식입찰",
       "projectNo": "A572000704",
-      "firstSeenAt": "2026-09-03T08:29:20+00:00"
+      "firstSeenAt": "2026-09-03T08:29:20+00:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "용역·서비스 구매 / 장비 아님 (신호: 試製作)",
+      "industry": "반도체"
     },
     {
       "id": "itriA582000921-10",
@@ -815,7 +876,10 @@
       "detectedLanguage": "zh-TW",
       "noticeType": "정식입찰",
       "projectNo": "A582000921",
-      "firstSeenAt": "2026-09-03T10:27:54+00:00"
+      "firstSeenAt": "2026-09-03T10:27:54+00:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "장비 구매가 아님이 분명함 (신호: 年鑑)",
+      "industry": "반도체"
     },
     {
       "id": "itriA512004154-10",
@@ -852,7 +916,10 @@
       "detectedLanguage": "zh-TW",
       "noticeType": "정식입찰",
       "projectNo": "A512004154",
-      "firstSeenAt": "2026-09-03T12:34:11+09:00"
+      "firstSeenAt": "2026-09-03T12:34:11+09:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "장비 구매가 아님이 분명함 (신호: 위탁)",
+      "industry": "반도체"
     },
     {
       "id": "cid5661",
@@ -898,7 +965,10 @@
       "source": "한국나노기술원",
       "sourceCode": "KANC",
       "noticeType": "사전규격",
-      "firstSeenAt": "2026-09-02T23:43:33+00:00"
+      "firstSeenAt": "2026-09-02T23:43:33+00:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "장비 구매가 아님이 분명함 (신호: 설계툴)",
+      "industry": "반도체"
     },
     {
       "id": "kriss63846",
@@ -934,7 +1004,10 @@
       "noticeType": "정식입찰",
       "projectNo": "제26-01-038-01호",
       "g2bBidNo": "R26BK01690519-000",
-      "firstSeenAt": "2026-09-01T00:53:52+00:00"
+      "firstSeenAt": "2026-09-01T00:53:52+00:00",
+      "equipmentStatus": "검토 필요",
+      "equipmentReason": "장비(시스템)이지만 반도체/디스플레이/TGV 산업 신호를 확인하지 못함",
+      "industry": "반도체"
     },
     {
       "id": "kaistR26BK01704393",
@@ -963,7 +1036,12 @@
       "sourceSiteUrl": "https://www.kaist.ac.kr/kr/html/footer/0815.html",
       "noticeType": "정식입찰",
       "g2bBidNo": "R26BK01704393",
-      "firstSeenAt": "2026-09-03T11:03:49+09:00"
+      "firstSeenAt": "2026-09-03T11:03:49+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(반도체) + 장비(장비)",
+      "industry": "반도체",
+      "process": "노광 / Lithography",
+      "equipmentName": "노광장비"
     },
     {
       "id": "nttidB000000006134Br2lZ6",
@@ -1021,7 +1099,12 @@
       "source": "나노종합기술원",
       "sourceCode": "NNFC",
       "noticeType": "정식입찰",
-      "firstSeenAt": "2026-09-01T23:40:28+00:00"
+      "firstSeenAt": "2026-09-01T23:40:28+00:00",
+      "equipmentStatus": "검토 필요",
+      "equipmentReason": "장비 신호(장비)와 공사·시설 신호(연결 공사)가 함께 있음",
+      "industry": "반도체",
+      "process": "ALD",
+      "equipmentName": "ALD"
     },
     {
       "id": "cid5663",
@@ -1067,7 +1150,12 @@
       "source": "한국나노기술원",
       "sourceCode": "KANC",
       "noticeType": "정식입찰",
-      "firstSeenAt": "2026-09-02T23:43:33+00:00"
+      "firstSeenAt": "2026-09-02T23:43:33+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(증착) + 장비(장비)",
+      "industry": "반도체",
+      "process": "CVD",
+      "quantity": "1식"
     },
     {
       "id": "ebnew709582888",
@@ -1107,7 +1195,10 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "0664-2640SUMECF94",
-      "firstSeenAt": "2026-08-20T22:21:07+00:00"
+      "firstSeenAt": "2026-08-20T22:21:07+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(반도체) + 장비(장비)",
+      "industry": "반도체"
     },
     {
       "id": "kriss63849",
@@ -1143,7 +1234,10 @@
       "noticeType": "정식입찰",
       "projectNo": "제26-01-041호",
       "g2bBidNo": null,
-      "firstSeenAt": "2026-09-02T23:43:33+00:00"
+      "firstSeenAt": "2026-09-02T23:43:33+00:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "부품 구매 / 장비 아님 (신호: 센서(칩))",
+      "industry": "반도체"
     },
     {
       "id": "jetro398981",
@@ -1180,7 +1274,11 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026072400170001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "검토 필요",
+      "equipmentReason": "장비인지 부품인지 확정 불가 (신호: 센서)",
+      "industry": "반도체",
+      "quantity": "1식"
     },
     {
       "id": "ebnew709634109",
@@ -1220,7 +1318,13 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "0692-2640XM075270/01",
-      "firstSeenAt": "2026-08-24T22:16:29+00:00"
+      "firstSeenAt": "2026-08-24T22:16:29+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(집적회로) + 장비(장비)",
+      "industry": "반도체",
+      "process": "패키징",
+      "equipmentName": "자동광학검사",
+      "quantity": "2대"
     },
     {
       "id": "ebnew709634111",
@@ -1260,7 +1364,13 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "0692-2640XM075270/04",
-      "firstSeenAt": "2026-08-24T22:16:29+00:00"
+      "firstSeenAt": "2026-08-24T22:16:29+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(집적회로) + 장비(장비)",
+      "industry": "반도체",
+      "process": "패키징",
+      "equipmentName": "자동광학검사",
+      "quantity": "1대"
     },
     {
       "id": "ebnew709696371",
@@ -1300,7 +1410,12 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "4197-254BOECG0001/45",
-      "firstSeenAt": "2026-08-29T03:31:05+00:00"
+      "firstSeenAt": "2026-08-29T03:31:05+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(유리 기반) + 장비(시험라인)",
+      "industry": "반도체",
+      "process": "패키징",
+      "equipmentName": "시험라인"
     },
     {
       "id": "ebnew709663056",
@@ -1342,7 +1457,11 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "4197-2640CSOTGZT8/124",
-      "firstSeenAt": "2026-08-27T02:23:58+00:00"
+      "firstSeenAt": "2026-08-27T02:23:58+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(oled) + 장비(显微镜)",
+      "industry": "반도체",
+      "equipmentName": "생산라인"
     },
     {
       "id": "mofcomff8080819e42905601a03d8e304c2292",
@@ -1382,7 +1501,10 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "4197-264BOECDCZ02/03",
-      "firstSeenAt": "2026-09-03T10:27:54+00:00"
+      "firstSeenAt": "2026-09-03T10:27:54+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(tft-lcd) + 장비(产线)",
+      "industry": "디스플레이"
     },
     {
       "id": "mofcomff8080819e42905601a03d431bbe60b9",
@@ -1422,7 +1544,10 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "4197-254CSOTGZT11/11",
-      "firstSeenAt": "2026-09-03T10:27:54+00:00"
+      "firstSeenAt": "2026-09-03T10:27:54+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(디스플레이) + 장비(세대별 생산라인 프로젝트)",
+      "industry": "디스플레이"
     },
     {
       "id": "ebnew709692102",
@@ -1462,7 +1587,10 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "0664-2640SUMECF94",
-      "firstSeenAt": "2026-08-29T03:31:05+00:00"
+      "firstSeenAt": "2026-08-29T03:31:05+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(반도체) + 장비(장비)",
+      "industry": "반도체"
     },
     {
       "id": "mofcomff8080819e42905601a05ce5dd173952",
@@ -1502,7 +1630,11 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "4197-244BOECDDT01/399",
-      "firstSeenAt": "2026-09-03T09:33:22+09:00"
+      "firstSeenAt": "2026-09-03T09:33:22+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(amoled) + 장비(생산라인)",
+      "industry": "디스플레이",
+      "equipmentName": "생산라인"
     },
     {
       "id": "mofcomff8080819e42905601a05cbd94b71827",
@@ -1542,7 +1674,11 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "4197-244BOECDDT01/378",
-      "firstSeenAt": "2026-09-03T09:33:22+09:00"
+      "firstSeenAt": "2026-09-03T09:33:22+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(amoled) + 장비(생산라인)",
+      "industry": "디스플레이",
+      "equipmentName": "생산라인"
     },
     {
       "id": "ebnew709754651",
@@ -1580,7 +1716,11 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "0730-264010SZ0102/61",
-      "firstSeenAt": "2026-09-02T23:43:33+00:00"
+      "firstSeenAt": "2026-09-02T23:43:33+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(자동광학검사) + 장비(장비)",
+      "process": "검사",
+      "equipmentName": "자동광학검사"
     },
     {
       "id": "mofcomff8080819e42905601a060d4f2c76c09",
@@ -1620,7 +1760,11 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "4197-244BOECDDT01/393",
-      "firstSeenAt": "2026-09-03T10:27:54+00:00"
+      "firstSeenAt": "2026-09-03T10:27:54+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(amoled) + 장비(생산라인)",
+      "industry": "디스플레이",
+      "equipmentName": "생산라인"
     },
     {
       "id": "ebnew709768834",
@@ -1660,7 +1804,11 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "4197-264BOECDCZ02/03",
-      "firstSeenAt": "2026-09-03T08:29:20+00:00"
+      "firstSeenAt": "2026-09-03T08:29:20+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(tft-lcd) + 장비(생산라인)",
+      "industry": "디스플레이",
+      "equipmentName": "생산라인"
     },
     {
       "id": "mofcomff8080819e42905601a0664bde497262",
@@ -1700,7 +1848,11 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "4197-2640CSOTGZT8/116",
-      "firstSeenAt": "2026-09-03T10:27:54+00:00"
+      "firstSeenAt": "2026-09-03T10:27:54+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(oled) + 장비(생산라인)",
+      "industry": "디스플레이",
+      "equipmentName": "생산라인"
     },
     {
       "id": "mofcomff8080819e42905601a066515daa77ac",
@@ -1740,7 +1892,10 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "4197-254CSOTGZT11/11",
-      "firstSeenAt": "2026-09-03T10:27:54+00:00"
+      "firstSeenAt": "2026-09-03T10:27:54+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(디스플레이) + 장비(세대별 생산라인 프로젝트)",
+      "industry": "디스플레이"
     },
     {
       "id": "mofcomff8080819e42905601a06643a3806a81",
@@ -1780,7 +1935,10 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "4197-264BOECDCZ02/03",
-      "firstSeenAt": "2026-09-03T10:27:54+00:00"
+      "firstSeenAt": "2026-09-03T10:27:54+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(tft-lcd) + 장비(产线)",
+      "industry": "디스플레이"
     },
     {
       "id": "ebnew709769095",
@@ -1821,7 +1979,12 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "4197-2640CSOTGZT8/123",
-      "firstSeenAt": "2026-09-03T08:29:20+00:00"
+      "firstSeenAt": "2026-09-03T08:29:20+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(oled) + 장비(刻蚀机)",
+      "industry": "반도체",
+      "process": "습식 식각",
+      "equipmentName": "생산라인"
     },
     {
       "id": "jetro399993",
@@ -1858,7 +2021,11 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026080500140001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "검토 필요",
+      "equipmentReason": "장비인지 부품인지 확정 불가 (신호: 검출기)",
+      "industry": "반도체",
+      "quantity": "1식"
     },
     {
       "id": "jetro401416",
@@ -1895,7 +2062,12 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026082800170001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(리소그래피) + 장비(장비)",
+      "industry": "반도체",
+      "process": "노광 / Lithography",
+      "quantity": "1식"
     },
     {
       "id": "jetro402008",
@@ -1932,7 +2104,13 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026090200110001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(반도체) + 장비(프로버)",
+      "industry": "반도체",
+      "process": "계측",
+      "equipmentName": "프로버",
+      "quantity": "1식"
     },
     {
       "id": "cid5654",
@@ -1978,7 +2156,12 @@
       "source": "한국나노기술원",
       "sourceCode": "KANC",
       "noticeType": "정식입찰",
-      "firstSeenAt": "2026-08-28T05:54:00+00:00"
+      "firstSeenAt": "2026-08-28T05:54:00+00:00",
+      "equipmentStatus": "검토 필요",
+      "equipmentReason": "장비(시험기)이지만 반도체/디스플레이/TGV 산업 신호를 확인하지 못함",
+      "industry": "반도체",
+      "equipmentName": "시험기",
+      "quantity": "1식"
     },
     {
       "id": "cid5636",
@@ -2024,7 +2207,10 @@
       "source": "한국나노기술원",
       "sourceCode": "KANC",
       "noticeType": "정식입찰",
-      "firstSeenAt": "2026-08-20T22:21:07+00:00"
+      "firstSeenAt": "2026-08-20T22:21:07+00:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "장비 구매가 아님이 분명함 (신호: 용역)",
+      "industry": "반도체"
     },
     {
       "id": "cid5633",
@@ -2066,7 +2252,10 @@
       "source": "한국나노기술원",
       "sourceCode": "KANC",
       "noticeType": "정식입찰",
-      "firstSeenAt": "2026-08-18T22:20:13+00:00"
+      "firstSeenAt": "2026-08-18T22:20:13+00:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "공사·시설 구매 / 장비 아님 (신호: 교체 및 설치)",
+      "industry": "반도체"
     },
     {
       "id": "cid5619",
@@ -2108,7 +2297,10 @@
       "source": "한국나노기술원",
       "sourceCode": "KANC",
       "noticeType": "정식입찰",
-      "firstSeenAt": "2026-08-07T22:29:45+00:00"
+      "firstSeenAt": "2026-08-07T22:29:45+00:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "공사·시설 구매 / 장비 아님 (신호: 교체 및 설치)",
+      "industry": "반도체"
     },
     {
       "id": "cid5618",
@@ -2150,7 +2342,13 @@
       "source": "한국나노기술원",
       "sourceCode": "KANC",
       "noticeType": "정식입찰",
-      "firstSeenAt": "2026-08-07T01:34:34+00:00"
+      "firstSeenAt": "2026-08-07T01:34:34+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(식각) + 장비(설비)",
+      "industry": "반도체",
+      "process": "식각",
+      "equipmentName": "스크러버",
+      "quantity": "1대"
     },
     {
       "id": "kotra26CN0C3",
@@ -2178,7 +2376,10 @@
       "sourceSiteUrl": "https://www.kotra.or.kr/",
       "noticeType": "수출상담회",
       "eventPeriod": "2026-01-01 ~ 2026-12-31",
-      "firstSeenAt": "2026-06-18T23:53:10+00:00"
+      "firstSeenAt": "2026-06-18T23:53:10+00:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "장비 구매가 아님이 분명함 (신호: 상담회)",
+      "industry": "반도체"
     },
     {
       "id": "ebnew709735431",
@@ -2218,7 +2419,12 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "낙찰·수주결과",
       "projectNo": "0613-264025124055",
-      "firstSeenAt": "2026-09-01T23:40:28+00:00"
+      "firstSeenAt": "2026-09-01T23:40:28+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(웨이퍼) + 장비(장비)",
+      "industry": "반도체",
+      "process": "세정",
+      "equipmentName": "세정 장비"
     },
     {
       "id": "ebnew709728930",
@@ -2258,7 +2464,12 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "낙찰·수주결과",
       "projectNo": "1143-2640ZRGJ0055",
-      "firstSeenAt": "2026-09-01T00:53:52+00:00"
+      "firstSeenAt": "2026-09-01T00:53:52+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(반도체) + 장비(장비)",
+      "industry": "반도체",
+      "process": "열처리 / Annealing",
+      "equipmentName": "생산라인"
     },
     {
       "id": "ebnew709691798",
@@ -2298,7 +2509,10 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "0664-2640SUMECF94",
-      "firstSeenAt": "2026-08-29T03:31:05+00:00"
+      "firstSeenAt": "2026-08-29T03:31:05+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(반도체) + 장비(장비)",
+      "industry": "반도체"
     },
     {
       "id": "ebnew709764903",
@@ -2338,7 +2552,11 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "4197-2640CSOTGZT8/124",
-      "firstSeenAt": "2026-09-03T12:34:11+09:00"
+      "firstSeenAt": "2026-09-03T12:34:11+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(oled) + 장비(显微镜)",
+      "industry": "디스플레이",
+      "equipmentName": "생산라인"
     },
     {
       "id": "ebnew709633705",
@@ -2378,7 +2596,13 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "0692-2640XM075270/04",
-      "firstSeenAt": "2026-08-24T22:16:29+00:00"
+      "firstSeenAt": "2026-08-24T22:16:29+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(집적회로) + 장비(장비)",
+      "industry": "반도체",
+      "process": "패키징",
+      "equipmentName": "자동광학검사",
+      "quantity": "1대"
     },
     {
       "id": "ebnew709633706",
@@ -2418,7 +2642,13 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
       "projectNo": "0692-2640XM075270/01",
-      "firstSeenAt": "2026-08-24T22:16:29+00:00"
+      "firstSeenAt": "2026-08-24T22:16:29+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(집적회로) + 장비(장비)",
+      "industry": "반도체",
+      "process": "패키징",
+      "equipmentName": "자동광학검사",
+      "quantity": "2대"
     },
     {
       "id": "ebnew709647976",
@@ -2458,7 +2688,12 @@
       "detectedLanguage": "zh-CN",
       "noticeType": "낙찰·수주결과",
       "projectNo": "3940-2607XG028-01",
-      "firstSeenAt": "2026-08-25T22:15:56+00:00"
+      "firstSeenAt": "2026-08-25T22:15:56+00:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(식각) + 장비(장비)",
+      "industry": "반도체",
+      "process": "습식 식각",
+      "equipmentName": "식각 장비"
     },
     {
       "id": "jetro399917",
@@ -2495,7 +2730,13 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026080400130001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(반도체) + 장비(분석기)",
+      "industry": "반도체",
+      "process": "계측",
+      "equipmentName": "분석기",
+      "quantity": "1식"
     },
     {
       "id": "jetro399065",
@@ -2532,7 +2773,13 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026072700140001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(반도체) + 장비(장치)",
+      "industry": "반도체",
+      "process": "계측",
+      "equipmentName": "분석기",
+      "quantity": "1식"
     },
     {
       "id": "jetro398989",
@@ -2569,7 +2816,11 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026072400250001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "검토 필요",
+      "equipmentReason": "장비인지 부품인지 확정 불가 (신호: 검출기)",
+      "industry": "반도체",
+      "quantity": "1식"
     },
     {
       "id": "jetro402047",
@@ -2606,7 +2857,13 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026090300090003",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(웨이퍼) + 장비(장비)",
+      "industry": "반도체",
+      "process": "식각",
+      "equipmentName": "식각 장비",
+      "quantity": "1식"
     },
     {
       "id": "jetro402048",
@@ -2643,7 +2900,13 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026090300090004",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(웨이퍼) + 장비(장비)",
+      "industry": "반도체",
+      "process": "식각",
+      "equipmentName": "식각 장비",
+      "quantity": "1식"
     },
     {
       "id": "jetro401480",
@@ -2680,7 +2943,13 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026083100140001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(웨이퍼) + 장비(현미경)",
+      "industry": "반도체",
+      "process": "검사",
+      "equipmentName": "현미경",
+      "quantity": "1식"
     },
     {
       "id": "jetro400024",
@@ -2717,7 +2986,11 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026080600230002",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "재료 구매 / 장비 아님 (신호: 기반 웨이퍼)",
+      "industry": "반도체",
+      "quantity": "1식"
     },
     {
       "id": "jetro399203",
@@ -2754,7 +3027,11 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026072900240001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "재료 구매 / 장비 아님 (신호: soi wafer)",
+      "industry": "반도체",
+      "quantity": "1식"
     },
     {
       "id": "jetro398529",
@@ -2791,7 +3068,11 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026072100370007",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "재료 구매 / 장비 아님 (신호: 웨이퍼 제작)",
+      "industry": "반도체",
+      "quantity": "1식"
     },
     {
       "id": "jetro401190",
@@ -2828,7 +3109,11 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026082100460001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "공사·시설 구매 / 장비 아님 (신호: 공조)",
+      "industry": "반도체",
+      "quantity": "1식"
     },
     {
       "id": "jetro397770",
@@ -2865,7 +3150,13 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026070800130001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(스퍼터) + 장비(장비)",
+      "industry": "반도체",
+      "process": "스퍼터링",
+      "equipmentName": "스퍼터",
+      "quantity": "1식"
     },
     {
       "id": "jetro399379",
@@ -2902,7 +3193,13 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026080300310000",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(식각) + 장비(장비)",
+      "industry": "반도체",
+      "process": "건식 식각",
+      "equipmentName": "식각 장비",
+      "quantity": "2식"
     },
     {
       "id": "jetro399204",
@@ -2939,7 +3236,13 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026072900250001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(식각) + 장비(장비)",
+      "industry": "반도체",
+      "process": "건식 식각",
+      "equipmentName": "식각 장비",
+      "quantity": "1식"
     },
     {
       "id": "jetro398518",
@@ -2976,7 +3279,13 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026072100310001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(식각) + 장비(장비)",
+      "industry": "반도체",
+      "process": "식각",
+      "equipmentName": "식각 장비",
+      "quantity": "1식"
     },
     {
       "id": "jetro397774",
@@ -3013,7 +3322,12 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026070800130005",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(리소그래피) + 장비(장비)",
+      "industry": "반도체",
+      "process": "노광 / Lithography",
+      "quantity": "1식"
     },
     {
       "id": "jetro401484",
@@ -3050,7 +3364,10 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026083100210001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "검토 필요",
+      "equipmentReason": "장비 신호(장비)와 완제품·전시장비 신호(대형 스크린)가 함께 있음",
+      "industry": "디스플레이"
     },
     {
       "id": "jetro401215",
@@ -3087,7 +3404,10 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026082400110001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "완제품·전시장비 구매 / 장비 아님 (신호: 정보 디스플레이 유닛)",
+      "industry": "디스플레이"
     },
     {
       "id": "jetro400227",
@@ -3124,7 +3444,10 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026081200020001",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "검토 필요",
+      "equipmentReason": "장비 신호(장비)와 용역·서비스 신호(training)가 함께 있음",
+      "industry": "디스플레이"
     },
     {
       "id": "jetro398940",
@@ -3161,7 +3484,10 @@
       "detectedLanguage": "en",
       "noticeType": "정식입찰",
       "projectNo": "2026072300250000",
-      "firstSeenAt": "2026-09-03T10:45:54+09:00"
+      "firstSeenAt": "2026-09-03T10:45:54+09:00",
+      "equipmentStatus": "제외",
+      "equipmentReason": "장비 구매가 아님이 분명함 (신호: advertising)",
+      "industry": "디스플레이"
     }
   ]
 }
