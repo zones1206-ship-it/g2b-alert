@@ -42,6 +42,7 @@ noticeType도 "사전규격"/"정식입찰"이 아니라 "프로젝트 정보"/"
 """
 
 import re
+import socket
 import time
 import html as html_lib
 import http.client
@@ -66,20 +67,23 @@ LIST_ENDPOINTS = [
 
 PAGE_SIZE = 20
 MAX_LIST_PAGES = 6  # 리스트당 최대 120건까지 확인 (실측 총량 71~104건 커버)
-# [2026-09-03 재진단] 예전 주석에는 "Actions(Azure) IP 대역 차단"이라고 적혀
-# 있었지만, 러너에서 계층별로 다시 측정해 보니 사실이 아니었다. 실제 결과:
-#   DNS 정상 / TCP 443 정상 / TLS 1.3 정상 / HTTP 200 수신
-#   목록 AJAX 12회 중 10회 성공(83%), 상세 6회 중 5회 성공(83%)
-#   응답 크기도 로컬과 동일(목록 60,984B / 상세 114,735B)
-#   실패는 전부 RemoteDisconnected("Remote end closed connection without
-#   response")이고 약 10초 뒤에 끊긴다. 최장 연속 실패는 1회.
-# 즉 차단이 아니라 KOTRA 서버가 간헐적으로 연결을 끊는 것이다.
+# [2026-09-03 재진단] KOTRA 접속 실패는 **러너 IP마다 결과가 다르다**.
+# GitHub Actions 러너 3대에서 같은 요청을 보내 실측한 값:
+#   러너 13.83.107.129  TCP 정상 / HTTP 200 / 목록 12회 중 10회 성공 (83%)
+#   러너 134.33.70.62   TCP 정상 / HTTP 200 / 목록  8회 중  4회 성공 (50%)
+#   러너 20.59.242.3    TCP 443 자체가 timeout / 목록 8회 중 0회 (0%)
+# 성공한 러너에서는 응답 크기까지 로컬과 같다(목록 60,984B, 상세 114,735B).
+# 403/429/Access Denied 같은 차단 응답은 한 번도 없었다.
+# → KOTRA 앞단 보안장비가 일부 Azure(Actions) IP 대역은 패킷째 버리고,
+#   통과시키는 IP에서도 연결을 간헐적으로 끊는 것으로 보인다. 러너 IP는
+#   실행마다 무작위로 배정되므로 날마다 결과가 달라진다.
 #
-# 그런데도 매일 실패한 진짜 이유는 우리 코드에 있었다. RemoteDisconnected는
+# 여기에 더해 우리 코드에도 진짜 버그가 있었다. RemoteDisconnected는
 # ConnectionResetError(OSError) 계열이라 urllib.error.URLError로 잡히지 않는다.
 # 그래서 아래 fetch()의 재시도가 전혀 동작하지 않았고, 예외가 collect() 밖으로
-# 그대로 튀어나가 KOTRA 수집 전체가 죽었다. 한 번 수집에 10회 이상 요청하므로
-# 요청당 17% 실패면 한 번이라도 끊길 확률이 약 89%다 — 연속 12회 실패와 맞는다.
+# 그대로 튀어나가 "통과되는 IP"에서도 KOTRA 수집 전체가 죽었다. 한 번 수집에
+# 10회 이상 요청하므로 요청당 17% 실패여도 한 번이라도 끊길 확률이 약 89%다.
+# 이 버그는 아래에서 고쳤다(우회가 아니라 정상적인 예외 처리다).
 REQUEST_TIMEOUT = 20
 MAX_RETRY_ATTEMPTS = 3   # 최장 연속 실패가 1회라 2회 재시도면 충분하다
 RETRY_DELAY_SECONDS = 4
@@ -155,6 +159,24 @@ def fetch(url: str, data: bytes = None) -> str:
                 print(f"[KOTRA] 요청 실패({exc}), {delay:.0f}초 후 재시도 {attempt}/{MAX_RETRY_ATTEMPTS - 1}")
                 time.sleep(delay)
     raise RuntimeError(f"KOTRA 페이지 요청이 {MAX_RETRY_ATTEMPTS}회 실패했습니다: {last_error}")
+
+
+def can_reach_kotra() -> bool:
+    """러너 IP에서 KOTRA에 TCP 443으로 닿는지 먼저 확인한다.
+
+    일부 Actions 러너 IP는 패킷이 통째로 버려져 모든 요청이 timeout까지
+    간다(실측: 20.59.242.3에서 8/8 timeout). 그런 실행에서 요청마다 20초씩
+    기다리면 워크플로 시간만 낭비하므로, 짧게 두 번 찔러 보고 안 닿으면
+    바로 장애로 처리한다. 우회가 아니라 빠른 실패 판정이다."""
+    for attempt in range(2):
+        try:
+            with socket.create_connection(("www.kotra.or.kr", 443), timeout=8):
+                return True
+        except OSError as exc:
+            print(f"[KOTRA] 사전 연결 확인 실패({attempt + 1}/2): {exc}")
+            if attempt == 0:
+                time.sleep(3)
+    return False
 
 
 def strip_tags(raw_html: str) -> str:
@@ -375,6 +397,13 @@ FETCH_STATE = FetchState("KOTRA")
 def collect():
     """KOTRA 사업신청 목록에서 반도체/디스플레이/TGV 관련 프로젝트만 수집한다."""
     FETCH_STATE.reset()
+    if not can_reach_kotra():
+        # 이 러너 IP에서는 KOTRA에 닿지 않는다. 요청마다 timeout을 기다리지
+        # 않고 바로 장애로 알린다(기존 데이터는 orchestrator가 유지한다).
+        raise RuntimeError(
+            "이 GitHub Actions 러너 IP에서 KOTRA(www.kotra.or.kr:443)에 "
+            "TCP 연결이 되지 않습니다 — 러너 IP 대역 차단으로 보입니다.")
+
     items = []
     seen_ids = set()
     stats = {"raw": 0, "title_prefiltered_out": 0, "detail_excluded": 0, "included": 0}
