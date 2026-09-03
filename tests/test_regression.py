@@ -16,7 +16,9 @@ import http.client
 import io
 import json
 import os
+import shutil
 import sys
+import tempfile
 import time
 import unittest
 import urllib.error
@@ -33,6 +35,7 @@ from collectors.common import (FetchState, NETWORK_EXCEPTIONS,     # noqa: E402
 import fetch_announcements as FA                                   # noqa: E402
 import notify_telegram as NT                                       # noqa: E402
 from notify_source_health import decide_actions                    # noqa: E402
+import check_data_drift as DRIFT                                   # noqa: E402
 
 
 # 수집기별 (모듈, fetch 함수명, 최대 시도 횟수)
@@ -545,6 +548,75 @@ class EbnewUrlTest(unittest.TestCase):
         url = "http://www.ebnew.com/a/b/c.html?x=1&y=2#frag"
         self.assertEqual(ebnew.canonical_url(url),
                          "https://www.ebnew.com/a/b/c.html?x=1&y=2#frag")
+
+
+class DataDriftTest(unittest.TestCase):
+    """F. 데이터 이상 변동 — 깨진 결과로 알림·커밋이 나가지 않는지."""
+
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.dir, ignore_errors=True)
+
+    def _write(self, name, data):
+        path = os.path.join(self.dir, name)
+        with io.open(path, "w", encoding="utf-8") as fp:
+            fp.write(data if isinstance(data, str)
+                     else json.dumps(data, ensure_ascii=False))
+        return path
+
+    def _sample(self, n_items=10, n_equip=6, all_ok=True, keep_seen=True):
+        items = [{"id": "x%d" % i,
+                  "equipmentStatus": "장비" if i < n_equip else "제외",
+                  "firstSeenAt": "2026-09-01T00:00:00" if keep_seen else ""}
+                 for i in range(n_items)]
+        return {"items": items,
+                "sourceHealth": {"KANC": {"ok": all_ok}, "NNFC": {"ok": True}}}
+
+    def _check(self, before, after):
+        return DRIFT.main(self._write("b.json", before), self._write("a.json", after))
+
+    def test_normal_change_passes(self):
+        """공고가 몇 건 늘고 주는 정상 변동은 통과해야 한다."""
+        self.assertEqual(self._check(self._sample(10, 6), self._sample(12, 7)), 0)
+
+    def test_empty_result_is_blocked(self):
+        self.assertEqual(self._check(self._sample(), ""), 1)
+
+    def test_malformed_result_is_blocked(self):
+        self.assertEqual(self._check(self._sample(), "{not json"), 1)
+
+    def test_count_collapse_is_blocked(self):
+        self.assertEqual(self._check(self._sample(40, 20), self._sample(3, 2)), 1)
+
+    def test_equipment_collapse_is_blocked(self):
+        """전체 건수는 유지되는데 장비 판정만 무너진 경우도 잡는다."""
+        self.assertEqual(self._check(self._sample(20, 18), self._sample(20, 2)), 1)
+
+    def test_all_sources_down_is_blocked(self):
+        after = self._sample(10, 6)
+        for v in after["sourceHealth"].values():
+            v["ok"] = False
+        self.assertEqual(self._check(self._sample(10, 6), after), 1)
+
+    def test_one_source_down_still_passes(self):
+        """한 수집원 장애는 정상 운영 범위다 — 여기서 막으면 안 된다."""
+        self.assertEqual(
+            self._check(self._sample(10, 6), self._sample(10, 6, all_ok=False)), 0)
+
+    def test_lost_first_seen_is_blocked(self):
+        """firstSeenAt이 사라지면 기존 공고가 신규로 오인돼 재발송된다."""
+        self.assertEqual(
+            self._check(self._sample(10, 6), self._sample(10, 6, keep_seen=False)), 1)
+
+    def test_missing_before_still_checks_after(self):
+        """최초 실행이라 이전 상태가 없어도 결과 자체는 검사한다."""
+        missing = os.path.join(self.dir, "없음.json")
+        self.assertEqual(DRIFT.main(missing, self._write("a.json", self._sample())), 0)
+        dead = self._sample(all_ok=False)
+        dead["sourceHealth"]["NNFC"]["ok"] = False
+        self.assertEqual(DRIFT.main(missing, self._write("a2.json", dead)), 1)
 
 
 if __name__ == "__main__":

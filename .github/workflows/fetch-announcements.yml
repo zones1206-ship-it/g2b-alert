@@ -57,6 +57,12 @@ jobs:
       - name: Fetch announcements
         run: python scripts/fetch_announcements.py
 
+      # 깨진 데이터로 기존 공고를 "신규"라며 한꺼번에 재발송하는 사고를
+      # 막는다. 정상 변동은 통과시키고, 파일이 비었거나 건수가 급감하거나
+      # firstSeenAt이 사라진 경우에만 실패시켜 알림·커밋을 중단한다.
+      - name: 데이터 이상 변동 검사
+        run: python scripts/check_data_drift.py data/announcements.before.json data/announcements.json
+
       - name: Notify new announcements via Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
