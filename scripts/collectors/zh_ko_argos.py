@@ -39,8 +39,40 @@ from . import zh_translate
 
 COMPANY_TERMS = dict(zh_translate.COMPANY_TERMS)
 
+# 실제 EBNEW 운영 데이터(공고 21건의 제목·발주기관)에 나오는 회사·기관명만
+# 등록한다. 데이터에 없는 중국 기업을 미리 대량 등록하지 않는다.
+# 표기 원칙:
+#   1) 공식 영문명이 확인되면 "한국어 표기(공식 영문명)"
+#   2) 공식 영문명을 확인하지 못하면 한국어 독음만 쓴다 — 뜻을 추측해
+#      한국어 회사명을 지어내지 않는다(深南→"딥 사우스" 같은 오역 금지).
+#   3) 기존에 이미 잘 처리되던 BOE(징둥팡)/TCL CSOT(화싱광전)/Tianma(톈마)는
+#      표기를 그대로 둔다.
+# 이 사전은 EBNEW 전용이다. zh_translate(=MOFCOM이 함께 쓰는 용어집)에는
+# 넣지 않는다 — MOFCOM 번역 결과를 바꾸지 않기 위해서다.
+ORG_NAME_TERMS = {
+    # (1) 공식 영문명 확인됨
+    "沈阳铁路信号": "선양철도신호(Shenyang Railway Signal)",  # syxh.crsc.cn 자사 영문 표기
+    "深圳职业技术大学": "선전직업기술대학(Shenzhen Polytechnic University)",  # english.szpu.edu.cn
+    "深南电路": "선난(Shennan Circuits)",                    # 선전 상장사 深南电路(002916)
+    "芯联微电子": "신롄 마이크로전자(Xinlian Microelectronics)",
+    "芯联": "신롄(Xinlian)",
+    "华星光电": "TCL CSOT(화싱광전)",  # 제목의 TCL华星 표기와 맞춘다
+    # (2) 공식 영문명 미확인 — 한국어 독음만 쓴다
+    "康源": "캉위안",
+    "威微": "웨이웨이",
+    "芯业时代": "신예스다이",
+    "创元": "촹위안",
+    "继彰": "지장",
+}
+
 REGION_TERMS = dict(zh_translate._REGION_WITH_SUFFIX)
 REGION_TERMS.update(zh_translate.REGION_TERMS)
+# 실제 EBNEW 데이터에 나오지만 기존 지역 사전에 없던 지명.
+REGION_TERMS.update({"南通": "난퉁", "南通市": "난퉁"})
+# 기존 사전은 山西(산시)와 구분하려고 "산시성(陕西)"처럼 한자를 병기해 두었고,
+# 그 한자가 다시 로마자로 떨어져 "산시성(ShanXi)"로 보인다. EBNEW에서는
+# 중국 정부 공식 로마자 표기(Shaanxi)를 써서 구분한다.
+REGION_TERMS.update({"陕西": "산시성(Shaanxi)", "陕西省": "산시성(Shaanxi)"})
 
 # 기존 반도체/TGV 용어집 + 지시문 5번 목록 중 기존 용어집에 없던 항목,
 # 그리고 PoC에서 Argos가 실제로 틀린 표현만 보강한다.
@@ -75,6 +107,11 @@ TECH_TERMS.update({
     "试验线": "시험라인", "中心": "센터", "技术": "기술", "特色": "특화",
     "时代": "시대", "高速": "고속", "扫描": "스캐닝", "加工": "가공",
     "生产线": "생산라인", "生产基地": "생산기지", "工厂": "공장",
+    # 발주기관 이름에 붙는 일반 명사(회사 고유명이 아니라 업종·법인격 표기).
+    "电子材料": "전자재료", "电子": "전자",
+    "传感技术": "센서 기술", "传感": "센서",
+    "印刷显示技术": "인쇄 디스플레이 기술", "印刷显示": "인쇄 디스플레이",
+    "工程造价咨询": "공사비 견적 자문", "咨询": "자문",
 })
 
 # 행정 상용어. 여기서 보호 대상을 늘릴수록 Argos에 들어가는 문장이 거의
@@ -254,7 +291,9 @@ def _protect(text):
 
     # 회사명 > 지역 > 전문용어 > 행정용어 순. 각 그룹 안에서는 긴 표현부터
     # 치환해야 짧은 표현이 그 일부를 잘못 먹지 않는다.
-    for group in (COMPANY_TERMS, REGION_TERMS, ADMIN_TERMS, TECH_TERMS):
+    # 회사·기관 고유명을 가장 먼저 치환한다. "深南电路"처럼 일반 명사(电路)를
+    # 품은 회사명이 있어서, 뒤 그룹이 먼저 손대면 이름이 쪼개진다.
+    for group in (ORG_NAME_TERMS, COMPANY_TERMS, REGION_TERMS, ADMIN_TERMS, TECH_TERMS):
         for term, korean in sorted(group.items(), key=lambda kv: len(kv[0]), reverse=True):
             if term not in result:
                 continue
@@ -543,6 +582,12 @@ def translate_title(text):
             raw = _argos_translate.translate(
                 _argos_translate.translate(protected, "zh", "en"), "en", "ko")
             candidate = _postprocess(_restore(_fix_english_leftovers(raw), mapping))
+            # 발주기관 표기와 맞춘다: 번역기는 "科技有限公司"를 "기술 유한공사"로
+            # 옮기지만 발주기관 쪽 용어집은 "과학기술 유한공사"로 낸다. 자리표시자로
+            # 보호하면 토큰이 늘어 번역이 불안정해져서(실측: 채택 21→20건)
+            # 원문에 그 표현이 있을 때만 결과에서 좁게 맞춘다.
+            if "科技有限公司" in body and "과학기술" not in candidate:
+                candidate = re.sub(r"(?<!과학)기술\s*유한공사", "과학기술 유한공사", candidate)
             engine = "argos+glossary"
     except Exception as exc:  # noqa: BLE001
         info["reason"] = f"번역 중 오류: {type(exc).__name__}"
@@ -565,3 +610,44 @@ def translate_title(text):
 
     info["engine"] = engine
     return full, True, info
+
+
+# 발주기관(org) 표기에 쓰는 사전. 제목과 **같은** 회사명 사전을 쓴다 —
+# 같은 회사가 제목과 발주기관에서 다르게 보이면 안 되기 때문이다.
+# 회사 고유명 → 지역 → 업종/법인격 순으로 긴 표현부터 치환한다.
+_ORG_GROUPS = (ORG_NAME_TERMS, COMPANY_TERMS, REGION_TERMS, ADMIN_TERMS, TECH_TERMS)
+
+
+def translate_org(text):
+    """중국어 발주기관명 → (한국어 표기, 완전 번역 여부).
+
+    회사명 사전으로 먼저 덮고, 남은 부분은 기존 zh_translate에 그대로 맡긴다
+    (용어집 → 로마자 표기 폴백). 즉 기존 안전장치를 대체하지 않고 앞단에만
+    회사명 사전을 얹는 구조다.
+
+    반환값이 (None, False)이면 "발주기관을 확정할 수 없다"는 뜻이다 —
+    호출부가 기존대로 "확인 필요"를 표시한다."""
+    if not text:
+        return text, True
+
+    stripped = text.strip()
+    # EBNEW 상세 페이지에서 "招标机构：" 값이 한 글자만 잘려 들어오는 경우가
+    # 실제로 있다(예: "招"). 이런 조각을 로마자로 읽어 "Zhao"라고 보여주면
+    # 없는 회사를 만들어내는 셈이라, 뜻을 지어내지 않고 확인 필요로 남긴다.
+    if len(stripped) <= 1 and _CJK_RE.search(stripped):
+        return None, False
+
+    result = stripped
+    for group in _ORG_GROUPS:
+        for term, korean in sorted(group.items(), key=lambda kv: len(kv[0]), reverse=True):
+            # 치환값 안에 한자를 품은 항목(기존 사전의 동음 구분 병기)은
+            # 여기서 손대지 않는다 — 뒤에서 zh_translate가 한 번 더 처리하며
+            # "산시성(산시성(...))"처럼 이중 치환되기 때문이다.
+            if _CJK_RE.search(korean):
+                continue
+            if term in result:
+                result = result.replace(term, f" {korean} ")
+    result = re.sub(r"\s{2,}", " ", result).strip()
+
+    # 남은 한자는 기존 방식(용어집 → 로마자 표기)으로 처리한다.
+    return zh_translate.translate(result)

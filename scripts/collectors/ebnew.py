@@ -351,7 +351,10 @@ def build_item(row: dict):
 
     summary_source = product or original_title
     translated_summary, summary_ok = zh_translate.translate(summary_source) if summary_source else (None, True)
-    translated_org, org_ok = zh_translate.translate(org) if org else (None, True)
+    # 발주기관도 제목과 **같은** 회사명 사전을 거친다(같은 회사가 제목과
+    # 발주기관에서 다르게 보이면 안 된다). 사전에 없는 부분은 그대로
+    # zh_translate(용어집 → 로마자 표기)로 넘어간다.
+    translated_org, org_ok = zh_ko_argos.translate_org(org) if org else (None, True)
     translated_region = zh_translate.translate_region(region) if region else None
 
     combined_relevance_text = " ".join(filter(None, [original_title, product, detail_text]))
