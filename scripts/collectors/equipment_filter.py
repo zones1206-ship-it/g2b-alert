@@ -94,14 +94,32 @@ EQUIPMENT_TERMS = [
     "드릴링 장비", "drilling system", "코터", "coater", "디벨로퍼", "developer",
     "진공 장비", "真空設備", "챔버", "chamber", "生產線", "생산라인", "生产线",
     "產線", "产线", "시험라인", "试验线", "試驗線", "파일럿 라인", "pilot line",
+    # 검출·센서·레이저는 단품이면 부품이지만, 아래처럼 "완성된 시스템"으로
+    # 적힌 경우에는 독립 장비로 본다(지시문 No.008).
+    "detector system", "검출 시스템", "검출기 시스템",
+    "measurement system", "계측 시스템", "측정 시스템",
+    "laser measurement", "레이저 계측", "laser system for", "분석 시스템",
+    "test system", "시험 시스템", "시험기", "tester", "검사 시스템",
 ]
 
 # (나) 애매한 신호 — 장비일 수도 부품일 수도 있다. 이것만 있으면 "검토 필요".
+# 검출기·센서·레이저는 여기서 뺐다(지시문 No.008에서 원문 9건을 직접 확인한 결과):
+#   - "X-ray sensors", "Germanium Semiconductor Detector"처럼 단품을 사는
+#     공고가 대부분이라 부품으로 확정했다(아래 NON_EQUIPMENT_RULES "부품").
+#   - 대신 "Detector System", "Inspection System", "Laser Measurement System"
+#     처럼 그 자체가 완성 장비인 표현은 EQUIPMENT_TERMS에 넣어 장비로 본다.
 AMBIGUOUS_EQUIPMENT_TERMS = [
-    "검출기", "detector", "센서", "sensor", "感測", "传感",
-    "레이저", "laser", "雷射", "激光", "광원", "light source",
     "모듈", "module", "模組", "模组", "척", "chuck", "承載盤",
+    "광원", "light source",
 ]
+
+# 구체적인 장비 이름. 이런 표현이 있으면 재료·부품 단어가 함께 있어도
+# ("반도체 검출기의 개발을 위한 반자동 프로버") 장비 구매로 본다.
+_GENERIC_EQUIPMENT = {"장비", "설비", "시스템", "장치", "기기", "설비류",
+                      "equipment", "system", "systems", "machine", "apparatus",
+                      "tool", "設備", "设备", "機台", "机台", "系統", "系统",
+                      "裝置", "装置", "儀器", "仪器", "챔버", "chamber"}
+SPECIFIC_EQUIPMENT_TERMS = [t for t in EQUIPMENT_TERMS if t not in _GENERIC_EQUIPMENT]
 
 # ---------------------------------------------------------------------------
 # 비장비 신호 — 장비 신호가 없을 때 "제외" 사유를 정한다.
@@ -124,6 +142,11 @@ NON_EQUIPMENT_RULES = [
                      "간행물", "yearbook", "백서", "출판", "出版"]),
     ("사업·행사", ["상담회", "설명회", "박람회", "전시회", "지원 사업", "지원사업",
                    "진입지원", "공급망 진입", "모집"]),
+    # 반도체·디스플레이 제조와 무관한 완성 시스템. 실제로 들어온 사례:
+    # 항공 관제 훈련 시스템(국토교통성), 경마장 LED 전광판(일본중앙경마회).
+    ("산업 무관 시스템", ["approach control", "air traffic", "관제", "항공",
+                          "training system", "훈련 시스템", "racing", "경마",
+                          "racing association"]),
     ("완제품·전시장비", ["대형 스크린", "large screen", "digital signage",
                          "사이니지", "전광판", "정보 디스플레이 유닛",
                          "information display unit", "advertising display"]),
@@ -134,7 +157,13 @@ NON_EQUIPMENT_RULES = [
     ("부품", ["부품", "零件", "元件", "구성품", "component", "프레임", "框架",
               "베이스플레이트", "底板", "브래킷", "bracket", "부속", "parts",
               "소자 구매", "센서(칩)", "칩 구매", "칩 모듈", "感測晶片",
-              "測試晶片", "晶片模組", "패널 손상", "面板損壞"]),
+              "測試晶片", "晶片模組", "패널 손상", "面板損壞",
+              # 검출기·센서 단품(지시문 No.008에서 JETRO/KANC 원문 확인).
+              # "…System"류는 위 EQUIPMENT_TERMS에서 먼저 장비로 잡힌다.
+              "검출기", "detector", "detectors", "센서", "sensor", "sensors",
+              "感測", "传感", "pcb", "인쇄회로기판", "정전척", "electrostatic chuck",
+              "esc", "광원 구매", "solid state laser", "레이저 다이오드",
+              "laser diode", "레이저 광원"]),
     ("재료", ["재료", "원재료", "소재", "材料", "素材", "웨이퍼片",
               "晶圓片", "晶圆片", "soi wafer", "기판재", "잉곳", "ingot",
               "타깃재", "타겟", "target material", "화학약품", "chemicals",
@@ -150,6 +179,14 @@ STRONG_NON_EQUIPMENT_TERMS = [
     "위탁", "委託", "委托", "용역", "설계툴", "구독", "subscription",
     "연감", "年鑑", "年鉴", "상담회", "진입지원", "공급망 진입",
     "advertising", "digital signage", "법률자문",
+    # 공사 — 공고명 자체가 공사면 장비 구매가 아니다(NNFC "ALD 장비 외 11종
+    # 유틸리티 연결 공사"는 공고문에 "공사명/공사내용/공사기간"으로 적혀 있다).
+    "유틸리티 연결", "연결 공사", "설치 공사", "제작 설치", "교체 및 설치",
+    # 디스플레이 완제품(제조 장비가 아니라 표시장치 자체)
+    "대형 스크린", "large screen", "전광판", "정보 디스플레이 유닛",
+    "information display unit",
+    # 우리 산업과 무관한 완성 시스템
+    "approach control", "training system", "훈련 시스템", "racing association",
 ]
 
 # 공고 본문에 늘 붙는 서식 문구. 판정에 쓰면 "services"/"procurement" 같은
@@ -303,12 +340,20 @@ def quantity_of(item):
 GENERATION_PATTERN = re.compile(r"(第\s*[0-9.]+\s*代|제\s*[0-9.]+\s*세대|g[0-9]\.[0-9])", re.I)
 
 
+# 반도체 전용 국가 나노팹을 운영하는 기관. 이 기관들이 사는 공정·시험 장비는
+# 제목에 "반도체"라는 단어가 없어도 우리 산업 장비다(한국나노기술원·나노종합
+# 기술원 모두 반도체 파운드리/나노팹 전용 기관).
+SEMICONDUCTOR_FAB_SOURCES = {"KANC", "NNFC"}
+
+
 def classify(item):
     """(판정, 사유) — 판정은 "장비" / "검토 필요" / "제외"."""
     text = _text_of(item)          # 산업·비장비 판정용(상세 본문 포함)
     buy = _title_text_of(item)     # 장비 성격 판정용(제목·품목만)
 
     industry = _first_match(text, INDUSTRY_TERMS) or _first_match(text, PROCESS_INDUSTRY_TERMS)
+    if not industry and item.get("sourceCode") in SEMICONDUCTOR_FAB_SOURCES:
+        industry = f"{item.get('sourceCode')} 반도체 나노팹"
     equipment = _first_match(buy, EQUIPMENT_TERMS)
     ambiguous = _first_match(buy, AMBIGUOUS_EQUIPMENT_TERMS)
     non_equipment = next(((label, t) for label, terms in NON_EQUIPMENT_RULES
@@ -336,8 +381,11 @@ def classify(item):
         return "제외", f"장비 구매가 아님이 분명함 (신호: {strong})"
 
     if equipment:
-        # 장비 신호가 있어도 공고 자체가 공사·자료·완제품·부품이면
-        # 장비 구매로 단정할 수 없다.
+        specific = _first_match(buy, SPECIFIC_EQUIPMENT_TERMS)
+        # 재료·부품·소모품 단어는 구체적인 장비 이름이 있으면 수식어로 본다
+        # ("반도체 검출기의 개발을 위한 반자동 프로버" → 프로버를 사는 것).
+        if non_equipment and non_equipment[0] in ("재료", "부품", "소모품") and specific:
+            return "장비", f"산업({industry}) + 장비({specific})"
         if non_equipment and non_equipment[0] != "소모품":
             return "검토 필요", f"장비 신호({equipment})와 {non_equipment[0]} 신호({non_equipment[1]})가 함께 있음"
         return "장비", f"산업({industry}) + 장비({equipment})"
@@ -356,9 +404,12 @@ def annotate(item):
     verdict, reason = classify(item)
     item["equipmentStatus"] = verdict
     item["equipmentReason"] = reason
+    # 장비가 아닌 것으로 판정된 공고에는 "장비명"을 남기지 않는다 —
+    # 화면에서 빠지긴 하지만, 데이터만 봐도 오해가 없도록 비운다.
+    name = equipment_name_of(item) if verdict != "제외" else None
     for field, value in (("industry", industry_of(item)),
                          ("process", process_of(item)),
-                         ("equipmentName", equipment_name_of(item)),
+                         ("equipmentName", name),
                          ("quantity", quantity_of(item))):
         if value:
             item[field] = value
