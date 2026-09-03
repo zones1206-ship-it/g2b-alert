@@ -44,6 +44,7 @@ noticeType도 "사전규격"/"정식입찰"이 아니라 "프로젝트 정보"/"
 import re
 import time
 import html as html_lib
+import http.client
 import urllib.request
 import urllib.error
 from datetime import datetime, date, timedelta
@@ -65,15 +66,22 @@ LIST_ENDPOINTS = [
 
 PAGE_SIZE = 20
 MAX_LIST_PAGES = 6  # 리스트당 최대 120건까지 확인 (실측 총량 71~104건 커버)
-# GitHub Actions 러너에서는 KOTRA가 TCP 443 연결 자체를 거부한다(러너에서
-# 직접 진단: DNS는 27.101.224.93로 정상 해석되지만 TCP 연결 실패, curl은
-# http=000, User-Agent/Accept/Referer/XHR/GET 등 5가지 요청 조합 모두 timeout,
-# 비-AJAX 공개 HTML 페이지도 동일). 로컬에서는 0.4초에 정상 응답하므로
-# 애플리케이션 레벨 문제가 아니라 Actions(Azure) IP 대역 차단으로 판단된다.
-# 차단은 재시도로 뚫리지 않으므로, 매 실행마다 몇 분씩 대기만 하지 않도록
-# 타임아웃과 시도 횟수를 짧게 둔다. 차단이 풀리면 그대로 정상 수집된다.
-REQUEST_TIMEOUT = 15
-MAX_RETRY_ATTEMPTS = 2
+# [2026-09-03 재진단] 예전 주석에는 "Actions(Azure) IP 대역 차단"이라고 적혀
+# 있었지만, 러너에서 계층별로 다시 측정해 보니 사실이 아니었다. 실제 결과:
+#   DNS 정상 / TCP 443 정상 / TLS 1.3 정상 / HTTP 200 수신
+#   목록 AJAX 12회 중 10회 성공(83%), 상세 6회 중 5회 성공(83%)
+#   응답 크기도 로컬과 동일(목록 60,984B / 상세 114,735B)
+#   실패는 전부 RemoteDisconnected("Remote end closed connection without
+#   response")이고 약 10초 뒤에 끊긴다. 최장 연속 실패는 1회.
+# 즉 차단이 아니라 KOTRA 서버가 간헐적으로 연결을 끊는 것이다.
+#
+# 그런데도 매일 실패한 진짜 이유는 우리 코드에 있었다. RemoteDisconnected는
+# ConnectionResetError(OSError) 계열이라 urllib.error.URLError로 잡히지 않는다.
+# 그래서 아래 fetch()의 재시도가 전혀 동작하지 않았고, 예외가 collect() 밖으로
+# 그대로 튀어나가 KOTRA 수집 전체가 죽었다. 한 번 수집에 10회 이상 요청하므로
+# 요청당 17% 실패면 한 번이라도 끊길 확률이 약 89%다 — 연속 12회 실패와 맞는다.
+REQUEST_TIMEOUT = 20
+MAX_RETRY_ATTEMPTS = 3   # 최장 연속 실패가 1회라 2회 재시도면 충분하다
 RETRY_DELAY_SECONDS = 4
 PAGE_DELAY_SECONDS = 2.0  # 짧은 간격 연속 요청 시 500 에러가 나는 것을 확인해 넉넉히 대기
 
@@ -131,7 +139,12 @@ def fetch(url: str, data: bytes = None) -> str:
         try:
             with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT) as res:
                 return res.read().decode("utf-8", "ignore")
-        except (urllib.error.URLError, TimeoutError) as exc:
+        # RemoteDisconnected/ConnectionResetError는 URLError가 아니라
+        # OSError 계열이라 예전 except 절에 걸리지 않았다(재시도 자체가
+        # 동작하지 않고 예외가 collect() 밖으로 튀어나갔다). urllib은
+        # getresponse() 단계의 http.client 예외를 URLError로 감싸주지 않는다.
+        # OSError + HTTPException으로 받아 URLError/TimeoutError까지 함께 덮는다.
+        except (OSError, http.client.HTTPException) as exc:
             last_error = exc
             if attempt < MAX_RETRY_ATTEMPTS:
                 # 고정 간격 대신 지수 백오프(4초 → 8초 → 16초). KOTRA 서버가
