@@ -1,13 +1,13 @@
 {
-  "updatedAt": "2026-09-03T03:44:25+00:00",
+  "updatedAt": "2026-09-03T03:56:26+00:00",
   "sourceHealth": {
     "KANC": {
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 11,
-      "lastRunAt": "2026-09-03T03:44:25+00:00",
-      "lastSuccessAt": "2026-09-03T03:44:25+00:00",
+      "lastRunAt": "2026-09-03T03:56:26+00:00",
+      "lastSuccessAt": "2026-09-03T03:56:26+00:00",
       "consecutiveFailures": 0
     },
     "NNFC": {
@@ -15,26 +15,26 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 8,
-      "lastRunAt": "2026-09-03T03:44:25+00:00",
-      "lastSuccessAt": "2026-09-03T03:44:25+00:00",
+      "lastRunAt": "2026-09-03T03:56:26+00:00",
+      "lastSuccessAt": "2026-09-03T03:56:26+00:00",
       "consecutiveFailures": 0
     },
     "KOTRA": {
       "ok": false,
-      "lastStatus": "오류",
-      "lastError": "Remote end closed connection without response",
+      "lastStatus": "결과 없음(기존 유지)",
+      "lastError": null,
       "collectedThisRun": 0,
-      "lastRunAt": "2026-09-03T03:44:25+00:00",
+      "lastRunAt": "2026-09-03T03:56:26+00:00",
       "lastSuccessAt": "2026-09-03T12:34:11+09:00",
-      "consecutiveFailures": 1
+      "consecutiveFailures": 2
     },
     "EBNEW": {
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 21,
-      "lastRunAt": "2026-09-03T03:44:25+00:00",
-      "lastSuccessAt": "2026-09-03T03:44:25+00:00",
+      "lastRunAt": "2026-09-03T03:56:26+00:00",
+      "lastSuccessAt": "2026-09-03T03:56:26+00:00",
       "consecutiveFailures": 0
     },
     "MOFCOM": {
@@ -42,8 +42,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 6,
-      "lastRunAt": "2026-09-03T03:44:25+00:00",
-      "lastSuccessAt": "2026-09-03T03:44:25+00:00",
+      "lastRunAt": "2026-09-03T03:56:26+00:00",
+      "lastSuccessAt": "2026-09-03T03:56:26+00:00",
       "consecutiveFailures": 0
     },
     "KRISS": {
@@ -51,8 +51,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 3,
-      "lastRunAt": "2026-09-03T03:44:25+00:00",
-      "lastSuccessAt": "2026-09-03T03:44:25+00:00",
+      "lastRunAt": "2026-09-03T03:56:26+00:00",
+      "lastSuccessAt": "2026-09-03T03:56:26+00:00",
       "consecutiveFailures": 0
     },
     "JETRO": {
@@ -60,8 +60,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 23,
-      "lastRunAt": "2026-09-03T03:44:25+00:00",
-      "lastSuccessAt": "2026-09-03T03:44:25+00:00",
+      "lastRunAt": "2026-09-03T03:56:26+00:00",
+      "lastSuccessAt": "2026-09-03T03:56:26+00:00",
       "consecutiveFailures": 0
     },
     "DGIST": {
@@ -69,8 +69,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 1,
-      "lastRunAt": "2026-09-03T03:44:25+00:00",
-      "lastSuccessAt": "2026-09-03T03:44:25+00:00",
+      "lastRunAt": "2026-09-03T03:56:26+00:00",
+      "lastSuccessAt": "2026-09-03T03:56:26+00:00",
       "consecutiveFailures": 0
     },
     "ITRI": {
@@ -78,8 +78,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 8,
-      "lastRunAt": "2026-09-03T03:44:25+00:00",
-      "lastSuccessAt": "2026-09-03T03:44:25+00:00",
+      "lastRunAt": "2026-09-03T03:56:26+00:00",
+      "lastSuccessAt": "2026-09-03T03:56:26+00:00",
       "consecutiveFailures": 0
     },
     "KAIST": {
@@ -87,8 +87,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 1,
-      "lastRunAt": "2026-09-03T03:44:25+00:00",
-      "lastSuccessAt": "2026-09-03T03:44:25+00:00",
+      "lastRunAt": "2026-09-03T03:56:26+00:00",
+      "lastSuccessAt": "2026-09-03T03:56:26+00:00",
       "consecutiveFailures": 0
     }
   },
