@@ -305,6 +305,11 @@ def extract_budget(detail_text: str):
     return f"{amount:,.0f}{unit}" if currency == "CNY" else f"${amount:,.0f}", currency
 
 
+# 항목 값 뒤에 이어 붙는 페이지 상용구/버튼 문구(라벨이 아니라 콜론이 없어
+# lookahead로는 잘리지 않는다). 실제 상세 페이지에서 관측된 것만 넣는다.
+_VALUE_STOP_MARKERS = ["您当前未登录", "购买标书", "登录", "。", "，“"]
+
+
 def extract_field(detail_text: str, label: str, max_len: int = 60):
     """"라벨：값" 형태에서 값을 뽑는다. 이 사이트 상세페이지는 항목 사이에
     구분자(세미콜론 등)가 없어서, 값이 끝나고 다음 "한글아님 2~10자 라벨："
@@ -323,8 +328,17 @@ def extract_field(detail_text: str, label: str, max_len: int = 60):
     )
     if not m:
         return None
+    value = m.group(1)
+    # 다음 항목이 "라벨：" 형태가 아니면(로그인 안내문, 버튼 문구 등) 위 lookahead가
+    # 걸리지 않아 값이 안내문까지 통째로 딸려 온다. 실측: 招标地区 값이
+    # "北京市 您当前未登录 …号内容请 登录 后查看。 沈阳铁路信号…공고" 로 나왔다.
+    # 페이지 상용구가 시작되는 지점에서 자른다.
+    for marker in _VALUE_STOP_MARKERS:
+        cut = value.find(marker)
+        if cut > 0:
+            value = value[:cut]
     # 로그인해야 보이는 부분은 "*"로 가려져 들어온다("… 유한책임공사 *.*").
-    value = re.sub(r"[\s*.]+$", "", m.group(1)).strip()
+    value = re.sub(r"[\s*.]+$", "", value).strip()
     # 라벨 조각이나 가림표만 남은 값은 항목이 비어 있는 것으로 본다.
     if len(value) < 2 or not re.search(r"[一-鿿A-Za-z0-9]", value):
         return None
