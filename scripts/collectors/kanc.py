@@ -33,7 +33,7 @@ import html as html_lib
 import urllib.request
 import urllib.error
 
-from .common import normalize_text, TGV_STRONG_TERMS, FetchState
+from .common import normalize_text, TGV_STRONG_TERMS, FetchState, NETWORK_EXCEPTIONS
 
 SOURCE_NAME = "한국나노기술원"
 SOURCE_CODE = "KANC"
@@ -84,7 +84,7 @@ def fetch_html(url: str) -> str:
         try:
             with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT) as res:
                 return res.read().decode("utf-8", "ignore")
-        except (urllib.error.URLError, TimeoutError) as exc:
+        except NETWORK_EXCEPTIONS as exc:
             last_error = exc
             if attempt < MAX_RETRY_ATTEMPTS:
                 print(f"[KANC] 요청 실패({exc}), {RETRY_DELAY_SECONDS}초 후 재시도 {attempt}/{MAX_RETRY_ATTEMPTS - 1}")

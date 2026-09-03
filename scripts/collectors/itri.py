@@ -27,7 +27,7 @@ import html as html_lib
 import urllib.error
 import urllib.request
 
-from .common import FetchState
+from .common import FetchState, NETWORK_EXCEPTIONS
 from . import zh_translate
 
 SOURCE_NAME = "ITRI (대만)"
@@ -159,7 +159,7 @@ def fetch(url):
                 except UnicodeDecodeError:
                     continue
             return raw.decode("utf-8", "ignore")
-        except (urllib.error.URLError, TimeoutError) as exc:
+        except NETWORK_EXCEPTIONS as exc:
             last_error = exc
             if attempt < MAX_RETRY_ATTEMPTS:
                 delay = RETRY_DELAY_SECONDS * attempt

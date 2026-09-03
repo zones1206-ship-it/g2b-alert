@@ -55,6 +55,8 @@ stamp_first_seen()이 모든 소스를 합친 뒤 한 번에 부여한다(같은
 그냥 표시를 생략하므로 다른 수집원에 영향이 없다.
 """
 
+import http.client
+
 # 사용자에게 노출되는 최상위 관심 분야 (홈 화면 토글 카드 / 결과 화면 그룹)
 CATEGORIES = ["반도체 장비", "디스플레이 장비", "TGV 장비"]
 
@@ -113,6 +115,25 @@ BLOCKED_SOURCES = [
 
 def normalize_text(text: str) -> str:
     return text.replace(" ", "").lower()
+
+
+# 네트워크 계층 예외 — 모든 수집기의 fetch 재시도에서 공통으로 잡는다.
+#
+# KOTRA 장애(2026-09-03)를 분석하며, 대부분의 수집기가
+# except (urllib.error.URLError, TimeoutError) 만 잡고 있어
+# RemoteDisconnected/ConnectionResetError가 발생하면 재시도되지 않고
+# collect() 밖으로 그대로 튀어나가는 잠재 버그를 발견했다. 원인은
+# http.client.RemoteDisconnected가 URLError의 하위 클래스가 아니라서다.
+#
+# 이 튜플은 그 문제를 근본적으로 막는다. urllib.error.URLError,
+# TimeoutError(=socket.timeout), ConnectionResetError,
+# http.client.RemoteDisconnected는 전부 OSError의 하위 클래스이므로
+# OSError 하나로 다 잡힌다(실측 확인). http.client.HTTPException은
+# OSError 계열이 아니라서(BadStatusLine 등) 따로 추가했다.
+#
+# 의도적으로 bare Exception을 쓰지 않는다 — 파싱 오류(KeyError/TypeError
+# 등 코드·데이터 버그)까지 "네트워크 재시도"로 숨기면 진짜 버그를 놓친다.
+NETWORK_EXCEPTIONS = (OSError, http.client.HTTPException)
 
 
 class FetchState:

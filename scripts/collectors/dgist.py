@@ -27,7 +27,7 @@ import html as html_lib
 import urllib.error
 import urllib.request
 
-from .common import TGV_STRONG_TERMS, FetchState
+from .common import TGV_STRONG_TERMS, FetchState, NETWORK_EXCEPTIONS
 
 SOURCE_NAME = "DGIST (한국)"
 SOURCE_CODE = "DGIST"
@@ -112,7 +112,7 @@ def fetch(url):
             req = urllib.request.Request(url, headers={"User-Agent": UA})
             with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT) as res:
                 return res.read().decode("utf-8", "ignore")
-        except (urllib.error.URLError, TimeoutError) as exc:
+        except NETWORK_EXCEPTIONS as exc:
             last_error = exc
             if attempt < MAX_RETRY_ATTEMPTS:
                 delay = RETRY_DELAY_SECONDS * (2 ** (attempt - 1))

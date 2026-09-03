@@ -45,7 +45,7 @@ import urllib.error
 import urllib.parse
 from datetime import datetime, timedelta
 
-from .common import normalize_text, FetchState
+from .common import normalize_text, FetchState, NETWORK_EXCEPTIONS
 from . import zh_translate
 from .ebnew import is_relevant_list_stage, is_equipment_purchase, match_categories
 
@@ -105,7 +105,7 @@ def fetch(url: str, data: bytes = None) -> str:
         try:
             with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT, context=SSL_CONTEXT) as res:
                 return res.read().decode("utf-8", "ignore")
-        except (urllib.error.URLError, TimeoutError) as exc:
+        except NETWORK_EXCEPTIONS as exc:
             last_error = exc
             if attempt < MAX_RETRY_ATTEMPTS:
                 print(f"[MOFCOM] 요청 실패({exc}), {RETRY_DELAY_SECONDS}초 후 재시도 {attempt}/{MAX_RETRY_ATTEMPTS - 1}")

@@ -39,7 +39,7 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta
 
-from .common import TGV_STRONG_TERMS, FetchState
+from .common import TGV_STRONG_TERMS, FetchState, NETWORK_EXCEPTIONS
 from . import en_ko_argos, en_translate, translation_memory
 
 SOURCE_NAME = "JETRO (일본)"
@@ -139,7 +139,7 @@ def fetch(url, headers, retries=MAX_RETRY_ATTEMPTS):
             req = urllib.request.Request(url, headers=headers)
             with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT) as res:
                 return res.read().decode("utf-8", "ignore")
-        except (urllib.error.URLError, TimeoutError) as exc:
+        except NETWORK_EXCEPTIONS as exc:
             last_error = exc
             if attempt < retries:
                 delay = RETRY_DELAY_SECONDS * attempt
