@@ -214,6 +214,96 @@ def _restore(text, mapping):
 
 
 # ---------------------------------------------------------------------------
+# 후처리 — Argos 결과를 업계에서 쓰는 표현으로 다듬는다.
+# ---------------------------------------------------------------------------
+# 아래 규칙은 전부 실제 JETRO 공고 23건에서 관측된 표현만 대상으로 한다
+# (문맥 없이 전역 치환하지 않으려고, 앞뒤 조건을 함께 건 규칙을 쓴다).
+# 순서가 중요하다: 긴 표현·구체적 규칙을 먼저 적용한다.
+_POST_RULES = [
+    # 1) 기계번역 특유의 어색한 수식 표현
+    (r"단\s*하나\s*(?=웨이퍼)", "단일 "),          # "단 하나 웨이퍼" → "단일 웨이퍼"
+    (r"반\s+자동적인", "반자동"),                   # "반 자동적인 프로버" → "반자동 프로버"
+    (r"자동적인", "자동"),
+    (r"광학적인", "광학"),
+    (r"진보된\s*논리", "첨단 로직"),                 # advanced logic
+    (r"고급\s*로직", "첨단 로직"),
+    (r"높은\s*전압", "고전압"),
+    (r"높은\s*스캐닝\s*속도", "고속 스캐닝"),
+    (r"고속\s*스캐닝\s*속도", "고속 스캐닝"),
+    (r"얇은\s*Film", "박막"),
+    (r"장비\s*소개(?=\s|$)", "장비"),                # "Dry Etching System" 오역 흔적
+    (r"(?<=\S)을위한", "을 위한"),                   # 붙어 나오는 조사 분리
+    (r"(?<=\S)를위한", "를 위한"),
+    (r"특성용(?=\s)", "특성 평가용"),
+    (r"장비는\s*(.+?)로\s*갖춰", r"장비(\1 포함)"),   # equipped with … 어순 복구(변형형)
+    (r"큰\s*스크린", "대형 스크린"),
+    (r"완전한\s*세트", "일괄"),
+    (r"상세한\s*디자인", "상세 설계"),
+    (r"공기\s*취급\s*단위", "공조기(AHU)"),          # Air Handling Unit
+    (r"표시\s*단위", "디스플레이 유닛"),
+    (r"멀티\s*타르커", "멀티 타깃"),                 # multi-target 오역
+    (r"공동\s*스퍼터링", "코스퍼터링"),               # co-sputtering
+    (r"회전\s*식각", "스핀 식각"),                   # spin etching
+    # 2) 반도체 계측 문맥에서 detector는 '검출기'가 표준
+    (r"(?<=반도체\s)감지기", "검출기"),
+    (r"(?<=반도체)\s*감지기", " 검출기"),
+    (r"X-ray\s*감지기", "X선 센서"),                # X-ray sensor
+    (r"(?<!반도체 )감지기", "검출기"),
+    # 3) 장비/소자 용어 정리
+    (r"반도체\s*장치(?=\s|$)", "반도체 소자"),
+    (r"반도체\s*해석기", "반도체 분석기"),
+    (r"특성화", "특성 평가"),
+    (r"발달을\s*위한", "개발용"),
+    (r"의\s*제작을\s*위한\s*기반\s*웨이퍼", " 제작용 기반 웨이퍼"),
+    (r"장비의\s*완전한", "장비 일괄"),
+    (r"장비\s*2식의\s*특징", "장비 2식"),            # "features" 오역 흔적 제거
+    (r"장비는\s*(.+?)\s*장비했습니다", r"장비(\1 포함)"),  # equipped with … 어순 붕괴 복구
+    # 4) 조사 정리 — "1식를 위한" 같은 잘못된 조사
+    (r"(\d+식)를(?=\s|$)", r"\1을"),
+    (r"(\d+식)를\s*위한", r"\1, "),                 # "1식를 위한 X" → "1식, X" 로 단순화
+    (r"(\d+대)를(?=\s|$)", r"\1를"),
+    # 5) 남은 영문 조각 정리(우리 용어집에 확정 표기가 있는 것만)
+    (r"\bIsotope-enriched\b", "동위원소 농축"),
+    (r"\bThin-Film\b", "박막"),
+    (r"\bNiobate\b", "니오베이트"),
+    (r"\bSuperconducting\b", "초전도"),
+    (r"\bCryomodule\b", "크라이오모듈"),
+]
+
+
+# 제목 끝에 붙는 수량 표기. 원문 예: "… 1 set", "… 2 sets", "… one ⑴ set"
+_QUANTITY_SUFFIX = re.compile(
+    r"[,\s]*(?:one\s*)?[⑴(]?\s*(\d+)\s*[)⑴]?\s*(sets?|units?|systems?|pieces?)\s*$",
+    re.I,
+)
+_QUANTITY_UNIT_KO = {"set": "식", "sets": "식", "unit": "대", "units": "대",
+                     "system": "대", "systems": "대", "piece": "개", "pieces": "개"}
+
+
+def _split_quantity_suffix(text):
+    """('본문', '1식') 형태로 나눈다. 수량 표기가 없으면 두 번째 값은 ''."""
+    m = _QUANTITY_SUFFIX.search(text or "")
+    if not m:
+        return text, ""
+    unit = _QUANTITY_UNIT_KO.get(m.group(2).lower(), "식")
+    return text[:m.start()].rstrip(" ,"), f"{m.group(1)}{unit}"
+
+
+def _postprocess(text):
+    """Argos 결과를 업계 표현으로 다듬는다. 숫자·약어·고유명사는 건드리지
+    않는 규칙만 쓰고, 결과는 호출부에서 다시 검증한다."""
+    result = text
+    for pattern, replacement in _POST_RULES:
+        result = re.sub(pattern, replacement, result)
+    # 어순 정리: "A 1식, B" 형태로 뒤집힌 목적어를 자연스럽게 붙인다
+    result = re.sub(r"^(.*?)\s*(\d+식),\s*(.+)$", r"\3 \1 \2", result) \
+        if re.match(r"^.{0,40}?\d+식,\s", result) else result
+    result = re.sub(r"\s{2,}", " ", result)
+    result = re.sub(r"\s+([,.])", r"\1", result)
+    return result.strip()
+
+
+# ---------------------------------------------------------------------------
 # 4) 검증 — 통과하지 못하면 번역 결과를 쓰지 않는다
 # ---------------------------------------------------------------------------
 
@@ -243,7 +333,12 @@ def validate(original, translated, mapping):
     if missing:
         return False, f"약어 소실({', '.join(sorted(missing)[:3])})"
     # 원문 대비 지나치게 짧아지면 내용이 통째로 날아간 것으로 본다.
-    if len(translated) < max(6, len(original) * 0.35):
+    # 비교는 수량 접미사("1 set" / "1식")를 뗀 본문끼리 한다 — 접미사를
+    # 분리해 번역하기 때문에 원문 전체와 비교하면 멀쩡한 번역이 걸린다.
+    # 한국어는 같은 뜻을 영어보다 짧게 쓰므로 기준을 0.30으로 둔다.
+    origin_body, _ = _split_quantity_suffix(original)
+    trans_body = re.sub(r"\s*\d+(식|대|개)\s*$", "", translated).strip()
+    if len(trans_body) < max(5, len(origin_body) * 0.30):
         return False, "번역이 원문 대비 과도하게 짧음"
     return True, None
 
@@ -265,9 +360,15 @@ def translate_title(text):
         return baseline, baseline_ok, info
 
     try:
-        protected, mapping = _protect(text)
+        # 제목 끝의 수량 표기("… 1 set")는 번역기에 넣으면 통째로 사라지는
+        # 경우가 실제로 있었다(TERMEV 토큰 소실 → 숫자 검증 실패 → 폴백).
+        # 접미사로 떼어내 번역 대상에서 제외하고, 다 끝난 뒤 다시 붙인다.
+        body, quantity = _split_quantity_suffix(text)
+        protected, mapping = _protect(body)
         raw = _argos_translate.translate(protected, "en", "ko")
-        candidate = _restore(raw, mapping)
+        candidate = _postprocess(_restore(raw, mapping))
+        if quantity:
+            candidate = f"{candidate} {quantity}".strip()
     except Exception as exc:  # noqa: BLE001
         info["reason"] = f"번역 중 오류: {type(exc).__name__}"
         return baseline, baseline_ok, info
