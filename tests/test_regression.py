@@ -729,7 +729,7 @@ class ChineseGlossaryTest(unittest.TestCase):
         ("显示", "디스플레이", "XianShi"),
         ("印刷OLED", "인쇄", "YinShua"),
         ("高清", "고화질", "GaoQing"),
-        ("一期", "1기", "YiQi"),
+        ("一期", "1단계", "YiQi"),
         ("板级封装", "패널레벨 패키징", "WeiBan"),
     ]
 
@@ -764,7 +764,7 @@ class ChineseGlossaryTest(unittest.TestCase):
             ("成都京东方光电2026年第4.5代TFT-LCD产线技术改造项目",
              ["광전", "2026년", "생산라인", "기술", "개조"]),
             ("第8.6代印刷OLED生产线一期项目",
-             ["제8.6세대", "인쇄", "생산라인", "1기"]),
+             ["제8.6세대", "인쇄", "생산라인", "1단계"]),
             ("苏州华星光电显示有限公司高清MINI LED COB产品技术改造项目",
              ["화싱광전", "디스플레이", "고화질", "기술"]),
         ]
@@ -773,6 +773,12 @@ class ChineseGlossaryTest(unittest.TestCase):
                 out = ZT._apply_glossary(zh)
                 for e in expected:
                     self.assertIn(e, out, f"{e} 없음 → {out}")
+
+    def test_numbers_do_not_run_together(self):
+        """용어집이 한자를 많이 흡수할수록 번역 모델이 띄어쓰기를 넣어 줄
+        기회가 줄어든다. "2026년제4.5세대TFT-LCD"처럼 붙지 않아야 한다."""
+        out = ZT._apply_glossary("成都京东方光电2026年第4.5代TFT-LCD产线")
+        self.assertIn("2026년 제4.5세대 TFT-LCD", out)
 
     def test_company_names_are_not_invented(self):
         """근거 없는 고유명사는 한국어로 창작하지 않는다(지시문 No.013 7번).
