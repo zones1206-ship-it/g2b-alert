@@ -106,6 +106,13 @@ def run_collector(name, module, existing_items, log):
         return fallback
 
     if not items:
+        # 목록을 정상적으로 받아왔는데 필터를 통과한 공고가 0건인 경우가 있다
+        # (장비 전용 필터를 세게 건 ITRI가 대표적). 이건 수집 실패가 아니므로
+        # 낡은 데이터를 붙들지 않고, 장애로도 표시하지 않는다.
+        if getattr(module, "LAST_RUN_FETCHED", False):
+            print(f"[{name}] 목록은 정상 수집했지만 조건에 맞는 공고가 없습니다(0건).")
+            log[name] = {"status": "정상", "detail": None, "count": 0}
+            return []
         print(f"[{name}] 이번 실행에서 수집된 항목이 없어 기존 데이터를 유지합니다.")
         log[name] = {"status": "결과 없음(기존 유지)", "detail": None, "count": len(fallback)}
         return fallback
