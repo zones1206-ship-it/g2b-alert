@@ -1,13 +1,13 @@
 {
-  "updatedAt": "2026-09-03T07:16:02+00:00",
+  "updatedAt": "2026-09-03T07:57:28+00:00",
   "sourceHealth": {
     "KANC": {
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 11,
-      "lastRunAt": "2026-09-03T07:16:02+00:00",
-      "lastSuccessAt": "2026-09-03T07:16:02+00:00",
+      "lastRunAt": "2026-09-03T07:57:28+00:00",
+      "lastSuccessAt": "2026-09-03T07:57:28+00:00",
       "consecutiveFailures": 0
     },
     "NNFC": {
@@ -15,8 +15,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 8,
-      "lastRunAt": "2026-09-03T07:16:02+00:00",
-      "lastSuccessAt": "2026-09-03T07:16:02+00:00",
+      "lastRunAt": "2026-09-03T07:57:28+00:00",
+      "lastSuccessAt": "2026-09-03T07:57:28+00:00",
       "consecutiveFailures": 0
     },
     "KOTRA": {
@@ -24,9 +24,9 @@
       "lastStatus": "결과 없음(기존 유지)",
       "lastError": null,
       "collectedThisRun": 0,
-      "lastRunAt": "2026-09-03T07:16:02+00:00",
+      "lastRunAt": "2026-09-03T07:57:28+00:00",
       "lastSuccessAt": "2026-09-03T13:25:26+09:00",
-      "consecutiveFailures": 4,
+      "consecutiveFailures": 5,
       "failureAlertSent": true
     },
     "EBNEW": {
@@ -34,8 +34,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 21,
-      "lastRunAt": "2026-09-03T07:16:02+00:00",
-      "lastSuccessAt": "2026-09-03T07:16:02+00:00",
+      "lastRunAt": "2026-09-03T07:57:28+00:00",
+      "lastSuccessAt": "2026-09-03T07:57:28+00:00",
       "consecutiveFailures": 0
     },
     "MOFCOM": {
@@ -43,8 +43,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 6,
-      "lastRunAt": "2026-09-03T07:16:02+00:00",
-      "lastSuccessAt": "2026-09-03T07:16:02+00:00",
+      "lastRunAt": "2026-09-03T07:57:28+00:00",
+      "lastSuccessAt": "2026-09-03T07:57:28+00:00",
       "consecutiveFailures": 0
     },
     "KRISS": {
@@ -52,8 +52,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 3,
-      "lastRunAt": "2026-09-03T07:16:02+00:00",
-      "lastSuccessAt": "2026-09-03T07:16:02+00:00",
+      "lastRunAt": "2026-09-03T07:57:28+00:00",
+      "lastSuccessAt": "2026-09-03T07:57:28+00:00",
       "consecutiveFailures": 0
     },
     "JETRO": {
@@ -61,8 +61,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 23,
-      "lastRunAt": "2026-09-03T07:16:02+00:00",
-      "lastSuccessAt": "2026-09-03T07:16:02+00:00",
+      "lastRunAt": "2026-09-03T07:57:28+00:00",
+      "lastSuccessAt": "2026-09-03T07:57:28+00:00",
       "consecutiveFailures": 0
     },
     "DGIST": {
@@ -70,8 +70,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 1,
-      "lastRunAt": "2026-09-03T07:16:02+00:00",
-      "lastSuccessAt": "2026-09-03T07:16:02+00:00",
+      "lastRunAt": "2026-09-03T07:57:28+00:00",
+      "lastSuccessAt": "2026-09-03T07:57:28+00:00",
       "consecutiveFailures": 0
     },
     "ITRI": {
@@ -79,19 +79,18 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 10,
-      "lastRunAt": "2026-09-03T07:16:02+00:00",
-      "lastSuccessAt": "2026-09-03T07:16:02+00:00",
+      "lastRunAt": "2026-09-03T07:57:28+00:00",
+      "lastSuccessAt": "2026-09-03T07:57:28+00:00",
       "consecutiveFailures": 0
     },
     "KAIST": {
-      "ok": false,
-      "lastStatus": "오류",
-      "lastError": "KAIST 요청이 4회 실패했습니다: <urlopen error timed out>",
-      "collectedThisRun": 0,
-      "lastRunAt": "2026-09-03T07:16:02+00:00",
-      "lastSuccessAt": "2026-09-03T04:36:21+00:00",
-      "consecutiveFailures": 3,
-      "failureAlertSent": true
+      "ok": true,
+      "lastStatus": "정상",
+      "lastError": null,
+      "collectedThisRun": 1,
+      "lastRunAt": "2026-09-03T07:57:28+00:00",
+      "lastSuccessAt": "2026-09-03T07:57:28+00:00",
+      "consecutiveFailures": 0
     }
   },
   "items": [
@@ -2060,8 +2059,8 @@
     },
     {
       "id": "ebnew709728930",
-      "title": "산시성(Shaanxi) 전자 신예스다이 과학기술 유한공사 8인치 고성능 특화 공정 반도체 칩 생산라인 프로젝트 8인치 D-Poly 퍼니스 튜브 장비 구매 낙찰 결과 공고 (1)",
-      "translatedTitle": "산시성(Shaanxi) 전자 신예스다이 과학기술 유한공사 8인치 고성능 특화 공정 반도체 칩 생산라인 프로젝트 8인치 D-Poly 퍼니스 튜브 장비 구매 낙찰 결과 공고 (1)",
+      "title": "산시성(Shaanxi) 전자 신예스다이 과학기술 유한공사 8인치 고성능 특화 공정 반도체 칩 생산라인 프로젝트 8인치 D-Poly 퍼니스 튜브 장비 낙찰 결과 공고 (1)",
+      "translatedTitle": "산시성(Shaanxi) 전자 신예스다이 과학기술 유한공사 8인치 고성능 특화 공정 반도체 칩 생산라인 프로젝트 8인치 D-Poly 퍼니스 튜브 장비 낙찰 결과 공고 (1)",
       "originalTitle": "陕西电子芯业时代科技有限公司8英寸高性能特色工艺半导体芯片生产线项目8吋D-Poly炉管设备采购中标结果公告(1)",
       "translatedSummary": "8CunD-POLYLuGuan 장비 , 반도체 XinPian",
       "originalSummary": "8吋D-POLY炉管设备,半导体芯片",
@@ -2787,8 +2786,8 @@
     },
     {
       "id": "jetro399379",
-      "title": "건식 식각 장비 2식",
-      "translatedTitle": "건식 식각 장비 2식",
+      "title": "팝업레이어 알림 2식",
+      "translatedTitle": "팝업레이어 알림 2식",
       "originalTitle": "Dry Etching System 2 sets",
       "translationIncomplete": false,
       "org": "National University Corporation - Hokkaido",
@@ -2898,8 +2897,8 @@
     },
     {
       "id": "jetro397774",
-      "title": "전자빔 리소그래피 장비(자동화된 취급과 PEB 단위 포함) 1식",
-      "translatedTitle": "전자빔 리소그래피 장비(자동화된 취급과 PEB 단위 포함) 1식",
+      "title": "전자빔 리소그래피 장비 자동 취급 및 PEB 단위 장착 1식",
+      "translatedTitle": "전자빔 리소그래피 장비 자동 취급 및 PEB 단위 장착 1식",
       "originalTitle": "E-beam Lithography System equipped with automated handling and PEB unit 1 set",
       "translationIncomplete": false,
       "org": "NIMS(일본 물질·재료연구기구) - Ibaraki",
