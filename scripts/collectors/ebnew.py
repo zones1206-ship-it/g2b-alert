@@ -35,7 +35,7 @@ import urllib.error
 import urllib.parse
 from datetime import datetime, timedelta
 
-from .common import normalize_text, FetchState, NETWORK_EXCEPTIONS
+from .common import normalize_text, FetchState, NETWORK_EXCEPTIONS, should_retry, retry_delay, looks_like_empty_board
 from . import zh_translate
 from . import zh_ko_argos
 from . import translation_memory
@@ -180,9 +180,15 @@ def fetch(url: str, data: bytes = None) -> str:
                 return res.read().decode("utf-8", "ignore")
         except NETWORK_EXCEPTIONS as exc:
             last_error = exc
+            # 403/404처럼 서버가 명확히 답한 HTTP 오류는 재시도하지 않는다
+            # (429·5xx만 재시도 — collectors/common.py의 should_retry 참고).
+            if not should_retry(exc):
+                print(f"[EBNEW] 재시도하지 않는 오류로 즉시 중단: {exc}")
+                break
             if attempt < MAX_RETRY_ATTEMPTS:
-                print(f"[EBNEW] 요청 실패({exc}), {RETRY_DELAY_SECONDS}초 후 재시도 {attempt}/{MAX_RETRY_ATTEMPTS - 1}")
-                time.sleep(RETRY_DELAY_SECONDS)
+                delay = retry_delay(exc, RETRY_DELAY_SECONDS)
+                print(f"[EBNEW] 요청 실패({exc}), {delay:.0f}초 후 재시도 {attempt}/{MAX_RETRY_ATTEMPTS - 1}")
+                time.sleep(delay)
     raise RuntimeError(f"EBNEW 요청이 {MAX_RETRY_ATTEMPTS}회 실패했습니다: {last_error}")
 
 
@@ -200,6 +206,27 @@ FIELD_PATTERN = re.compile(
 )
 
 
+# EBNEW 검색 결과 HTML이 상세 링크를 실행마다 http:// / https:// 로 번갈아
+# 내보낸다(커밋 이력에서 확인). 내용은 같은데 announcements.json에 매번
+# 20줄씩 무의미한 diff가 생기므로, 저장 전에 스킴만 https로 고정한다.
+#
+# 도메인·경로·쿼리·공고 id는 절대 건드리지 않는다. EBNEW 공식 도메인에만
+# 적용하며(다른 도메인을 억지로 https로 바꾸지 않는다), 실제로 https로
+# 정상 접속되는 것을 확인했다.
+EBNEW_HOSTS = ("www.ebnew.com", "ebnew.com", "ss.ebnew.com")
+
+
+def canonical_url(url: str) -> str:
+    """EBNEW 공식 도메인의 http:// 링크를 https:// 로만 바꾼다."""
+    if not url:
+        return url
+    for host in EBNEW_HOSTS:
+        prefix = f"http://{host}/"
+        if url.startswith(prefix):
+            return "https://" + url[len("http://"):]
+    return url
+
+
 def parse_search_results(raw_html: str):
     """검색 결과 HTML을 abstract-box 블록 단위로 나눠 각 블록에서
     태그/제목/URL/필드(항목명:값)를 추출한다."""
@@ -214,7 +241,7 @@ def parse_search_results(raw_html: str):
         fields = {m.group("label").strip(): m.group("value").strip() for m in FIELD_PATTERN.finditer(block)}
         rows.append({
             "tag": tag_m.group(1).strip() if tag_m else None,
-            "url": link_m.group(1),
+            "url": canonical_url(link_m.group(1)),
             "title": html_lib.unescape(link_m.group(2)),
             "date": date_m.group(1) if date_m else None,
             "fields": fields,
@@ -484,7 +511,8 @@ def collect():
                 print(f"[EBNEW] '{keyword}' 검색 실패, 다음 키워드로 넘어감: {exc}")
                 break
 
-            rows = FETCH_STATE.mark(parse_search_results(html))
+            rows = FETCH_STATE.mark(parse_search_results(FETCH_STATE.mark_page(html)),
+                                     structure_ok=looks_like_empty_board(html))
             if not rows:
                 break
 

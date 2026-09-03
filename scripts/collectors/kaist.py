@@ -26,7 +26,7 @@ import html as html_lib
 import urllib.error
 import urllib.request
 
-from .common import TGV_STRONG_TERMS, FetchState, NETWORK_EXCEPTIONS
+from .common import TGV_STRONG_TERMS, FetchState, NETWORK_EXCEPTIONS, should_retry, retry_delay, looks_like_empty_board
 
 SOURCE_NAME = "KAIST (한국)"
 SOURCE_CODE = "KAIST"
@@ -95,8 +95,13 @@ def fetch(url):
                 return res.read().decode("utf-8", "ignore")
         except NETWORK_EXCEPTIONS as exc:
             last_error = exc
+            # 403/404처럼 서버가 명확히 답한 HTTP 오류는 재시도하지 않는다
+            # (429·5xx만 재시도 — collectors/common.py의 should_retry 참고).
+            if not should_retry(exc):
+                print(f"[KAIST] 재시도하지 않는 오류로 즉시 중단: {exc}")
+                break
             if attempt < MAX_RETRY_ATTEMPTS:
-                delay = RETRY_DELAY_SECONDS * (2 ** (attempt - 1))
+                delay = retry_delay(exc, RETRY_DELAY_SECONDS * (2 ** (attempt - 1)))
                 print(f"[KAIST] 요청 실패({exc}), {delay}초 후 재시도 {attempt}/{MAX_RETRY_ATTEMPTS - 1}")
                 time.sleep(delay)
     raise RuntimeError(f"KAIST 요청이 {MAX_RETRY_ATTEMPTS}회 실패했습니다: {last_error}")
@@ -221,7 +226,8 @@ FETCH_STATE = FetchState("KAIST")
 def collect():
     FETCH_STATE.reset()
     html = fetch(LIST_URL)
-    rows = FETCH_STATE.mark(parse_list(html))
+    rows = FETCH_STATE.mark(parse_list(FETCH_STATE.mark_page(html)),
+                            structure_ok=looks_like_empty_board(html))
     print(f"[KAIST] 조회 대상(raw): {len(rows)}건")
 
     included, excluded = [], {}

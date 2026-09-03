@@ -35,7 +35,7 @@ import html as html_lib
 import urllib.request
 import urllib.error
 
-from .common import normalize_text, TGV_STRONG_TERMS, FetchState, NETWORK_EXCEPTIONS
+from .common import normalize_text, TGV_STRONG_TERMS, FetchState, NETWORK_EXCEPTIONS, should_retry, retry_delay, looks_like_empty_board
 
 SOURCE_NAME = "나노종합기술원"
 SOURCE_CODE = "NNFC"
@@ -78,9 +78,15 @@ def fetch_html(url: str) -> str:
                 return res.read().decode("utf-8", "ignore")
         except NETWORK_EXCEPTIONS as exc:
             last_error = exc
+            # 403/404처럼 서버가 명확히 답한 HTTP 오류는 재시도하지 않는다
+            # (429·5xx만 재시도 — collectors/common.py의 should_retry 참고).
+            if not should_retry(exc):
+                print(f"[NNFC] 재시도하지 않는 오류로 즉시 중단: {exc}")
+                break
             if attempt < MAX_RETRY_ATTEMPTS:
-                print(f"[NNFC] 요청 실패({exc}), {RETRY_DELAY_SECONDS}초 후 재시도 {attempt}/{MAX_RETRY_ATTEMPTS - 1}")
-                time.sleep(RETRY_DELAY_SECONDS)
+                delay = retry_delay(exc, RETRY_DELAY_SECONDS)
+                print(f"[NNFC] 요청 실패({exc}), {delay:.0f}초 후 재시도 {attempt}/{MAX_RETRY_ATTEMPTS - 1}")
+                time.sleep(delay)
     raise RuntimeError(f"NNFC 페이지 요청이 {MAX_RETRY_ATTEMPTS}회 실패했습니다: {last_error}")
 
 
@@ -307,7 +313,8 @@ def collect():
             print(f"[NNFC {page}] 목록 페이지 요청 실패, 이후 페이지 중단: {exc}")
             break
 
-        rows = FETCH_STATE.mark(parse_list_page(list_html))
+        rows = FETCH_STATE.mark(parse_list_page(FETCH_STATE.mark_page(list_html)),
+                                structure_ok=looks_like_empty_board(list_html))
         if not rows:
             print(f"[NNFC {page}] 게시물 없음, 중단")
             break

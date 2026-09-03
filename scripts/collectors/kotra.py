@@ -50,7 +50,7 @@ import urllib.request
 import urllib.error
 from datetime import datetime, date, timedelta
 
-from .common import normalize_text, TGV_STRONG_TERMS, FetchState
+from .common import normalize_text, TGV_STRONG_TERMS, FetchState, should_retry, retry_delay, looks_like_empty_board
 
 SOURCE_NAME = "대한무역투자진흥공사"
 SOURCE_CODE = "KOTRA"
@@ -150,12 +150,17 @@ def fetch(url: str, data: bytes = None) -> str:
         # OSError + HTTPException으로 받아 URLError/TimeoutError까지 함께 덮는다.
         except (OSError, http.client.HTTPException) as exc:
             last_error = exc
+            # 403/404처럼 서버가 명확히 답한 HTTP 오류는 재시도하지 않는다
+            # (429·5xx만 재시도 — collectors/common.py의 should_retry 참고).
+            if not should_retry(exc):
+                print(f"[KOTRA] 재시도하지 않는 오류로 즉시 중단: {exc}")
+                break
             if attempt < MAX_RETRY_ATTEMPTS:
                 # 고정 간격 대신 지수 백오프(4초 → 8초 → 16초). KOTRA 서버가
                 # 일시적으로 연결을 끊거나(Remote end closed) 응답이 느릴 때
                 # 곧바로 다시 찔러 같은 실패를 반복하는 것을 줄인다.
                 # 시도 횟수는 MAX_RETRY_ATTEMPTS로 제한된다(무한 재시도 없음).
-                delay = RETRY_DELAY_SECONDS * (2 ** (attempt - 1))
+                delay = retry_delay(exc, RETRY_DELAY_SECONDS * (2 ** (attempt - 1)))
                 print(f"[KOTRA] 요청 실패({exc}), {delay:.0f}초 후 재시도 {attempt}/{MAX_RETRY_ATTEMPTS - 1}")
                 time.sleep(delay)
     raise RuntimeError(f"KOTRA 페이지 요청이 {MAX_RETRY_ATTEMPTS}회 실패했습니다: {last_error}")
@@ -417,7 +422,8 @@ def collect():
                 print(f"[KOTRA] 목록 페이지 요청 실패, 이 목록은 여기서 중단: {exc}")
                 break
 
-            cards = FETCH_STATE.mark(parse_list_cards(list_html))
+            cards = FETCH_STATE.mark(parse_list_cards(FETCH_STATE.mark_page(list_html)),
+                                     structure_ok=looks_like_empty_board(list_html))
             if not cards:
                 break
 

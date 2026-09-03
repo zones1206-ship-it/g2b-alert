@@ -43,6 +43,14 @@ jobs:
         continue-on-error: true
         run: python scripts/install_translation_model.py
 
+      # 핵심 규칙 회귀테스트(네트워크 재시도/FetchState/장비 판정/Telegram
+      # 중복 방지). 실제 네트워크나 번역 모델을 쓰지 않아 1초 안에 끝난다.
+      # 여기서 실패하면 수집을 진행하지 않는다 — 잘못된 분류나 중복 알림이
+      # 담긴 데이터를 커밋하는 것보다 그날 갱신을 건너뛰는 편이 안전하다
+      # (기존 데이터는 그대로 남고, Actions 실패로 즉시 눈에 띈다).
+      - name: 핵심 규칙 회귀테스트
+        run: python -m unittest discover -s tests
+
       - name: Snapshot previous data (신규 공고 판별용)
         run: cp data/announcements.json data/announcements.before.json
 

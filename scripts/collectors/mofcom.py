@@ -45,7 +45,7 @@ import urllib.error
 import urllib.parse
 from datetime import datetime, timedelta
 
-from .common import normalize_text, FetchState, NETWORK_EXCEPTIONS
+from .common import normalize_text, FetchState, NETWORK_EXCEPTIONS, should_retry, retry_delay
 from . import zh_translate
 from .ebnew import is_relevant_list_stage, is_equipment_purchase, match_categories
 
@@ -107,9 +107,15 @@ def fetch(url: str, data: bytes = None) -> str:
                 return res.read().decode("utf-8", "ignore")
         except NETWORK_EXCEPTIONS as exc:
             last_error = exc
+            # 403/404처럼 서버가 명확히 답한 HTTP 오류는 재시도하지 않는다
+            # (429·5xx만 재시도 — collectors/common.py의 should_retry 참고).
+            if not should_retry(exc):
+                print(f"[MOFCOM] 재시도하지 않는 오류로 즉시 중단: {exc}")
+                break
             if attempt < MAX_RETRY_ATTEMPTS:
-                print(f"[MOFCOM] 요청 실패({exc}), {RETRY_DELAY_SECONDS}초 후 재시도 {attempt}/{MAX_RETRY_ATTEMPTS - 1}")
-                time.sleep(RETRY_DELAY_SECONDS)
+                delay = retry_delay(exc, RETRY_DELAY_SECONDS)
+                print(f"[MOFCOM] 요청 실패({exc}), {delay:.0f}초 후 재시도 {attempt}/{MAX_RETRY_ATTEMPTS - 1}")
+                time.sleep(delay)
     raise RuntimeError(f"MOFCOM 요청이 {MAX_RETRY_ATTEMPTS}회 실패했습니다: {last_error}")
 
 
@@ -258,7 +264,9 @@ def collect():
                 print(f"[MOFCOM] '{keyword}' 검색 실패, 다음 키워드로 넘어감: {exc}")
                 break
 
-            rows = FETCH_STATE.mark(payload.get("rows") or [])
+            rows = FETCH_STATE.mark(
+                    payload.get("rows") or [],
+                    structure_ok=isinstance(payload, dict) and "rows" in payload)
             if not rows:
                 break
 

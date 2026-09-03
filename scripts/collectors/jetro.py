@@ -39,7 +39,7 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta
 
-from .common import TGV_STRONG_TERMS, FetchState, NETWORK_EXCEPTIONS
+from .common import TGV_STRONG_TERMS, FetchState, NETWORK_EXCEPTIONS, should_retry, retry_delay
 from . import en_ko_argos, en_translate, translation_memory
 
 SOURCE_NAME = "JETRO (일본)"
@@ -141,8 +141,13 @@ def fetch(url, headers, retries=MAX_RETRY_ATTEMPTS):
                 return res.read().decode("utf-8", "ignore")
         except NETWORK_EXCEPTIONS as exc:
             last_error = exc
+            # 403/404처럼 서버가 명확히 답한 HTTP 오류는 재시도하지 않는다
+            # (429·5xx만 재시도 — collectors/common.py의 should_retry 참고).
+            if not should_retry(exc):
+                print(f"[JETRO] 재시도하지 않는 오류로 즉시 중단: {exc}")
+                break
             if attempt < retries:
-                delay = RETRY_DELAY_SECONDS * attempt
+                delay = retry_delay(exc, RETRY_DELAY_SECONDS * attempt)
                 print(f"[JETRO] 요청 실패({exc}), {delay}초 후 재시도 {attempt}/{retries - 1}")
                 time.sleep(delay)
     raise RuntimeError(f"JETRO 요청이 {retries}회 실패했습니다: {last_error}")
@@ -358,7 +363,9 @@ def collect():
             except RuntimeError as exc:
                 print(f"[JETRO] '{keyword}' 검색 실패, 다음 키워드로 넘어감: {exc}")
                 break
-            items = FETCH_STATE.mark(data.get("items") or [])
+            items = FETCH_STATE.mark(
+                data.get("items") or [],
+                structure_ok=isinstance(data, dict) and "items" in data)
             raw_count += len(items)
             if not items:
                 break

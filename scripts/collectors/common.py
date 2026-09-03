@@ -55,7 +55,9 @@ stamp_first_seen()이 모든 소스를 합친 뒤 한 번에 부여한다(같은
 그냥 표시를 생략하므로 다른 수집원에 영향이 없다.
 """
 
+import email.utils
 import http.client
+import urllib.error
 
 # 사용자에게 노출되는 최상위 관심 분야 (홈 화면 토글 카드 / 결과 화면 그룹)
 CATEGORIES = ["반도체 장비", "디스플레이 장비", "TGV 장비"]
@@ -135,9 +137,86 @@ def normalize_text(text: str) -> str:
 # 등 코드·데이터 버그)까지 "네트워크 재시도"로 숨기면 진짜 버그를 놓친다.
 NETWORK_EXCEPTIONS = (OSError, http.client.HTTPException)
 
+# 재시도할 가치가 있는 HTTP 상태코드.
+#   429      요청이 몰렸다는 신호 — 잠시 뒤 재시도(Retry-After 존중)
+#   5xx 일부 서버 쪽 일시 장애 — 제한 재시도
+# 403/404/그 외 4xx는 서버가 "명확한 답"을 준 것이므로 재시도하지 않는다.
+# (403이 간헐적으로 정상 복구된 근거가 있는 출처가 생기면 그때 개별 판단한다.)
+RETRYABLE_HTTP_STATUS = frozenset({429, 500, 502, 503, 504})
+
+# Retry-After를 그대로 믿으면 워크플로가 몇 분씩 멈출 수 있어 상한을 둔다.
+RETRY_AFTER_MAX_SECONDS = 30
+
+
+def should_retry(exc) -> bool:
+    """네트워크 예외를 재시도할지 판단한다.
+
+    urllib.error.HTTPError는 URLError→OSError 계열이라 NETWORK_EXCEPTIONS에
+    같이 잡힌다. 그대로 두면 403·404까지 재시도하게 되므로 여기서 먼저
+    분리해 상태코드로 판단한다. 연결 계층 오류(timeout/RemoteDisconnected/
+    ConnectionReset 등)는 전부 재시도 대상이다."""
+    if isinstance(exc, urllib.error.HTTPError):
+        return exc.code in RETRYABLE_HTTP_STATUS
+    return True
+
+
+def retry_delay(exc, base_delay):
+    """대기 시간을 정한다. 429/503이 Retry-After를 주면 그걸 존중한다.
+
+    Retry-After는 초(delta-seconds) 또는 HTTP-date 두 형식이 모두 허용되므로
+    둘 다 처리하고, RETRY_AFTER_MAX_SECONDS로 상한을 둔다(무한 대기 방지).
+    헤더가 없거나 해석할 수 없으면 각 수집기의 기존 backoff 값을 쓴다."""
+    if not isinstance(exc, urllib.error.HTTPError):
+        return base_delay
+    raw = None
+    try:
+        raw = exc.headers.get("Retry-After") if exc.headers else None
+    except AttributeError:
+        raw = None
+    if not raw:
+        return base_delay
+    raw = raw.strip()
+    seconds = None
+    if raw.isdigit():
+        seconds = int(raw)
+    else:
+        try:
+            when = email.utils.parsedate_to_datetime(raw)
+        except (TypeError, ValueError):
+            when = None
+        if when is not None:
+            import datetime
+            now = datetime.datetime.now(when.tzinfo) if when.tzinfo else datetime.datetime.now()
+            seconds = max(0, (when - now).total_seconds())
+    if seconds is None:
+        return base_delay
+    return min(max(seconds, base_delay), RETRY_AFTER_MAX_SECONDS)
+
+
+# 게시판이 "진짜로 비어 있다"고 페이지가 직접 말하는 문구.
+# 목록 행이 0건일 때 이 문구가 있으면 정상 빈 게시판으로 본다. 문구가 없으면
+# 페이지 구조가 바뀐 것일 수 있으므로 보수적으로 장애로 남긴다(정상으로
+# 잘못 판정하면 낡은 데이터가 조용히 사라진다).
+EMPTY_BOARD_MARKERS = (
+    "게시물이 없습니다", "게시글이 없습니다", "게시물이 존재하지 않습니다",
+    "검색결과가 없습니다", "검색 결과가 없습니다", "조회된 결과가 없습니다",
+    "조회된 내용이 없습니다", "등록된 자료가 없습니다", "자료가 없습니다",
+    "데이터가 없습니다", "결과가 없습니다", "내역이 없습니다",
+    "no data", "no result", "no records",
+    "沒有資料", "查無資料", "無資料", "暂无数据", "没有数据", "无数据",
+)
+
+
+def looks_like_empty_board(body) -> bool:
+    """페이지가 스스로 "목록이 비었다"고 알려주는지 확인한다."""
+    if not body:
+        return False
+    low = body.lower()
+    return any(m.lower() in low for m in EMPTY_BOARD_MARKERS)
+
 
 class FetchState:
-    """수집기가 "원본 목록을 실제로 읽고 파싱했는지"를 기록한다.
+    """수집기가 원본 목록을 어디까지 성공했는지 단계별로 기록한다.
 
     왜 필요한가 (2026-09-03 ITRI에서 실제로 발생):
       장비 전용 필터를 세게 걸면 사이트는 멀쩡한데 조건을 통과한 공고가
@@ -145,31 +224,77 @@ class FetchState:
       낡은 데이터를 붙들고, Health를 장애로 기록하고, 연속 3회면 잘못된
       장애 Telegram까지 나간다.
 
-    구분 기준은 하나다 — **목록을 실제로 받아 파싱했는가**.
-      fetch 성공 + parse 성공 + 필터 결과 0건  → 정상 0건
-      접속/파싱 자체 실패(빈 목록만 얻음)        → 장애
+    처음에는 "목록 행이 1건 이상이면 성공"으로만 판단했는데, 그러면
+    **게시판이 진짜로 0건인 날**도 장애로 잡힌다. 그래서 네 가지를 분리한다:
 
-    단순히 collect()가 []를 돌려줬다는 이유만으로 정상 처리하지 않는다.
-    한 건이라도 목록 행을 파싱했을 때만 fetched=True가 된다.
+      network_fetched : 목록 페이지 본문을 실제로 받았는가
+      parse_succeeded : 그 페이지가 우리가 아는 구조였는가
+                        (행이 0건이어도 목록 컨테이너가 있으면 True)
+      item_count      : 원본 목록에서 파싱한 행 수
+      filtered_count  : 우리 조건을 통과한 수(수집기가 알려줄 때만)
+
+    판정:
+      network_fetched=True, parse_succeeded=True, item_count=0  → 정상 0건
+      network_fetched=False 또는 parse_succeeded=False           → 장애
 
     사용법(수집기):
-        FETCH_STATE = FetchState("KANC")      # 모듈 상단
+        FETCH_STATE = FetchState("KANC")            # 모듈 상단
         def collect():
-            FETCH_STATE.reset()               # 실행 시작 시
-            rows = FETCH_STATE.mark(parse_list_page(html))   # 파싱 직후
+            FETCH_STATE.reset()                     # 실행 시작 시
+            html = fetch_html(url)
+            FETCH_STATE.mark_page(html)             # 본문 수신 기록
+            rows = FETCH_STATE.mark(parse_list_page(html),
+                                    structure_ok=has_list_container(html))
     """
 
-    __slots__ = ("name", "fetched")
+    __slots__ = ("name", "network_fetched", "parse_succeeded",
+                 "item_count", "filtered_count")
 
     def __init__(self, name):
         self.name = name
-        self.fetched = False
+        self.reset()
 
     def reset(self):
-        self.fetched = False
+        self.network_fetched = False
+        self.parse_succeeded = False
+        self.item_count = 0
+        self.filtered_count = None
 
-    def mark(self, rows):
-        """파싱 결과를 그대로 돌려주면서, 한 건이라도 있으면 성공으로 기록한다."""
+    def mark_page(self, body):
+        """목록 페이지 본문을 받았음을 기록한다(내용 판단은 하지 않는다)."""
+        if body:
+            self.network_fetched = True
+        return body
+
+    def mark(self, rows, structure_ok=None):
+        """파싱 결과를 그대로 돌려주면서 단계별 상태를 갱신한다.
+
+        rows가 비어 있어도 structure_ok=True(목록 컨테이너를 찾았다)면
+        "진짜 빈 게시판"으로 보고 파싱 성공으로 기록한다. structure_ok를
+        주지 않으면 예전과 같이 행이 있을 때만 성공으로 본다(보수적).
+        """
+        rows = rows or []
         if rows:
-            self.fetched = True
+            self.network_fetched = True
+            self.parse_succeeded = True
+            self.item_count += len(rows)
+        elif structure_ok:
+            self.network_fetched = True
+            self.parse_succeeded = True
         return rows
+
+    def mark_filtered(self, count):
+        """우리 조건을 통과한 건수를 기록한다(로그·판정 근거용)."""
+        self.filtered_count = count
+
+    @property
+    def fetched(self):
+        """정상 수집으로 볼 수 있는가(=정상 0건 포함).
+
+        fetch_announcements가 이 값만 보고 "정상 0건 / 장애"를 가른다.
+        예전 이름을 그대로 두어 호출부를 바꾸지 않았다."""
+        return self.network_fetched and self.parse_succeeded
+
+    def summary(self):
+        return (f"network={self.network_fetched} parse={self.parse_succeeded} "
+                f"items={self.item_count} filtered={self.filtered_count}")
