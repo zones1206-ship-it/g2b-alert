@@ -11,6 +11,13 @@
                      (China Site — EBNEW와 동일한 번역/관련성 판정 로직 재사용)
 - collectors.kriss  : 한국표준과학연구원(KRISS) 입찰공고 게시판
                      (KANC와 동일한 4단계 관련성 판정 로직 재사용)
+- collectors.jetro  : JETRO(일본무역진흥기구) 일본 정부조달 데이터베이스
+                     (AIST/RIKEN/NIMS/일본 대학 공고가 이 한 곳에 모인다 —
+                      기관별 수집기를 따로 두지 않고 여기서 먼저 수집한다.
+                      영문 공고라 en_translate 용어집으로 한국어 우선 표기)
+- collectors.dgist  : 대구경북과학기술원(DGIST) 입찰정보 게시판
+                     (국내 공고라 번역 불필요. Actions에서 간헐적 연결
+                      끊김이 있어 재시도로 커버한다)
 
 (과거 나라장터(G2B) 오픈API 수집기가 있었으나, 전체 공고 대비 실제
 장비 구매 공고 비율이 낮고 502 오류·복잡한 필터링 문제로 제거했다.
@@ -45,7 +52,7 @@ for _stream in (sys.stdout, sys.stderr):
     if hasattr(_stream, "reconfigure"):
         _stream.reconfigure(encoding="utf-8", errors="replace")
 
-from collectors import kanc, nnfc, kotra, ebnew, mofcom, kriss
+from collectors import kanc, nnfc, kotra, ebnew, mofcom, kriss, jetro, dgist
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "announcements.json")
 
@@ -56,6 +63,8 @@ COLLECTORS = [
     ("EBNEW", ebnew),
     ("MOFCOM", mofcom),
     ("KRISS", kriss),
+    ("JETRO", jetro),
+    ("DGIST", dgist),
 ]
 
 # 마감돼도 삭제하지 않고 계속 보여줄 출처 (영업 정보로서 가치가 있는 경우)

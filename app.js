@@ -22,6 +22,8 @@ const SOURCE_LINK_LABELS = {
   NNFC: "나노종합기술원 원문 보기",
   KOTRA: "KOTRA 원문 보기",
   EBNEW: "비롄왕(EBNEW) 원문 보기",
+  JETRO: "JETRO(일본 정부조달) 원문 보기",
+  DGIST: "DGIST 원문 보기",
 };
 
 const NOTICE_TYPE_LABELS = {

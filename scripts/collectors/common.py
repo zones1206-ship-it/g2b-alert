@@ -80,6 +80,8 @@ SOURCES = [
     {"code": "EBNEW", "name": "중국 비롄왕(EBNEW)"},
     {"code": "MOFCOM", "name": "중국국제초표망(MOFCOM)"},
     {"code": "KRISS", "name": "한국표준과학연구원"},
+    {"code": "JETRO", "name": "JETRO (일본)"},
+    {"code": "DGIST", "name": "DGIST (한국)"},
 ]
 
 # 실제로 접근을 시도했으나 현재 수집이 불가능해 미구현 상태로 남겨둔
