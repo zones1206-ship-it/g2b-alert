@@ -110,6 +110,19 @@ body {
 }
 .source-chip b { color: var(--accent); font-weight: 700; }
 
+/* 수집 실패 경고 — 평소에는 hidden이라 헤더 높이에 영향이 없다. */
+.source-health {
+  margin: 4px 0 0;
+  padding: 5px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #92400e;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 6px;
+}
+.source-health[hidden] { display: none; }
+
 .source-pending {
   width: 100%;
   font-size: 11px;
@@ -367,6 +380,20 @@ body {
 .notice-type-project { background: #eef1fb; color: var(--navy-soft); }
 .notice-type-consult { background: #e8f7f0; color: var(--green); }
 .notice-type-result { background: #f3e8fd; color: #7c3aed; }
+/* 자동 번역이 불완전한 중국 공고 표시 — 제목만으로 내용 판단이 어려우니
+   상세의 원문(중국어)/원문 링크를 보라는 신호다. 기존 배지들과 같은 줄에
+   붙어 카드 높이를 늘리지 않는다. */
+.translation-badge {
+  font-size: 10.5px; font-weight: 800;
+  color: #92600a;
+  background: #fff4de;
+  border: 1px solid #f5dcae;
+  border-radius: 5px;
+  padding: 1px 6px;
+  white-space: nowrap;
+  cursor: help;
+}
+
 /* 최초 발견(firstSeenAt) 48시간 이내 공고 표시 — 정식입찰 등 기존 배지와
    같은 줄(.notice-tags)에 나란히 붙어서 카드 높이를 늘리지 않는다. */
 .new-badge {

@@ -206,6 +206,16 @@ function ddayBadge(dateStr) {
   return `<span class="dday-badge ${cls}">${label}</span>`;
 }
 
+// 원문에서 가져온 status는 수집 시점 값이라 마감일이 지나도 "진행중"으로
+// 남는다(마감돼도 계속 보여주는 KOTRA/EBNEW/MOFCOM에서 실제로 발생).
+// 카드의 D-day 배지는 마감일 기준으로 "마감"을 표시하는데 상세의 상태만
+// "진행중"이면 같은 카드 안에서 정보가 충돌하므로, 표시할 때 마감일을
+// 우선한다. 데이터 파일 자체는 수정하지 않고 화면 표시만 보정한다.
+function displayStatus(item) {
+  if (item.dueDate && daysUntil(item.dueDate) < 0) return "마감";
+  return item.status;
+}
+
 function topTags(item) {
   const flag = COUNTRY_FLAGS[item.country] || "";
   const countryLabel = flag ? `${flag} ${item.country}` : (item.country || "국가 미상");
@@ -217,6 +227,12 @@ function topTags(item) {
   const noticeType = NOTICE_TYPE_LABELS[item.noticeType];
   if (noticeType) {
     tags.push(`<span class="notice-type-badge ${noticeType.cls}">${noticeType.label}</span>`);
+  }
+  // 번역이 불완전한 중국 공고(용어집에 없어 로마자 표기로 폴백된 경우)는
+  // 제목만으로 내용을 알 수 없으므로, 원문 확인이 필요하다는 것을 알린다.
+  // 원문 제목은 상세의 "원문(중국어)" 블록, 원문 링크는 하단 버튼에 그대로 있다.
+  if (item.translationIncomplete) {
+    tags.push(`<span class="translation-badge" title="자동 번역이 불완전합니다. 상세의 원문(중국어)과 원문 링크를 확인하세요.">번역 미완료</span>`);
   }
   if (isNewItem(item)) {
     tags.push(`<span class="new-badge">NEW</span>`);
@@ -307,7 +323,7 @@ function renderCard(item, kw) {
             ${detailRow("등록일", item.postedDate || "확인 필요")}
             ${detailRow("마감일", item.dueDate || "마감일 확인 필요")}
             ${detailRow("행사 기간", item.eventPeriod)}
-            ${detailRow("상태", item.status)}
+            ${detailRow("상태", displayStatus(item))}
           </dl>
         </div>
         ${businessRows ? `<div class="detail-section"><h4>사업 정보</h4><dl class="notice-detail-list">${businessRows}</dl></div>` : ""}
@@ -773,6 +789,27 @@ function showTab(tab) {
   }
 }
 
+// 수집이 실패한 출처가 있으면 헤더에 경고를 띄운다 — 실패해도 그 출처의
+// 이전 수집분이 화면에 그대로 남기 때문에, 표시가 없으면 낡은 데이터를
+// 최신으로 오해하게 된다. 정상일 때는 아무것도 표시하지 않는다.
+function renderSourceHealth() {
+  const el = document.getElementById("sourceHealthNotice");
+  if (!el) return;
+  const health = state.data.sourceHealth || {};
+  const failing = Object.entries(health).filter(([, h]) => h && h.ok === false);
+  if (failing.length === 0) {
+    el.hidden = true;
+    el.textContent = "";
+    return;
+  }
+  const parts = failing.map(([code, h]) => {
+    const last = h.lastSuccessAt ? formatUpdatedAt(h.lastSuccessAt).replace("마지막 업데이트 ", "") : "기록 없음";
+    return `${code}(마지막 정상 수집 ${last})`;
+  });
+  el.hidden = false;
+  el.textContent = `⚠ 수집 실패 중: ${parts.join(", ")} — 해당 출처는 이전에 수집된 공고가 그대로 표시됩니다.`;
+}
+
 async function loadData() {
   try {
     const res = await fetch("data/announcements.json", { cache: "no-store" });
@@ -784,6 +821,7 @@ async function loadData() {
   const updatedText = formatUpdatedAt(state.data.updatedAt);
   document.getElementById("updatedAt").innerHTML = `🔄 ${updatedText}`;
   document.getElementById("updatedAt2").innerHTML = `🔄 ${updatedText}`;
+  renderSourceHealth();
   // 데이터가 늦게 도착해도 현재 보고 있는 탭을 다시 그려 숫자/차트를 채운다.
   const active = document.querySelector(".bottom-nav-item.active");
   showTab(active ? active.dataset.tab : "home");

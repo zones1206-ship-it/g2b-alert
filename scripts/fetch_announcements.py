@@ -62,14 +62,18 @@ COLLECTORS = [
 KEEP_EXPIRED_SOURCES = {"KOTRA", "EBNEW", "MOFCOM"}
 
 
-def load_existing_items():
+def load_existing_data():
+    """이전 실행 결과 전체(items + sourceHealth)를 읽는다. sourceHealth는
+    수집원별 마지막 정상 수집 시각/연속 실패 횟수를 실행 간에 이어받기
+    위해 필요하다(파일이 유일한 저장소라 여기 같이 보관한다)."""
     if not os.path.exists(DATA_PATH):
-        return []
+        return [], {}
     try:
         with open(DATA_PATH, "r", encoding="utf-8") as f:
-            return json.load(f).get("items", [])
+            data = json.load(f)
+        return data.get("items", []), data.get("sourceHealth", {}) or {}
     except (json.JSONDecodeError, OSError):
-        return []
+        return [], {}
 
 
 def run_collector(name, module, existing_items, log):
@@ -90,6 +94,51 @@ def run_collector(name, module, existing_items, log):
 
     log[name] = {"status": "정상", "detail": None, "count": len(items)}
     return items
+
+
+def build_source_health(log, previous_health, now_iso):
+    """수집원별 상태를 계산한다 — 수집이 실패해도 워크플로는 성공으로 끝나기
+    때문에, 어느 수집원이 언제부터 고장났는지 여기에 남겨야 알 수 있다.
+
+    - ok               : 이번 실행에서 새로 수집됐는지
+    - lastSuccessAt    : 마지막으로 정상 수집된 시각(실패해도 이전 값 유지)
+    - consecutiveFailures : 연속 실패 횟수(성공하면 0으로 초기화)
+    - lastStatus/lastError : 이번 실행 결과와 오류 요약
+    """
+    health = {}
+    for name, info in log.items():
+        prev = previous_health.get(name, {})
+        succeeded = info["status"] == "정상"
+        prev_failures = prev.get("consecutiveFailures", 0) or 0
+        health[name] = {
+            "ok": succeeded,
+            "lastStatus": info["status"],
+            "lastError": info["detail"],
+            "collectedThisRun": info["count"] if succeeded else 0,
+            "lastRunAt": now_iso,
+            "lastSuccessAt": now_iso if succeeded else prev.get("lastSuccessAt"),
+            "consecutiveFailures": 0 if succeeded else prev_failures + 1,
+        }
+    return health
+
+
+def print_health_summary(health, by_source):
+    """GitHub Actions 로그에 수집원별 상태를 출력한다. 실패한 수집원은
+    ::warning:: 로 출력해 Actions 실행 화면 상단 주석으로 뜨게 한다
+    (워크플로 자체는 계속 성공으로 끝내되, 장애는 눈에 보이게 한다)."""
+    print("--- 수집원 Health Check ---")
+    for name, h in health.items():
+        reflected = by_source.get(name, 0)
+        if h["ok"]:
+            print(f"  [{name}] 정상 — 이번 수집 {h['collectedThisRun']}건 / 최종 반영 {reflected}건")
+            continue
+        last_success = h.get("lastSuccessAt") or "기록 없음"
+        detail = f" — {h['lastError']}" if h.get("lastError") else ""
+        print(
+            f"::warning title=수집원 장애 ({name})::[{name}] {h['lastStatus']}{detail} "
+            f"| 연속 실패 {h['consecutiveFailures']}회 | 마지막 정상 수집 {last_success} "
+            f"| 현재 화면에는 이전 수집분 {reflected}건이 그대로 남아 있음"
+        )
 
 
 def sort_key(item):
@@ -130,7 +179,7 @@ def is_still_open(item):
 
 
 def main():
-    existing_items = load_existing_items()
+    existing_items, previous_health = load_existing_data()
     run_started = datetime.now()
 
     log = {}
@@ -143,8 +192,10 @@ def main():
     all_items.sort(key=sort_key)
 
     now = datetime.now().astimezone()
+    source_health = build_source_health(log, previous_health, now.isoformat(timespec="seconds"))
     output = {
         "updatedAt": now.isoformat(timespec="seconds"),
+        "sourceHealth": source_health,
         "items": all_items,
     }
 
@@ -166,6 +217,8 @@ def main():
         detail = f" ({info['detail']})" if info["detail"] else ""
         print(f"  [{name}] {info['status']}{detail} — 최종 반영 {by_source.get(name, 0)}건")
     print("  다음 자동 실행: 매일 07:00(KST), .github/workflows/fetch-announcements.yml 참고")
+
+    print_health_summary(source_health, by_source)
 
 
 if __name__ == "__main__":

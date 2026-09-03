@@ -38,6 +38,7 @@
 
 import json
 import re
+import ssl
 import time
 import urllib.request
 import urllib.error
@@ -76,6 +77,20 @@ RETRY_DELAY_SECONDS = 4
 REQUEST_DELAY_SECONDS = 1.2
 
 
+def build_ssl_context() -> ssl.SSLContext:
+    """MOFCOM 서버는 OpenSSL 3.x의 기본 보안수준(SECLEVEL=2)이 요구하는
+    cipher를 제공하지 않아 handshake 자체가 실패한다(실제 오류:
+    SSLV3_ALERT_HANDSHAKE_FAILURE). 접근 제한을 우회하는 게 아니라
+    (로그인/CAPTCHA 없음) 이 서버가 쓰는 구형 cipher를 허용하도록
+    협상 수준만 낮춘다 — 인증서 검증은 그대로 유지한다."""
+    ctx = ssl.create_default_context()
+    ctx.set_ciphers("DEFAULT@SECLEVEL=1")
+    return ctx
+
+
+SSL_CONTEXT = build_ssl_context()
+
+
 def fetch(url: str, data: bytes = None) -> str:
     req = urllib.request.Request(
         url, data=data,
@@ -88,7 +103,7 @@ def fetch(url: str, data: bytes = None) -> str:
     last_error = None
     for attempt in range(1, MAX_RETRY_ATTEMPTS + 1):
         try:
-            with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT) as res:
+            with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT, context=SSL_CONTEXT) as res:
                 return res.read().decode("utf-8", "ignore")
         except (urllib.error.URLError, TimeoutError) as exc:
             last_error = exc

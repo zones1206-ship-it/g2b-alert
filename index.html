@@ -41,6 +41,11 @@
         <span class="source-chip">한국표준과학연구원 <b>KRISS</b></span>
       </div>
     </details>
+    <!-- 수집원이 고장나면 그 출처 데이터는 이전 수집분이 그대로 남는다.
+         낡은 데이터를 최신으로 오인하지 않도록 여기에 경고를 표시한다
+         (app.js의 renderSourceHealth가 data/announcements.json의
+         sourceHealth를 읽어 채운다. 정상일 때는 아무것도 표시하지 않음). -->
+    <p class="source-health" id="sourceHealthNotice" hidden></p>
     <details class="source-pending">
       <summary>추후 연동 후보 사이트 (현재 수집 불가) 3곳</summary>
       <ul>

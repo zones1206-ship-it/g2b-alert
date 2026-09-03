@@ -65,8 +65,11 @@ LIST_ENDPOINTS = [
 
 PAGE_SIZE = 20
 MAX_LIST_PAGES = 6  # 리스트당 최대 120건까지 확인 (실측 총량 71~104건 커버)
-REQUEST_TIMEOUT = 20
-MAX_RETRY_ATTEMPTS = 3
+# GitHub Actions 러너에서 timeout/연결종료가 반복 관측돼(로컬에서는 0.4초에
+# 응답) 대기 시간을 늘리고 재시도를 1회 추가했다. 백오프는 지수(4/8/16초),
+# 총 시도 횟수는 아래 값으로 상한이 있어 무한 재시도는 발생하지 않는다.
+REQUEST_TIMEOUT = 30
+MAX_RETRY_ATTEMPTS = 4
 RETRY_DELAY_SECONDS = 4
 PAGE_DELAY_SECONDS = 2.0  # 짧은 간격 연속 요청 시 500 에러가 나는 것을 확인해 넉넉히 대기
 
@@ -127,8 +130,13 @@ def fetch(url: str, data: bytes = None) -> str:
         except (urllib.error.URLError, TimeoutError) as exc:
             last_error = exc
             if attempt < MAX_RETRY_ATTEMPTS:
-                print(f"[KOTRA] 요청 실패({exc}), {RETRY_DELAY_SECONDS}초 후 재시도 {attempt}/{MAX_RETRY_ATTEMPTS - 1}")
-                time.sleep(RETRY_DELAY_SECONDS)
+                # 고정 간격 대신 지수 백오프(4초 → 8초 → 16초). KOTRA 서버가
+                # 일시적으로 연결을 끊거나(Remote end closed) 응답이 느릴 때
+                # 곧바로 다시 찔러 같은 실패를 반복하는 것을 줄인다.
+                # 시도 횟수는 MAX_RETRY_ATTEMPTS로 제한된다(무한 재시도 없음).
+                delay = RETRY_DELAY_SECONDS * (2 ** (attempt - 1))
+                print(f"[KOTRA] 요청 실패({exc}), {delay:.0f}초 후 재시도 {attempt}/{MAX_RETRY_ATTEMPTS - 1}")
+                time.sleep(delay)
     raise RuntimeError(f"KOTRA 페이지 요청이 {MAX_RETRY_ATTEMPTS}회 실패했습니다: {last_error}")
 
 
