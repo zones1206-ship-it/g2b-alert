@@ -1,40 +1,40 @@
 {
-  "updatedAt": "2026-09-03T00:46:06+00:00",
+  "updatedAt": "2026-09-03T01:16:36+00:00",
   "sourceHealth": {
     "KANC": {
-      "ok": true,
-      "lastStatus": "정상",
+      "ok": false,
+      "lastStatus": "결과 없음(기존 유지)",
       "lastError": null,
-      "collectedThisRun": 11,
-      "lastRunAt": "2026-09-03T00:46:06+00:00",
+      "collectedThisRun": 0,
+      "lastRunAt": "2026-09-03T01:16:36+00:00",
       "lastSuccessAt": "2026-09-03T00:46:06+00:00",
-      "consecutiveFailures": 0
+      "consecutiveFailures": 1
     },
     "NNFC": {
-      "ok": true,
-      "lastStatus": "정상",
+      "ok": false,
+      "lastStatus": "결과 없음(기존 유지)",
       "lastError": null,
-      "collectedThisRun": 8,
-      "lastRunAt": "2026-09-03T00:46:06+00:00",
+      "collectedThisRun": 0,
+      "lastRunAt": "2026-09-03T01:16:36+00:00",
       "lastSuccessAt": "2026-09-03T00:46:06+00:00",
-      "consecutiveFailures": 0
+      "consecutiveFailures": 1
     },
     "KOTRA": {
       "ok": false,
       "lastStatus": "결과 없음(기존 유지)",
       "lastError": null,
       "collectedThisRun": 0,
-      "lastRunAt": "2026-09-03T00:46:06+00:00",
+      "lastRunAt": "2026-09-03T01:16:36+00:00",
       "lastSuccessAt": "2026-09-03T09:33:22+09:00",
-      "consecutiveFailures": 1
+      "consecutiveFailures": 2
     },
     "EBNEW": {
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 21,
-      "lastRunAt": "2026-09-03T00:46:06+00:00",
-      "lastSuccessAt": "2026-09-03T00:46:06+00:00",
+      "lastRunAt": "2026-09-03T01:16:36+00:00",
+      "lastSuccessAt": "2026-09-03T01:16:36+00:00",
       "consecutiveFailures": 0
     },
     "MOFCOM": {
@@ -42,8 +42,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 8,
-      "lastRunAt": "2026-09-03T00:46:06+00:00",
-      "lastSuccessAt": "2026-09-03T00:46:06+00:00",
+      "lastRunAt": "2026-09-03T01:16:36+00:00",
+      "lastSuccessAt": "2026-09-03T01:16:36+00:00",
       "consecutiveFailures": 0
     },
     "KRISS": {
@@ -51,8 +51,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 3,
-      "lastRunAt": "2026-09-03T00:46:06+00:00",
-      "lastSuccessAt": "2026-09-03T00:46:06+00:00",
+      "lastRunAt": "2026-09-03T01:16:36+00:00",
+      "lastSuccessAt": "2026-09-03T01:16:36+00:00",
       "consecutiveFailures": 0
     }
   },
