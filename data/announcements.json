@@ -1,13 +1,13 @@
 {
-  "updatedAt": "2026-09-03T04:47:36+00:00",
+  "updatedAt": "2026-09-03T07:03:24+00:00",
   "sourceHealth": {
     "KANC": {
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 11,
-      "lastRunAt": "2026-09-03T04:47:36+00:00",
-      "lastSuccessAt": "2026-09-03T04:47:36+00:00",
+      "lastRunAt": "2026-09-03T07:03:24+00:00",
+      "lastSuccessAt": "2026-09-03T07:03:24+00:00",
       "consecutiveFailures": 0
     },
     "NNFC": {
@@ -15,26 +15,27 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 8,
-      "lastRunAt": "2026-09-03T04:47:36+00:00",
-      "lastSuccessAt": "2026-09-03T04:47:36+00:00",
+      "lastRunAt": "2026-09-03T07:03:24+00:00",
+      "lastSuccessAt": "2026-09-03T07:03:24+00:00",
       "consecutiveFailures": 0
     },
     "KOTRA": {
       "ok": false,
-      "lastStatus": "오류",
-      "lastError": "Remote end closed connection without response",
+      "lastStatus": "결과 없음(기존 유지)",
+      "lastError": null,
       "collectedThisRun": 0,
-      "lastRunAt": "2026-09-03T04:47:36+00:00",
+      "lastRunAt": "2026-09-03T07:03:24+00:00",
       "lastSuccessAt": "2026-09-03T13:25:26+09:00",
-      "consecutiveFailures": 2
+      "consecutiveFailures": 3,
+      "failureAlertSent": true
     },
     "EBNEW": {
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 21,
-      "lastRunAt": "2026-09-03T04:47:36+00:00",
-      "lastSuccessAt": "2026-09-03T04:47:36+00:00",
+      "lastRunAt": "2026-09-03T07:03:24+00:00",
+      "lastSuccessAt": "2026-09-03T07:03:24+00:00",
       "consecutiveFailures": 0
     },
     "MOFCOM": {
@@ -42,8 +43,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 6,
-      "lastRunAt": "2026-09-03T04:47:36+00:00",
-      "lastSuccessAt": "2026-09-03T04:47:36+00:00",
+      "lastRunAt": "2026-09-03T07:03:24+00:00",
+      "lastSuccessAt": "2026-09-03T07:03:24+00:00",
       "consecutiveFailures": 0
     },
     "KRISS": {
@@ -51,8 +52,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 3,
-      "lastRunAt": "2026-09-03T04:47:36+00:00",
-      "lastSuccessAt": "2026-09-03T04:47:36+00:00",
+      "lastRunAt": "2026-09-03T07:03:24+00:00",
+      "lastSuccessAt": "2026-09-03T07:03:24+00:00",
       "consecutiveFailures": 0
     },
     "JETRO": {
@@ -60,8 +61,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 23,
-      "lastRunAt": "2026-09-03T04:47:36+00:00",
-      "lastSuccessAt": "2026-09-03T04:47:36+00:00",
+      "lastRunAt": "2026-09-03T07:03:24+00:00",
+      "lastSuccessAt": "2026-09-03T07:03:24+00:00",
       "consecutiveFailures": 0
     },
     "DGIST": {
@@ -69,8 +70,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 1,
-      "lastRunAt": "2026-09-03T04:47:36+00:00",
-      "lastSuccessAt": "2026-09-03T04:47:36+00:00",
+      "lastRunAt": "2026-09-03T07:03:24+00:00",
+      "lastSuccessAt": "2026-09-03T07:03:24+00:00",
       "consecutiveFailures": 0
     },
     "ITRI": {
@@ -78,8 +79,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 9,
-      "lastRunAt": "2026-09-03T04:47:36+00:00",
-      "lastSuccessAt": "2026-09-03T04:47:36+00:00",
+      "lastRunAt": "2026-09-03T07:03:24+00:00",
+      "lastSuccessAt": "2026-09-03T07:03:24+00:00",
       "consecutiveFailures": 0
     },
     "KAIST": {
@@ -87,9 +88,9 @@
       "lastStatus": "오류",
       "lastError": "KAIST 요청이 4회 실패했습니다: <urlopen error timed out>",
       "collectedThisRun": 0,
-      "lastRunAt": "2026-09-03T04:47:36+00:00",
+      "lastRunAt": "2026-09-03T07:03:24+00:00",
       "lastSuccessAt": "2026-09-03T04:36:21+00:00",
-      "consecutiveFailures": 1
+      "consecutiveFailures": 2
     }
   },
   "items": [
@@ -620,43 +621,6 @@
       "firstSeenAt": "2026-08-28T05:54:00+00:00"
     },
     {
-      "id": "itriA512004154-10",
-      "title": "위탁GuangDian칩테스트TuAn HuaHui Zhi",
-      "translatedTitle": "위탁GuangDian칩테스트TuAn HuaHui Zhi",
-      "originalTitle": "委託光電晶片測試圖案化繪製",
-      "translationIncomplete": true,
-      "org": "ITRI(대만 산업기술연구원)",
-      "originalOrg": "工業技術研究院",
-      "country": "대만",
-      "countryCode": "TW",
-      "region": null,
-      "status": null,
-      "dueDate": "2026-09-07",
-      "postedDate": null,
-      "keywords": [
-        "반도체 장비"
-      ],
-      "classificationStatus": null,
-      "budget": null,
-      "contractMethod": "詢價案(견적 요청)",
-      "deliveryCondition": "履約期限 2026-10-14",
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "수량 1 · 案號 A512004154 (항목 10)",
-      "attachments": [],
-      "url": "https://quotaweb.itri.org.tw/quotabrowse.aspx",
-      "originalUrl": "https://quotaweb.itri.org.tw/quotabrowse.aspx",
-      "source": "ITRI (대만)",
-      "sourceCode": "ITRI",
-      "sourceSiteUrl": "https://quotaweb.itri.org.tw/quotabrowse.aspx",
-      "sourceCountry": "TW",
-      "sourceType": "Taiwan Site",
-      "detectedLanguage": "zh-TW",
-      "noticeType": "정식입찰",
-      "projectNo": "A512004154",
-      "firstSeenAt": "2026-09-03T12:34:11+09:00"
-    },
-    {
       "id": "itriA692001225-10",
       "title": "LiangZi TuoLuo YiGan Ce칩",
       "translatedTitle": "LiangZi TuoLuo YiGan Ce칩",
@@ -692,6 +656,43 @@
       "noticeType": "정식입찰",
       "projectNo": "A692001225",
       "firstSeenAt": "2026-09-03T13:25:26+09:00"
+    },
+    {
+      "id": "itriA512004154-10",
+      "title": "위탁GuangDian칩테스트TuAn HuaHui Zhi",
+      "translatedTitle": "위탁GuangDian칩테스트TuAn HuaHui Zhi",
+      "originalTitle": "委託光電晶片測試圖案化繪製",
+      "translationIncomplete": true,
+      "org": "ITRI(대만 산업기술연구원)",
+      "originalOrg": "工業技術研究院",
+      "country": "대만",
+      "countryCode": "TW",
+      "region": null,
+      "status": null,
+      "dueDate": "2026-09-07",
+      "postedDate": null,
+      "keywords": [
+        "반도체 장비"
+      ],
+      "classificationStatus": null,
+      "budget": null,
+      "contractMethod": "詢價案(견적 요청)",
+      "deliveryCondition": "履約期限 2026-10-14",
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "수량 1 · 案號 A512004154 (항목 10)",
+      "attachments": [],
+      "url": "https://quotaweb.itri.org.tw/quotabrowse.aspx",
+      "originalUrl": "https://quotaweb.itri.org.tw/quotabrowse.aspx",
+      "source": "ITRI (대만)",
+      "sourceCode": "ITRI",
+      "sourceSiteUrl": "https://quotaweb.itri.org.tw/quotabrowse.aspx",
+      "sourceCountry": "TW",
+      "sourceType": "Taiwan Site",
+      "detectedLanguage": "zh-TW",
+      "noticeType": "정식입찰",
+      "projectNo": "A512004154",
+      "firstSeenAt": "2026-09-03T12:34:11+09:00"
     },
     {
       "id": "cid5661",
@@ -1583,12 +1584,12 @@
       "firstSeenAt": "2026-09-02T23:43:33+00:00"
     },
     {
-      "id": "mofcomff8080819e42905601a060d4f2c76c09",
+      "id": "mofcomff8080819e42905601a060d4f2c86c19",
       "title": "BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트 - 국제 입찰공고 (1)",
       "translatedTitle": "BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트 - 국제 입찰공고 (1)",
       "originalTitle": "京东方第8.6代AMOLED生产线项目 - 国际招标公告(1)",
-      "translatedSummary": "4197-244BOECDDT01/393, BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트",
-      "originalSummary": "4197-244BOECDDT01/393,京东方第8.6代AMOLED生产线项目",
+      "translatedSummary": "4197-244BOECDDT01/395, BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트",
+      "originalSummary": "4197-244BOECDDT01/395,京东方第8.6代AMOLED生产线项目",
       "org": "청두 BOE(징둥팡) 디스플레이 기술 유한공사",
       "originalOrg": "成都京东方显示技术有限公司",
       "translationIncomplete": false,
@@ -1608,10 +1609,10 @@
       "deliveryCondition": null,
       "paymentCondition": null,
       "eligibility": null,
-      "description": "4197-244BOECDDT01/393, BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트",
+      "description": "4197-244BOECDDT01/395, BOE(징둥팡) 제8.6세대AMOLED 생산라인 프로젝트",
       "attachments": [],
-      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202609/ff8080819e42905601a060d4f2c76c09.html",
-      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202609/ff8080819e42905601a060d4f2c76c09.html",
+      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202609/ff8080819e42905601a060d4f2c86c19.html",
+      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202609/ff8080819e42905601a060d4f2c86c19.html",
       "source": "중국국제초표망(MOFCOM)",
       "sourceCode": "MOFCOM",
       "sourceSiteUrl": "https://chinabidding.mofcom.gov.cn/",
@@ -1619,8 +1620,8 @@
       "sourceType": "China Site",
       "detectedLanguage": "zh-CN",
       "noticeType": "정식입찰",
-      "projectNo": "4197-244BOECDDT01/393",
-      "firstSeenAt": "2026-09-03T09:33:22+09:00"
+      "projectNo": "4197-244BOECDDT01/395",
+      "firstSeenAt": "2026-09-03T07:03:24+00:00"
     },
     {
       "id": "jetro399993",
