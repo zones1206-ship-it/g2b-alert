@@ -35,7 +35,7 @@ import urllib.error
 import urllib.parse
 from datetime import datetime, timedelta
 
-from .common import normalize_text
+from .common import normalize_text, FetchState
 from . import zh_translate
 from . import zh_ko_argos
 from . import translation_memory
@@ -454,8 +454,14 @@ def build_item(row: dict):
     }
 
 
+# 목록을 실제로 읽고 파싱했는지 기록한다. "정상 수집 + 조건에 맞는
+# 공고 0건"을 수집 실패로 오인하지 않기 위한 신호다(common.FetchState).
+FETCH_STATE = FetchState("EBNEW")
+
+
 def collect():
     """EBNEW 검색 결과에서 반도체/디스플레이/TGV 관련 공고만 수집한다."""
+    FETCH_STATE.reset()
     cutoff = (datetime.now() - timedelta(days=LOOKBACK_DAYS)).date().isoformat()
 
     _TITLE_STATS.clear()
@@ -478,7 +484,7 @@ def collect():
                 print(f"[EBNEW] '{keyword}' 검색 실패, 다음 키워드로 넘어감: {exc}")
                 break
 
-            rows = parse_search_results(html)
+            rows = FETCH_STATE.mark(parse_search_results(html))
             if not rows:
                 break
 

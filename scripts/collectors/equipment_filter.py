@@ -340,10 +340,38 @@ def quantity_of(item):
 GENERATION_PATTERN = re.compile(r"(第\s*[0-9.]+\s*代|제\s*[0-9.]+\s*세대|g[0-9]\.[0-9])", re.I)
 
 
-# 반도체 전용 국가 나노팹을 운영하는 기관. 이 기관들이 사는 공정·시험 장비는
-# 제목에 "반도체"라는 단어가 없어도 우리 산업 장비다(한국나노기술원·나노종합
-# 기술원 모두 반도체 파운드리/나노팹 전용 기관).
+# 반도체 전용 국가 나노팹을 운영하는 기관(한국나노기술원·나노종합기술원).
+# 다만 **기관 이름만으로 장비를 인정하지 않는다** — 이 기관들도 공조기·
+# 버스덕트·지게차·사무기기를 산다. 아래 FAB_EQUIPMENT_TERMS(명확한 반도체
+# 공정·검사·계측 장비)가 함께 확인될 때만 산업 관련성의 보조 신호로 쓴다.
 SEMICONDUCTOR_FAB_SOURCES = {"KANC", "NNFC"}
+
+# 기관 신호를 인정해 주는 "명확한 반도체 공정·검사·계측 장비" 목록.
+# 일반 장비어(장비/설비/시스템)는 일부러 넣지 않는다.
+FAB_EQUIPMENT_TERMS = [
+    "pvd", "cvd", "pecvd", "mocvd", "ald", "epitaxy", "에피",
+    "스퍼터", "sputter", "sputtering", "증착기", "증착 장비",
+    "etcher", "식각기", "식각 장비", "식각설비", "cleaner", "세정기", "세정 장비",
+    "웨트벤치", "wet bench", "스크러버", "scrubber", "플라즈마", "plasma",
+    "furnace", "퍼니스", "성장로", "확산로", "열처리로", "rtp", "annealer",
+    "lithography", "리소그래피", "노광기", "노광장비", "stepper",
+    "prober", "프로버", "probe station",
+    "tester", "시험기", "검사기", "검사 장비", "inspection", "자동광학검사", "aoi",
+    "metrology", "계측기", "계측 장비", "분석기", "analyzer",
+    "현미경", "microscope", "엘립소미터", "ellipsometer", "profilometer",
+    "cmp", "연마 장비", "polisher", "plating system", "도금 장비", "ecd",
+    "bonder", "본더", "wafer", "웨이퍼", "클린룸", "cleanroom",
+]
+
+# 팹에 설치된다고 반도체 장비가 아니다. 이 기관들이 사더라도 시설·유틸리티
+# 성격이면 제외한다(팹 비상전력 버스덕트, 공조기, UPS, 지게차 등).
+FACILITY_TERMS = [
+    "hvac", "공조", "냉난방", "냉방", "난방", "냉동기", "항온항습",
+    "버스덕트", "버스(부스) 덕트", "bus duct", "ups", "무정전",
+    "지게차", "차량", "발전기", "수배전", "변압기", "소화설비", "소방",
+    "사무기기", "복합기", "모니터", "책상", "의자", "환경설비", "폐수",
+    "배기", "스크러버 배관", "덕트 공사",
+]
 
 
 def classify(item):
@@ -352,8 +380,20 @@ def classify(item):
     buy = _title_text_of(item)     # 장비 성격 판정용(제목·품목만)
 
     industry = _first_match(text, INDUSTRY_TERMS) or _first_match(text, PROCESS_INDUSTRY_TERMS)
-    if not industry and item.get("sourceCode") in SEMICONDUCTOR_FAB_SOURCES:
-        industry = f"{item.get('sourceCode')} 반도체 나노팹"
+    source = item.get("sourceCode")
+
+    # 반도체 전용 나노팹 기관은 **보조 신호**로만 쓴다. 기관 이름만으로
+    # 산업 조건을 채워 주면 그 기관이 산 공조기·버스덕트까지 반도체 장비가
+    # 된다. 명확한 공정·검사·계측 장비가 함께 확인될 때만 인정한다.
+    if not industry and source in SEMICONDUCTOR_FAB_SOURCES:
+        fab_equipment = _first_match(buy, FAB_EQUIPMENT_TERMS)
+        if fab_equipment:
+            industry = f"{source} 반도체 나노팹 + {fab_equipment}"
+
+    # 팹에 설치되더라도 시설·유틸리티는 반도체 장비가 아니다.
+    facility = _first_match(text, FACILITY_TERMS)
+    if facility:
+        return "제외", f"팹 시설·유틸리티 / 반도체 장비 아님 (신호: {facility})"
     equipment = _first_match(buy, EQUIPMENT_TERMS)
     ambiguous = _first_match(buy, AMBIGUOUS_EQUIPMENT_TERMS)
     non_equipment = next(((label, t) for label, terms in NON_EQUIPMENT_RULES

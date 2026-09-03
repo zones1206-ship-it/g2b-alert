@@ -113,3 +113,42 @@ BLOCKED_SOURCES = [
 
 def normalize_text(text: str) -> str:
     return text.replace(" ", "").lower()
+
+
+class FetchState:
+    """수집기가 "원본 목록을 실제로 읽고 파싱했는지"를 기록한다.
+
+    왜 필요한가 (2026-09-03 ITRI에서 실제로 발생):
+      장비 전용 필터를 세게 걸면 사이트는 멀쩡한데 조건을 통과한 공고가
+      0건이 될 수 있다. 그때 fetch_announcements가 "수집 실패"로 오인하면
+      낡은 데이터를 붙들고, Health를 장애로 기록하고, 연속 3회면 잘못된
+      장애 Telegram까지 나간다.
+
+    구분 기준은 하나다 — **목록을 실제로 받아 파싱했는가**.
+      fetch 성공 + parse 성공 + 필터 결과 0건  → 정상 0건
+      접속/파싱 자체 실패(빈 목록만 얻음)        → 장애
+
+    단순히 collect()가 []를 돌려줬다는 이유만으로 정상 처리하지 않는다.
+    한 건이라도 목록 행을 파싱했을 때만 fetched=True가 된다.
+
+    사용법(수집기):
+        FETCH_STATE = FetchState("KANC")      # 모듈 상단
+        def collect():
+            FETCH_STATE.reset()               # 실행 시작 시
+            rows = FETCH_STATE.mark(parse_list_page(html))   # 파싱 직후
+    """
+
+    __slots__ = ("name", "fetched")
+
+    def __init__(self, name):
+        self.name = name
+        self.fetched = False
+
+    def reset(self):
+        self.fetched = False
+
+    def mark(self, rows):
+        """파싱 결과를 그대로 돌려주면서, 한 건이라도 있으면 성공으로 기록한다."""
+        if rows:
+            self.fetched = True
+        return rows

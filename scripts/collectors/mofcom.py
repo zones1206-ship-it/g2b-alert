@@ -45,7 +45,7 @@ import urllib.error
 import urllib.parse
 from datetime import datetime, timedelta
 
-from .common import normalize_text
+from .common import normalize_text, FetchState
 from . import zh_translate
 from .ebnew import is_relevant_list_stage, is_equipment_purchase, match_categories
 
@@ -222,9 +222,15 @@ def build_item(row: dict):
     }
 
 
+# 목록을 실제로 읽고 파싱했는지 기록한다. "정상 수집 + 조건에 맞는
+# 공고 0건"을 수집 실패로 오인하지 않기 위한 신호다(common.FetchState).
+FETCH_STATE = FetchState("MOFCOM")
+
+
 def collect():
     """MOFCOM(중국국제초표망) 검색 결과에서 반도체/디스플레이/TGV 관련
     공고만 수집한다."""
+    FETCH_STATE.reset()
     cutoff = (datetime.now() - timedelta(days=LOOKBACK_DAYS)).date().isoformat()
 
     items = []
@@ -252,7 +258,7 @@ def collect():
                 print(f"[MOFCOM] '{keyword}' 검색 실패, 다음 키워드로 넘어감: {exc}")
                 break
 
-            rows = payload.get("rows") or []
+            rows = FETCH_STATE.mark(payload.get("rows") or [])
             if not rows:
                 break
 

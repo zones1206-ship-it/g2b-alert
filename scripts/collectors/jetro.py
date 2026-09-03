@@ -39,7 +39,7 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta
 
-from .common import TGV_STRONG_TERMS
+from .common import TGV_STRONG_TERMS, FetchState
 from . import en_ko_argos, en_translate, translation_memory
 
 SOURCE_NAME = "JETRO (일본)"
@@ -340,7 +340,13 @@ def build_item(row, detail_fields, detail_url):
     }
 
 
+# 목록을 실제로 읽고 파싱했는지 기록한다. "정상 수집 + 조건에 맞는
+# 공고 0건"을 수집 실패로 오인하지 않기 위한 신호다(common.FetchState).
+FETCH_STATE = FetchState("JETRO")
+
+
 def collect():
+    FETCH_STATE.reset()
     seen_xid = set()
     candidates = []
     raw_count = 0
@@ -352,7 +358,7 @@ def collect():
             except RuntimeError as exc:
                 print(f"[JETRO] '{keyword}' 검색 실패, 다음 키워드로 넘어감: {exc}")
                 break
-            items = data.get("items") or []
+            items = FETCH_STATE.mark(data.get("items") or [])
             raw_count += len(items)
             if not items:
                 break

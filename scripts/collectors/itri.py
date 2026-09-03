@@ -27,6 +27,7 @@ import html as html_lib
 import urllib.error
 import urllib.request
 
+from .common import FetchState
 from . import zh_translate
 
 SOURCE_NAME = "ITRI (대만)"
@@ -307,18 +308,15 @@ def build_item(row):
     }
 
 
-# 수집 자체는 성공했는데 필터를 통과한 공고가 0건일 수 있다(장비 전용 필터를
-# 세게 걸었기 때문). 그때 "수집 실패"로 오인해 낡은 데이터를 붙들고 장애
-# 알림까지 보내면 안 되므로, 목록을 실제로 받아왔는지 여기에 남긴다.
-LAST_RUN_FETCHED = False
+# 목록을 실제로 읽고 파싱했는지 기록한다. "정상 수집 + 조건에 맞는
+# 공고 0건"을 수집 실패로 오인하지 않기 위한 신호다(common.FetchState).
+FETCH_STATE = FetchState("ITRI")
 
 
 def collect():
-    global LAST_RUN_FETCHED
-    LAST_RUN_FETCHED = False
+    FETCH_STATE.reset()
     html = fetch(LIST_URL)
-    rows = parse_list(html)
-    LAST_RUN_FETCHED = bool(rows)
+    rows = FETCH_STATE.mark(parse_list(html))
     print(f"[ITRI] 조회 대상(raw): {len(rows)}건")
 
     included, excluded = [], {}

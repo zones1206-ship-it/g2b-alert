@@ -48,7 +48,7 @@ import urllib.request
 import urllib.error
 from datetime import datetime, date, timedelta
 
-from .common import normalize_text, TGV_STRONG_TERMS
+from .common import normalize_text, TGV_STRONG_TERMS, FetchState
 
 SOURCE_NAME = "대한무역투자진흥공사"
 SOURCE_CODE = "KOTRA"
@@ -354,8 +354,14 @@ def build_item(biz_no: str, list_title: str, detail_html: str):
     }
 
 
+# 목록을 실제로 읽고 파싱했는지 기록한다. "정상 수집 + 조건에 맞는
+# 공고 0건"을 수집 실패로 오인하지 않기 위한 신호다(common.FetchState).
+FETCH_STATE = FetchState("KOTRA")
+
+
 def collect():
     """KOTRA 사업신청 목록에서 반도체/디스플레이/TGV 관련 프로젝트만 수집한다."""
+    FETCH_STATE.reset()
     items = []
     seen_ids = set()
     stats = {"raw": 0, "title_prefiltered_out": 0, "detail_excluded": 0, "included": 0}
@@ -369,7 +375,7 @@ def collect():
                 print(f"[KOTRA] 목록 페이지 요청 실패, 이 목록은 여기서 중단: {exc}")
                 break
 
-            cards = parse_list_cards(list_html)
+            cards = FETCH_STATE.mark(parse_list_cards(list_html))
             if not cards:
                 break
 

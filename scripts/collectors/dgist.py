@@ -27,7 +27,7 @@ import html as html_lib
 import urllib.error
 import urllib.request
 
-from .common import TGV_STRONG_TERMS
+from .common import TGV_STRONG_TERMS, FetchState
 
 SOURCE_NAME = "DGIST (한국)"
 SOURCE_CODE = "DGIST"
@@ -251,7 +251,13 @@ def build_item(row, fields, attachments, detail_url):
     }
 
 
+# 목록을 실제로 읽고 파싱했는지 기록한다. "정상 수집 + 조건에 맞는
+# 공고 0건"을 수집 실패로 오인하지 않기 위한 신호다(common.FetchState).
+FETCH_STATE = FetchState("DGIST")
+
+
 def collect():
+    FETCH_STATE.reset()
     raw_rows = []
     for page in range(1, MAX_LIST_PAGES + 1):
         try:
@@ -259,7 +265,7 @@ def collect():
         except RuntimeError as exc:
             print(f"[DGIST] 목록 {page}페이지 요청 실패, 여기서 중단: {exc}")
             break
-        rows = parse_list(html)
+        rows = FETCH_STATE.mark(parse_list(html))
         if not rows:
             break
         raw_rows.extend(rows)

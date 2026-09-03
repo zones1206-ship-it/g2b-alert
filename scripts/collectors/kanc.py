@@ -33,7 +33,7 @@ import html as html_lib
 import urllib.request
 import urllib.error
 
-from .common import normalize_text, TGV_STRONG_TERMS
+from .common import normalize_text, TGV_STRONG_TERMS, FetchState
 
 SOURCE_NAME = "한국나노기술원"
 SOURCE_CODE = "KANC"
@@ -290,8 +290,14 @@ def normalize_list_date(list_date: str):
     return f"{int(y):04d}-{int(mo):02d}-{int(d):02d}"
 
 
+# 목록을 실제로 읽고 파싱했는지 기록한다. "정상 수집 + 조건에 맞는
+# 공고 0건"을 수집 실패로 오인하지 않기 위한 신호다(common.FetchState).
+FETCH_STATE = FetchState("KANC")
+
+
 def collect():
     """KANC 게시판을 최근 LOOKBACK_DAYS일 범위로 수집해 표준 스키마 아이템 리스트를 반환한다."""
+    FETCH_STATE.reset()
     from datetime import datetime, timedelta
 
     cutoff = (datetime.now() - timedelta(days=LOOKBACK_DAYS)).date()
@@ -318,7 +324,7 @@ def collect():
             print(f"[KANC {page}] 목록 페이지 요청 실패, 이후 페이지 중단: {exc}")
             break
 
-        rows = parse_list_page(list_html)
+        rows = FETCH_STATE.mark(parse_list_page(list_html))
         if not rows:
             print(f"[KANC {page}] 게시물 없음, 중단")
             break

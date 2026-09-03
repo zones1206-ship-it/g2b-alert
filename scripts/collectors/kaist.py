@@ -26,7 +26,7 @@ import html as html_lib
 import urllib.error
 import urllib.request
 
-from .common import TGV_STRONG_TERMS
+from .common import TGV_STRONG_TERMS, FetchState
 
 SOURCE_NAME = "KAIST (한국)"
 SOURCE_CODE = "KAIST"
@@ -213,9 +213,15 @@ def build_item(row):
     }
 
 
+# 목록을 실제로 읽고 파싱했는지 기록한다. "정상 수집 + 조건에 맞는
+# 공고 0건"을 수집 실패로 오인하지 않기 위한 신호다(common.FetchState).
+FETCH_STATE = FetchState("KAIST")
+
+
 def collect():
+    FETCH_STATE.reset()
     html = fetch(LIST_URL)
-    rows = parse_list(html)
+    rows = FETCH_STATE.mark(parse_list(html))
     print(f"[KAIST] 조회 대상(raw): {len(rows)}건")
 
     included, excluded = [], {}

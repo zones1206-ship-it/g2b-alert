@@ -35,7 +35,7 @@ import html as html_lib
 import urllib.request
 import urllib.error
 
-from .common import normalize_text, TGV_STRONG_TERMS
+from .common import normalize_text, TGV_STRONG_TERMS, FetchState
 
 SOURCE_NAME = "한국표준과학연구원"
 SOURCE_CODE = "KRISS"
@@ -226,10 +226,16 @@ def build_item(row: dict, detail_html: str):
     }
 
 
+# 목록을 실제로 읽고 파싱했는지 기록한다. "정상 수집 + 조건에 맞는
+# 공고 0건"을 수집 실패로 오인하지 않기 위한 신호다(common.FetchState).
+FETCH_STATE = FetchState("KRISS")
+
+
 def collect():
     """KRISS 입찰공고 게시판을 최근 LOOKBACK_DAYS일 범위로 수집해 표준 스키마
     아이템 리스트를 반환한다. 반도체/디스플레이/TGV 장비 관련 신호가 있는
     공고만 포함한다(전체 공고를 무조건 다 가져오지 않는다)."""
+    FETCH_STATE.reset()
     from datetime import datetime, timedelta
 
     cutoff = (datetime.now() - timedelta(days=LOOKBACK_DAYS)).date().isoformat()
@@ -248,7 +254,7 @@ def collect():
             print(f"[KRISS {page}] 목록 페이지 요청 실패, 이후 페이지 중단: {exc}")
             break
 
-        rows = parse_list_page(list_html)
+        rows = FETCH_STATE.mark(parse_list_page(list_html))
         if not rows:
             print(f"[KRISS {page}] 게시물 없음, 중단")
             break
