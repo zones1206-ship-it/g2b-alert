@@ -40,7 +40,7 @@ import urllib.request
 from datetime import datetime, timedelta
 
 from .common import TGV_STRONG_TERMS
-from . import en_ko_argos, en_translate
+from . import en_ko_argos, en_translate, translation_memory
 
 SOURCE_NAME = "JETRO (일본)"
 SOURCE_CODE = "JETRO"
@@ -409,4 +409,8 @@ def collect():
     incomplete = sum(1 for i in items if i.get("translationIncomplete"))
     print(f"[JETRO] 상세 요청 실패: {detail_failed}건")
     print(f"[JETRO] 최종 포함: {len(items)}건 (번역 미완료 {incomplete}건)")
+    # 이번에 새로 검증을 통과한 번역을 기억해 둔다 — 같은 원문이 다음 실행에
+    # 다른 한국어로 바뀌지 않게 하기 위해서다(Argos 출력이 실행마다 다르다).
+    if translation_memory.save():
+        print(f"[JETRO] 번역 기억 갱신: {translation_memory.stats()}")
     return items

@@ -70,7 +70,9 @@ jobs:
           rm -f data/announcements.before.json
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/announcements.json
+          # translation_memory.json: 검증을 통과한 번역을 원문 기준으로 기억해
+          # 같은 원문이 실행마다 다른 한국어로 바뀌는 것을 막는다(수 KB 텍스트).
+          git add data/announcements.json data/translation_memory.json
           git diff --cached --quiet && echo "No changes to commit" || git commit -m "chore: update announcements data"
           # 수집이 도는 동안 사람이 main에 푸시하면 push가 (fetch first)로 거부돼
           # 수집 결과가 통째로 버려진다(실제로 발생). 데이터 파일은 이 워크플로만

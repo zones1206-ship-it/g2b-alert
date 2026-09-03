@@ -26,6 +26,7 @@
 import re
 
 from . import en_translate
+from . import translation_memory
 
 # ---------------------------------------------------------------------------
 # 1) 보호 대상 — 번역기에 넘기지 않고 우리가 정한 표기로 되돌릴 표현들
@@ -318,10 +319,21 @@ def _acronyms(text):
     return {w.upper() for w in re.findall(r"(?<![A-Za-z0-9])[A-Z]{2,}[0-9]*(?![a-z])", text or "")}
 
 
+# 번역기가 학습 데이터에서 통째로 끌어오는 상투구. 원문과 아무 관련이 없다
+# (실측: "Dry Etching System 2 sets" → "팝업레이어 알림 2식").
+_HALLUCINATION_MARKERS = [
+    "팝업레이어", "레이어 팝업", "최신뉴스", "게재하고 있습니다",
+    "자세한 내용은", "저작권", "무단전재", "본 사이트",
+]
+
+
 def validate(original, translated, mapping):
     """(통과 여부, 실패 사유)를 돌려준다."""
     if not translated or not translated.strip():
         return False, "번역 결과가 비어 있음"
+    marker = next((m for m in _HALLUCINATION_MARKERS if m in translated), None)
+    if marker:
+        return False, f"원문과 무관한 상투구 생성({marker})"
     if not re.search(r"[가-힣]", translated):
         return False, "번역 결과에 한국어가 없음"
     if re.search(r"TERM[A-Z]", translated, re.I):
@@ -355,6 +367,15 @@ def translate_title(text):
     baseline, baseline_ok = en_translate.translate_title(text)
     info = {"engine": "glossary", "protected": [], "reason": None}
 
+    # 같은 원문에 대해 이미 검증을 통과한 번역이 있으면 그걸 그대로 쓴다.
+    # Argos는 같은 입력에도 실행마다 다른 결과를 내기 때문에(실측), 이걸
+    # 하지 않으면 멀쩡하던 제목이 다음 실행에 오역으로 바뀔 수 있다.
+    remembered = translation_memory.lookup("en_ko", text)
+    if remembered:
+        info["engine"] = "memory"
+        info["reason"] = "이전에 검증된 번역 재사용"
+        return remembered, True, info
+
     if not text or not _load_argos():
         info["reason"] = _argos_reason or "원문 없음"
         return baseline, baseline_ok, info
@@ -380,4 +401,5 @@ def translate_title(text):
         return baseline, baseline_ok, info
 
     info["engine"] = "argos+glossary"
+    translation_memory.remember("en_ko", text, candidate)
     return candidate, True, info

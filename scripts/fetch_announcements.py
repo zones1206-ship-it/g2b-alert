@@ -120,6 +120,13 @@ def build_source_health(log, previous_health, now_iso):
     - lastSuccessAt    : 마지막으로 정상 수집된 시각(실패해도 이전 값 유지)
     - consecutiveFailures : 연속 실패 횟수(성공하면 0으로 초기화)
     - lastStatus/lastError : 이번 실행 결과와 오류 요약
+    - failureAlertSent : 이 장애를 Telegram으로 이미 알렸는지(중복 발송 방지)
+
+    failureAlertSent는 이 함수가 만들지 않고 **이전 실행 값을 그대로 이어받는다**.
+    예전에는 매 실행마다 상태를 새로 만들면서 이 플래그를 빠뜨렸고, 그래서
+    notify_source_health가 매번 "아직 안 알렸다"고 판단해 연속 실패 4회·5회에도
+    장애 알림을 다시 보냈다(KOTRA에서 실제로 발생). 플래그를 지우는 것은
+    notify_source_health가 복구 알림을 보낸 뒤에만 한다.
     """
     health = {}
     for name, info in log.items():
@@ -134,6 +141,7 @@ def build_source_health(log, previous_health, now_iso):
             "lastRunAt": now_iso,
             "lastSuccessAt": now_iso if succeeded else prev.get("lastSuccessAt"),
             "consecutiveFailures": 0 if succeeded else prev_failures + 1,
+            "failureAlertSent": bool(prev.get("failureAlertSent")),
         }
     return health
 
