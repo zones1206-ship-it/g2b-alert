@@ -23,21 +23,23 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # JETRO 영문 제목 번역용 en→ko 모델(약 130MB)을 캐시해 매 실행마다
-      # 다시 받지 않는다. 모델 파일은 저장소에 커밋하지 않는다.
+      # 제목 번역용 Argos 모델을 캐시해 매 실행마다 다시 받지 않는다.
+      #   en→ko (약 130MB) : JETRO 영문 제목
+      #   zh→en (약 83MB)  : EBNEW 중국어 제목(한국어 직접 모델이 없어 영어 경유)
+      # 모델 파일은 저장소에 커밋하지 않는다.
       # 캐시가 없거나 복원에 실패해도 아래 설치 스크립트가 조용히 처리하고,
       # 그마저 실패하면 수집기가 기존 용어집 방식으로 폴백한다.
       # v4는 Node 20 런타임이라 지원 종료 경고가 뜬다. v5부터 Node 24를 쓰며
       # Actions Runner 2.327.1 이상을 요구하는데, 이 저장소가 쓰는 GitHub
       # 호스티드 러너는 2.337.0이라 조건을 충족한다(실행 로그로 확인).
-      - name: Restore Argos en→ko model cache
+      - name: Restore Argos translation model cache
         id: argos-cache
         uses: actions/cache@v5
         with:
           path: ~/.local/share/argos-translate/packages
-          key: argos-en-ko-v1
+          key: argos-models-en-ko-zh-en-v1
 
-      - name: Ensure Argos en→ko model
+      - name: Ensure Argos translation models
         continue-on-error: true
         run: python scripts/install_translation_model.py
 

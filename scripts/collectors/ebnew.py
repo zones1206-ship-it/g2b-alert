@@ -37,6 +37,7 @@ from datetime import datetime, timedelta
 
 from .common import normalize_text
 from . import zh_translate
+from . import zh_ko_argos
 
 SOURCE_NAME = "중국 비롄왕(EBNEW)"
 SOURCE_CODE = "EBNEW"
@@ -155,6 +156,11 @@ TAG_TYPE_MAP = {
     "公示": "낙찰·수주결과",
     "结果": "낙찰·수주결과",
 }
+
+
+# 제목 번역이 어느 경로로 처리됐는지 집계용(로그에만 쓴다).
+_TITLE_STATS = {}
+_TITLE_FALLBACK_REASONS = {}
 
 
 def fetch(url: str, data: bytes = None) -> str:
@@ -315,7 +321,15 @@ def extract_field(detail_text: str, label: str, max_len: int = 60):
 
 def build_item(row: dict):
     original_title = row["title"]
-    translated_title, title_ok = zh_translate.translate(original_title)
+    # 제목만 C″ 방식(용어집 보호 + 필요한 구간만 zh→en→ko)으로 옮긴다.
+    # 안전검증을 통과하지 못하면 zh_ko_argos가 기존 zh_translate 결과를
+    # 그대로 돌려주므로, 실패해도 지금보다 나빠지지 않는다.
+    # 발주처/요약은 이번 적용 범위가 아니라 기존 방식을 유지한다.
+    translated_title, title_ok, title_info = zh_ko_argos.translate_title(original_title)
+    _TITLE_STATS[title_info["engine"]] = _TITLE_STATS.get(title_info["engine"], 0) + 1
+    if title_info["engine"] == "glossary" and title_info["reason"]:
+        _TITLE_FALLBACK_REASONS[title_info["reason"]] = \
+            _TITLE_FALLBACK_REASONS.get(title_info["reason"], 0) + 1
 
     try:
         detail_html = fetch(row["url"])
@@ -400,6 +414,11 @@ def collect():
     """EBNEW 검색 결과에서 반도체/디스플레이/TGV 관련 공고만 수집한다."""
     cutoff = (datetime.now() - timedelta(days=LOOKBACK_DAYS)).date().isoformat()
 
+    _TITLE_STATS.clear()
+    _TITLE_FALLBACK_REASONS.clear()
+    argos_ready, argos_reason = zh_ko_argos.argos_status()
+    print(f"[EBNEW] 제목 번역 zh→en→ko 모델: {'사용 가능' if argos_ready else '사용 불가 — ' + argos_reason}")
+
     items = []
     seen_ids = set()
     seen_title_date = set()  # 같은 공고가 검색어마다 다른 내부 ID로 잡히는 경우의 중복 제거용
@@ -469,6 +488,11 @@ def collect():
     print(f"[EBNEW] 관련성 낮아 제외(1차/2차, 제목 기준): {stats['not_relevant']}건")
     print(f"[EBNEW] 상세 확인 후 제외(3차 장비구매 성격 미확인/요청실패): {stats['excluded_after_detail']}건")
     print(f"[EBNEW] 최종 포함: {stats['included']}건 (일부 로마자표기 폴백/검토필요 {stats['translate_failed']}건)")
+    if _TITLE_STATS:
+        detail = ", ".join(f"{k} {v}건" for k, v in sorted(_TITLE_STATS.items()))
+        print(f"[EBNEW] 제목 번역 경로: {detail}")
+        for reason, count in sorted(_TITLE_FALLBACK_REASONS.items(), key=lambda kv: -kv[1]):
+            print(f"[EBNEW]   기존 번역 유지 사유: {reason} ({count}건)")
 
     return items
 

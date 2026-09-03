@@ -21,8 +21,8 @@
 | 나노종합기술원 (NNFC) | `NNFC` | 국내 | 공개 입찰공고 게시판 HTML 수집 (공식 API/RSS 없음) |
 | 한국표준과학연구원 (KRISS) | `KRISS` | 국내 | 공개 입찰공고 게시판 HTML 수집. KANC와 같은 4단계 관련성 판정 로직 재사용 |
 | 대한무역투자진흥공사 (KOTRA) | `KOTRA` | 해외(프로젝트 대상국 기준) | "사업신청" 목록 중 반도체/디스플레이/TGV 관련 프로젝트만 HTML 수집 |
-| 중국 비롄왕(必联网/EBNEW) | `EBNEW` | 중국(China Site) | 로그인 불필요, 실제 검색 API(POST) 확인 후 반도체/디스플레이/TGV 키워드로 수집. 용어집 기반 최선노력 한국어 번역, 원문 보존 |
-| 중국국제초표망 (MOFCOM) | `MOFCOM` | 중국(China Site) | `chinabidding.mofcom.gov.cn` 검색 API(POST). EBNEW의 번역/관련성 판정 로직 재사용 |
+| 중국 비롄왕(必联网/EBNEW) | `EBNEW` | 중국(China Site) | 로그인 불필요, 실제 검색 API(POST) 확인 후 반도체/디스플레이/TGV 키워드로 수집. 제목은 C″ 번역(용어집 보호 + 필요한 구간만 Argos zh→en→ko, 검증 실패 시 기존 번역 유지), 원문 보존 |
+| 중국국제초표망 (MOFCOM) | `MOFCOM` | 중국(China Site) | `chinabidding.mofcom.gov.cn` 검색 API(POST). 관련성 판정은 EBNEW 로직 재사용, 번역은 기존 용어집 방식 유지(PoC 결과 이미 우수) |
 | JETRO (일본) | `JETRO` | 일본 | 일본 정부조달 데이터베이스의 공개 JSON 목록 + 상세 HTML. AIST/RIKEN/NIMS/일본 대학 공고가 여기 모인다 |
 | DGIST (한국) | `DGIST` | 국내 | 입찰정보 게시판 HTML 수집 (상세는 버튼의 `data-key-no` 값으로 열림) |
 | ITRI (대만) | `ITRI` | 대만 | 採購資訊系統 詢價案 공개 목록 HTML. 번체 중국어라 수집기 내부 번체 용어집으로 한국어 표기 |
@@ -82,7 +82,9 @@ g2b-alert/
 │       ├── kanc.py / nnfc.py / kriss.py   국내 기관 입찰공고 게시판 수집기
 │       ├── kotra.py                     KOTRA 사업신청 목록 수집기
 │       ├── ebnew.py / mofcom.py         중국 사이트 수집기 (China Site)
-│       └── zh_translate.py              용어집 기반 최선노력 중국어 번역
+│       ├── zh_translate.py              용어집 기반 최선노력 중국어 번역(MOFCOM·발주처·요약)
+│       └── zh_ko_argos.py               EBNEW 제목 전용 C″ 번역(용어집 보호 → 필요한 구간만
+│                                        zh→en→ko → 검증 → 실패 시 zh_translate 결과 유지)
 ├── security/cloudflare-worker/          접속 게이트(비밀번호) Worker 코드 + 배포 안내
 └── .github/workflows/
     ├── fetch-announcements.yml          매일 1회 자동 수집 + Telegram 알림 + 데이터 커밋
@@ -313,12 +315,22 @@ g2b-alert/
 - `SEARCH_KEYWORDS`(반도체/디스플레이/TGV 관련 중국어 키워드 약 14개)로
   각각 검색해 후보를 모으고, 상세페이지(`www.ebnew.com/businessShow/{id}.html`,
   GET)에서 마감일/발주기관/지역/품목을 정규식으로 추출한다.
-- **번역은 진짜 기계번역이 아니다.** 이 환경에 번역 API가 연결돼 있지
-  않아 `scripts/collectors/zh_translate.py`의 회사명/기술용어/행정용어
-  용어집으로 치환하는 "최선 노력" 번역이다. `originalTitle`/
-  `originalSummary`에 원문을 항상 보존하고, 치환 후에도 한자가 절반
-  넘게 남으면 번역 실패로 보고 원문을 그대로 쓴다(지어내지 않는다).
-  회사명은 "BOE(京东方)"처럼 영문명+원문 한자를 병기한다.
+- **번역은 외부 번역 API를 쓰지 않는다.** 기본은
+  `scripts/collectors/zh_translate.py`의 회사명/기술용어/행정용어 용어집
+  치환이고, 용어집으로 덮지 못한 한자는 pypinyin 로마자 표기로 폴백한다.
+  `originalTitle`/`originalSummary`에 원문을 항상 보존하고, 뜻을 지어내지
+  않는다. 회사명은 "BOE(징둥팡)"처럼 영문명+한국식 발음을 병기한다.
+- **EBNEW 제목만** `scripts/collectors/zh_ko_argos.py`(C″ 방식)를 추가로
+  거친다: 회사명·전문용어·약어·세대·숫자단위를 자리표시자로 보호(양옆에
+  공백을 넣어 인접 한자와 분리) → 용어집으로 덮이지 않은 구간만 Argos
+  zh→en→ko(오프라인 모델, 한국어 직접 모델이 없어 영어를 경유) → 복원 →
+  후처리 → 자동 검증. **숫자·약어·회사명·보호 토큰 중 하나라도 어긋나면
+  결과를 버리고 기존 zh_translate 결과를 그대로 쓴다.** 모델이 없어도
+  (Actions 캐시 실패 등) 용어집 경로는 그대로 동작한다.
+  MOFCOM은 기존 방식이 이미 우수해 이 경로를 쓰지 않는다.
+  저장된 공고를 다시 번역할 때는 `python scripts/retranslate_ebnew.py`
+  (미리보기) / `--apply`(저장) — 제목 관련 필드만 바꾸고 id는 건드리지
+  않으므로 Telegram 신규 공고 재발송이 발생하지 않는다.
 - 관련성 판단은 2단계(목록 제목에서 1차 필터 → 상세 확인 없이 바로 강한/
   낮은 신호 재검사)로, "세정"류 짧은 키워드의 오탐 문제는 아직 발견되지
   않았지만 KANC/NNFC/KOTRA와 같은 원칙(강한 신호 우선)을 적용한다.
@@ -359,9 +371,11 @@ python -m http.server 8080
 - **KOTRA 수집이 GitHub Actions에서 실패한다** — Actions(Azure) IP 대역에서
   TCP 연결이 차단되는 것으로 확인됐다(위 수집 출처 항목 참고). 로컬 실행은
   정상이며, 실패 시 이전 데이터를 유지하고 Health Check 경고로 표시된다.
-- **중국어 번역 품질** — 번역 API가 연결돼 있지 않아 용어집 치환 + 로마자
-  폴백이라, 상당수 공고가 `translationIncomplete`로 표시된다. 원문 제목과
-  원문 링크는 항상 보존된다.
+- **중국어 번역 품질** — EBNEW 제목은 C″ 방식으로 크게 개선됐지만(21건 중
+  20건 채택, 한글 비중 평균 30%→50%), 발주처·요약과 MOFCOM은 여전히 용어집
+  치환 + 로마자 폴백이라 상당수 공고가 `translationIncomplete`로 표시된다.
+  용어집에 없는 중국 기업 브랜드명은 뜻을 지어내지 않고 로마자로 표기한다.
+  원문 제목과 원문 링크는 항상 보존된다.
 - **접속 게이트(Cloudflare Worker)** — 코드와 배포 안내는 있지만 실제 배포
   여부는 이 저장소에서 확인할 수 없다. 미배포 상태에서 헤더의 "로그아웃"
   링크는 아무 동작도 하지 않는 무해한 링크다.
