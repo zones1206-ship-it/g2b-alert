@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta name="robots" content="index,follow">
+	<link rel="shortcut icon" type="image/x-icon" href="/pcms/common/images/favicon.ico">
+	<link rel="apple-touch-icon-precomposed" href="/pcms/common/images/favicon_152.png">
+	<meta name="title" content="DGIST 대구경북과학기술원">
+	<meta name="author" content="DGIST 대구경북과학기술원">
+	<meta name="keywords" content="DGIST,dgist,대구경북과학기술원,대학,대학교,대학원,입학">
+	<meta name="description" content="혁신으로 세상을 바꾸는 융복합 대학, DGIST입니다." />
+	<meta name="copyright" content="(42988) 대구광역시 달성군 현풍읍 테크노중앙대로 333 Tel. 053-785-0114 Fax. 053-785-1219">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<meta property="og:title" content="DGIST 대구경북과학기술원" />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="DGIST 대구경북과학기술원" />
+	<meta property="og:description" content="혁신으로 세상을 바꾸는 융복합 대학, DGIST입니다." />
+	<meta property="og:image" content="/pcms/common/images/og.jpg" />
+	<meta itemprop="name" content="DGIST 대구경북과학기술원" />
+	<meta itemprop="description" content="혁신으로 세상을 바꾸는 융복합 대학, DGIST입니다." />
+	<meta itemprop="image" content="/pcms/common/images/og.jpg" />
+	<meta charset="utf-8">
+	<title>DGIST 홈페이지</title>
+	<link rel="stylesheet preload" as="style" href="/pcms/common/fonts/ko/pretendard/fontStyle.css?var=" />
+	<link rel="stylesheet" href="/css/intro/acego.intro.min.css">
+	<script src="/pcms/common/pluigs/jQuery/jquery-3.6.4.min.js"></script>
+	<script src="/pcms/common/pluigs/jQuery/jquery-migrate-1.4.1.min.js"></script>
+	<script src="/pcms/common/pluigs/jQueryUI/jquery-ui.min.js"></script>
+	<script src="/pcms/common/pluigs/bootstrap/bootstrap.min.js"></script>
+	<script src="/js/intro/plugin.js"></script>
+	<style>#slogan .text2 {color:#def3ff;}</style>
+</head>
+<body class="grid-system">
+<div id="wrap">
+	<header id="header">
+		<h1 class="logo"><img src="/images/intro/logo.png" alt="DGIST daegu Gyeongbuk Institute of Science & Technology"></h1>
+	</header>
+	<div class="inner">
+		<section id="slogan">
+			<header>
+				<span id="svg_dgist"></span>
+				<h2 class="skip">혁신으로 세상을 바꾸는 융복합 대학</h2>
+				<small class="text1">Innovative University Changing the World through Convergence,</small>
+				<small class="text2">Daegu Gyeongbuk Institute of Science &amp; Technology</small>
+				<script>
+					(function(){
+						var animation = lottie.loadAnimation({
+							container: document.getElementById('svg_dgist'), // Required
+							path: '/js/intro/slogan.json', // Required
+							renderer: 'svg', // Required
+							loop: false, // Optional
+							autoplay: false, // Optional
+							name: "dgist2" // Name for future reference. Optional.
+						});
+
+						$('#slogan .text1').css({marginLeft:'-100px',opacity:0});
+						$('#slogan .text2').css({marginLeft:'-100px',opacity:0});
+
+						$(window).ready(function() {
+							var  offsetTop = String( $('#svg_dgist').offset().top ).replace('px');
+							if ( offsetTop < $(window).scrollTop() + $(window).height() ) {
+								animation.play();
+
+								$('#slogan .text1').delay(4000).animate({marginLeft:0,opacity:1});
+								$('#slogan .text2').delay(4100).animate({marginLeft:0,opacity:1});
+							}
+						})
+					}());
+				</script>
+			</header>
+		</section>
+
+		<nav id="intro_nav">
+			<h2 class="skip">바로가기 메뉴</h2>
+			<ul>
+				<li>
+					<a href="https://ipsi3.uwayapply.com/2027/susi1/dgist/?CHA=1" target="_blank" title="새창으로 이동">
+						<div class="normal">
+							<strong>수시모집 원서접수 바로가기</strong>
+							<span>2027학년도 DGIST 학부 수시모집 원서접수</span>
+						</div>
+						<div class="ov">
+							<strong>수시모집 원서접수 바로가기</strong>
+							<span>2027학년도 DGIST 학부 수시모집 원서접수</span>
+						</div>
+					</a>
+				</li>
+				<li>
+					<a href="/kor/index.do" target="_blank" title="새창으로 이동">
+						<div class="normal">
+							<strong>DGIST 홈페이지</strong><span>DGIST Website</span>
+						</div>
+						<div class="ov">
+							<strong>DGIST 홈페이지</strong><span>DGIST Website</span>
+						</div>
+					</a>
+				</li>
+				<li>
+					<a href="/adm/" target="_blank" title="새창으로 이동">
+						<div class="normal">
+							<strong>DGIST 입학 홈페이지</strong><span>DGIST Admission</span>
+						</div>
+						<div class="ov">
+							<strong>DGIST 입학 홈페이지</strong><span>DGIST Admission</span>
+						</div>
+					</a>
+				</li>
+			</ul>
+		</nav>
+
+	</div>
+
+	<footer id="footer">
+		<div class="foot_wrap">
+			<address>(우)42988 대구광역시 달성군 현풍읍 테크노중앙대로 333 <br>대구경북과학기술원<!-- &nbsp;&nbsp;&nbsp;Tel. 053-785-5141~5&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<br> Fax. 053-785-5149&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<br>  E-mail. college@dgist.ac.kr -->
+				<span class="copy">COPYRIGHT© 2023 DGIST. ALL RIGHTS RESERVED.</span>
+			</address>
+		</div>
+	</footer>
+</div>
+</body>
+</html>

@@ -38,9 +38,18 @@ LIST_URL_TMPL = BASE_URL + "/prog/bidPbanc/kor/sub06_01_04/list.do?pageIndex={pa
 DETAIL_URL_TMPL = BASE_URL + "/prog/bidPbanc/kor/sub06_01_04/view.do?pbancNo={no}"
 
 MAX_LIST_PAGES = 3
-REQUEST_TIMEOUT = 25
-MAX_RETRY_ATTEMPTS = 3
-RETRY_DELAY_SECONDS = 3
+# Actions 러너에서 실측한 결과(2026-09 진단):
+#  - 정상 응답은 1~2초. 실패는 timeout까지 기다린 게 아니라 TLS 핸드셰이크
+#    단계에서 즉시 끊긴다(curl exit 35, tls=0.000000s, 0.65초만에 실패).
+#  - 2초 간격 5회와 15초 간격 3회가 같은 비율로 실패 → 짧은 간격 반복 호출에
+#    따른 일시 제한이 아니라 무작위 연결 실패다.
+#  - bot UA와 브라우저 UA 결과가 같아 UA 문제도 아니다.
+# 그래서 timeout을 길게 두는 건 의미가 없고, 빨리 포기하고 재시도하는 쪽이
+# 성공률과 실행시간 모두 유리하다. 최악의 경우에도 4x12 + (2+4+8) = 62초로
+# 기존(3x25 + 3+6 = 84초)보다 짧다. 무한 재시도는 하지 않는다.
+REQUEST_TIMEOUT = 12
+MAX_RETRY_ATTEMPTS = 4
+RETRY_DELAY_SECONDS = 2
 PAGE_DELAY_SECONDS = 0.6
 
 UA = "Mozilla/5.0 (compatible; g2b-alert-bot/1.0)"
@@ -106,7 +115,7 @@ def fetch(url):
         except (urllib.error.URLError, TimeoutError) as exc:
             last_error = exc
             if attempt < MAX_RETRY_ATTEMPTS:
-                delay = RETRY_DELAY_SECONDS * attempt
+                delay = RETRY_DELAY_SECONDS * (2 ** (attempt - 1))
                 print(f"[DGIST] 요청 실패({exc}), {delay}초 후 재시도 {attempt}/{MAX_RETRY_ATTEMPTS - 1}")
                 time.sleep(delay)
     raise RuntimeError(f"DGIST 요청이 {MAX_RETRY_ATTEMPTS}회 실패했습니다: {last_error}")

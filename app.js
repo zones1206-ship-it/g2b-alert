@@ -834,6 +834,20 @@ function showTab(tab) {
 // 수집이 실패한 출처가 있으면 헤더에 경고를 띄운다 — 실패해도 그 출처의
 // 이전 수집분이 화면에 그대로 남기 때문에, 표시가 없으면 낡은 데이터를
 // 최신으로 오해하게 된다. 정상일 때는 아무것도 표시하지 않는다.
+// 헤더의 "데이터 출처 N곳" 표기를 실제 활성 수집원 수로 채운다.
+// sourceHealth의 키가 곧 이번 실행에 등록돼 돌아간 수집원 목록이라,
+// 수집원을 추가·제거해도 화면 숫자를 따로 고칠 필요가 없다.
+function renderSourceSummary() {
+  const el = document.getElementById("sourceSummary");
+  if (!el) return;
+  const codes = Object.keys(state.data.sourceHealth || {});
+  if (codes.length === 0) return; // 데이터 로드 실패 시 기본 문구 유지
+  const preview = codes.slice(0, 2).join(" · ");
+  const rest = codes.length - 2;
+  el.innerHTML = `데이터 출처 ${codes.length}곳 · ${escapeHtml(preview)}`
+    + (rest > 0 ? ` <span class="source-more">+${rest}</span>` : "");
+}
+
 function renderSourceHealth() {
   const el = document.getElementById("sourceHealthNotice");
   if (!el) return;
@@ -863,6 +877,7 @@ async function loadData() {
   const updatedText = formatUpdatedAt(state.data.updatedAt);
   document.getElementById("updatedAt").innerHTML = `🔄 ${updatedText}`;
   document.getElementById("updatedAt2").innerHTML = `🔄 ${updatedText}`;
+  renderSourceSummary();
   renderSourceHealth();
   // 데이터가 늦게 도착해도 현재 보고 있는 탭을 다시 그려 숫자/차트를 채운다.
   const active = document.querySelector(".bottom-nav-item.active");

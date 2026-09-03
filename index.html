@@ -31,7 +31,10 @@
       <a href="/__auth/logout" class="icon-btn logout-link" title="로그아웃">로그아웃</a>
     </div>
     <details class="source-chips-collapse">
-      <summary class="source-summary">데이터 출처 10곳 · KANC · NNFC <span class="source-more">+8</span></summary>
+      <!-- 출처 수는 app.js가 data/announcements.json의 sourceHealth(=실제로
+           도는 수집원 목록)를 세어 채운다. 수집원을 추가·제거해도 여기 숫자를
+           손댈 필요가 없다. 데이터 로드 전에는 아래 기본 문구가 보인다. -->
+      <summary class="source-summary" id="sourceSummary">데이터 출처 · KANC · NNFC</summary>
       <div class="source-chips" aria-label="공고 수집 출처">
         <span class="source-chip">한국나노기술원 <b>KANC</b></span>
         <span class="source-chip">나노종합기술원 <b>NNFC</b></span>

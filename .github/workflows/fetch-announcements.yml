@@ -35,6 +35,16 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python scripts/notify_telegram.py data/announcements.before.json data/announcements.json
 
+      # 신규 공고 알림과는 별개 기능이다. 수집원이 연속 3회 이상 실패하면
+      # 최초 1회만 장애를 알리고, 정상 복귀하면 복구를 알린다(중복 발송 방지
+      # 상태는 announcements.json의 sourceHealth에 저장돼 아래 커밋 스텝이
+      # 함께 저장한다).
+      - name: Notify source collection failures via Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python scripts/notify_source_health.py data/announcements.json
+
       - name: Commit updated data
         run: |
           rm -f data/announcements.before.json
