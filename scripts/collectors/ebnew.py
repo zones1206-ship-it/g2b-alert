@@ -38,6 +38,7 @@ from datetime import datetime, timedelta
 from .common import normalize_text
 from . import zh_translate
 from . import zh_ko_argos
+from . import translation_memory
 
 SOURCE_NAME = "중국 비롄왕(EBNEW)"
 SOURCE_CODE = "EBNEW"
@@ -308,15 +309,26 @@ def extract_field(detail_text: str, label: str, max_len: int = 60):
     """"라벨：값" 형태에서 값을 뽑는다. 이 사이트 상세페이지는 항목 사이에
     구분자(세미콜론 등)가 없어서, 값이 끝나고 다음 "한글아님 2~10자 라벨："
     패턴이 시작되기 직전까지만(lookahead) 잘라내 다음 항목이 섞여
-    들어오는 것을 막는다."""
+    들어오는 것을 막는다.
+
+    값이 비어 있는 항목이 실제로 있다(로그인해야 보이는 항목은 값이 없거나
+    "***"로 가려진다). 예전 정규식은 최소 1글자를 강제해서, 값이 비면 바로
+    다음 라벨의 첫 글자를 값으로 잡아버렸다 — "招标机构：招标地区：..." 에서
+    발주기관을 "招"로, "项目编号：公告类型：..." 에서 공고번호를 "公"으로
+    잘못 뽑던 원인이 이것이다. 그래서 0글자 매칭을 허용해 빈 값은 빈 값으로
+    돌려준다."""
     m = re.search(
-        re.escape(label) + r"[：:]\s*(.{1,%d}?)(?=\s*[一-鿿]{2,10}[：:]|$)" % max_len,
+        re.escape(label) + r"[：:]\s*(.{0,%d}?)(?=\s*[一-鿿]{2,10}[：:]|$)" % max_len,
         detail_text,
     )
     if not m:
         return None
-    value = m.group(1).strip()
-    return value or None
+    # 로그인해야 보이는 부분은 "*"로 가려져 들어온다("… 유한책임공사 *.*").
+    value = re.sub(r"[\s*.]+$", "", m.group(1)).strip()
+    # 라벨 조각이나 가림표만 남은 값은 항목이 비어 있는 것으로 본다.
+    if len(value) < 2 or not re.search(r"[一-鿿A-Za-z0-9]", value):
+        return None
+    return value
 
 
 def build_item(row: dict):
@@ -342,7 +354,22 @@ def build_item(row: dict):
     deadline_m = re.search(r"截止时间[：:]\s*(\d{4}-\d{2}-\d{2})", detail_text)
     deadline = deadline_m.group(1) if deadline_m else None
 
-    org = extract_field(detail_text, "招标人") or extract_field(detail_text, "招标机构") or row["fields"].get("发布企业")
+    # 발주기관 후보 순서는 실제 상세 페이지를 읽고 정했다(추측 아님).
+    #  - 招标人  : 대부분의 공고에서 실제 발주자다(京东方/华星光电/康源 등).
+    #  - 采购人  : 招标人이 비어 있는 공고에서 구매기관이 여기 들어온다
+    #              (실측: 沈阳铁路信号有限责任公司).
+    #  - 采购单位/招标单位 : 같은 성격의 표기 변형.
+    #  - 招标机构 : 발주자가 아니라 **입찰 대행사**다(中电商务/广东省机电设备
+    #              招标中心/上海继彰工程造价咨询 등). 그래서 앞의 후보가 모두
+    #              없을 때만 마지막 수단으로 쓴다 — 대행사라도 연락 가능한
+    #              기관을 보여주는 편이 "확인 필요"보다 낫다.
+    #  - 发布企业 : 목록 페이지에 있는 발행 기업(최후 수단).
+    org = (extract_field(detail_text, "招标人")
+           or extract_field(detail_text, "采购人")
+           or extract_field(detail_text, "采购单位")
+           or extract_field(detail_text, "招标单位")
+           or extract_field(detail_text, "招标机构")
+           or row["fields"].get("发布企业"))
     region = extract_field(detail_text, "招标地区") or row["fields"].get("项目地区") or row["fields"].get("招标地区")
     product = extract_field(detail_text, "招标产品") or row["fields"].get("招标产品")
     project_no = extract_field(detail_text, "项目编号")
@@ -496,6 +523,12 @@ def collect():
         print(f"[EBNEW] 제목 번역 경로: {detail}")
         for reason, count in sorted(_TITLE_FALLBACK_REASONS.items(), key=lambda kv: -kv[1]):
             print(f"[EBNEW]   기존 번역 유지 사유: {reason} ({count}건)")
+
+    # 이번에 새로 검증을 통과한 번역기 결과를 기억해 둔다 — 같은 원문이 다음
+    # 실행에 다른 한국어로 바뀌지 않게 하기 위해서다(Argos 출력이 실행마다
+    # 다르다는 것을 JETRO에서 실측했다).
+    if translation_memory.save():
+        print(f"[EBNEW] 번역 기억 갱신: {translation_memory.stats()}")
 
     return items
 

@@ -31,6 +31,7 @@ MOFCOM은 이 모듈을 쓰지 않는다. PoC에서 MOFCOM은 기존 A안이 숫
 import re
 
 from . import zh_translate
+from . import translation_memory
 
 # ---------------------------------------------------------------------------
 # 1) 보호 대상 — 기존 중국어 용어집을 그대로 재사용하고, PoC에서 Argos가
@@ -553,6 +554,17 @@ def translate_title(text):
         info["reason"] = "원문 없음"
         return baseline, baseline_ok, info
 
+    # 같은 원문에 대해 이미 안전검증을 통과한 번역이 있으면 그걸 그대로 쓴다.
+    # Argos는 같은 입력에도 실행마다 다른 결과를 낸다(JETRO에서 실측: 멀쩡하던
+    # 제목이 다음 실행에 완전 오역으로 바뀌었다). 새 번역이 검증된 제목을
+    # 덮어쓰지 못하게 막는다. 다시 번역하려면 기억 파일에서 항목을 지우면 된다.
+    remembered = translation_memory.lookup("zh_ko", text)
+    if remembered:
+        info["engine"] = "memory"
+        info["reason"] = "이전에 검증된 번역 재사용"
+        info["candidate"] = remembered
+        return remembered, True, info
+
     # 기존 A안이 용어집만으로 완전히 처리됐다면(로마자 표기 폴백을 쓰지 않았다면)
     # 고칠 가독성 문제가 없다 — 굳이 기계번역으로 바꾸지 않는다(지시문 16번).
     if baseline_ok:
@@ -609,6 +621,10 @@ def translate_title(text):
         return baseline, baseline_ok, info
 
     info["engine"] = engine
+    # 번역기를 실제로 부른 경로만 기억해 둔다. 용어집 경로는 원래 결정적이라
+    # 기억할 필요가 없고, 용어집을 고쳤을 때 곧바로 반영돼야 한다.
+    if engine == "argos+glossary":
+        translation_memory.remember("zh_ko", text, full)
     return full, True, info
 
 
