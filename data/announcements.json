@@ -1,13 +1,13 @@
 {
-  "updatedAt": "2026-09-03T02:13:56+00:00",
+  "updatedAt": "2026-09-03T02:34:56+00:00",
   "sourceHealth": {
     "KANC": {
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 11,
-      "lastRunAt": "2026-09-03T02:13:56+00:00",
-      "lastSuccessAt": "2026-09-03T02:13:56+00:00",
+      "lastRunAt": "2026-09-03T02:34:56+00:00",
+      "lastSuccessAt": "2026-09-03T02:34:56+00:00",
       "consecutiveFailures": 0
     },
     "NNFC": {
@@ -15,26 +15,26 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 8,
-      "lastRunAt": "2026-09-03T02:13:56+00:00",
-      "lastSuccessAt": "2026-09-03T02:13:56+00:00",
+      "lastRunAt": "2026-09-03T02:34:56+00:00",
+      "lastSuccessAt": "2026-09-03T02:34:56+00:00",
       "consecutiveFailures": 0
     },
     "KOTRA": {
       "ok": false,
-      "lastStatus": "결과 없음(기존 유지)",
-      "lastError": null,
+      "lastStatus": "오류",
+      "lastError": "Remote end closed connection without response",
       "collectedThisRun": 0,
-      "lastRunAt": "2026-09-03T02:13:56+00:00",
+      "lastRunAt": "2026-09-03T02:34:56+00:00",
       "lastSuccessAt": "2026-09-03T11:03:49+09:00",
-      "consecutiveFailures": 1
+      "consecutiveFailures": 2
     },
     "EBNEW": {
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 21,
-      "lastRunAt": "2026-09-03T02:13:56+00:00",
-      "lastSuccessAt": "2026-09-03T02:13:56+00:00",
+      "lastRunAt": "2026-09-03T02:34:56+00:00",
+      "lastSuccessAt": "2026-09-03T02:34:56+00:00",
       "consecutiveFailures": 0
     },
     "MOFCOM": {
@@ -42,8 +42,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 8,
-      "lastRunAt": "2026-09-03T02:13:56+00:00",
-      "lastSuccessAt": "2026-09-03T02:13:56+00:00",
+      "lastRunAt": "2026-09-03T02:34:56+00:00",
+      "lastSuccessAt": "2026-09-03T02:34:56+00:00",
       "consecutiveFailures": 0
     },
     "KRISS": {
@@ -51,8 +51,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 3,
-      "lastRunAt": "2026-09-03T02:13:56+00:00",
-      "lastSuccessAt": "2026-09-03T02:13:56+00:00",
+      "lastRunAt": "2026-09-03T02:34:56+00:00",
+      "lastSuccessAt": "2026-09-03T02:34:56+00:00",
       "consecutiveFailures": 0
     },
     "JETRO": {
@@ -60,8 +60,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 23,
-      "lastRunAt": "2026-09-03T02:13:56+00:00",
-      "lastSuccessAt": "2026-09-03T02:13:56+00:00",
+      "lastRunAt": "2026-09-03T02:34:56+00:00",
+      "lastSuccessAt": "2026-09-03T02:34:56+00:00",
       "consecutiveFailures": 0
     },
     "DGIST": {
@@ -69,8 +69,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 1,
-      "lastRunAt": "2026-09-03T02:13:56+00:00",
-      "lastSuccessAt": "2026-09-03T02:13:56+00:00",
+      "lastRunAt": "2026-09-03T02:34:56+00:00",
+      "lastSuccessAt": "2026-09-03T02:34:56+00:00",
       "consecutiveFailures": 0
     },
     "ITRI": {
@@ -78,18 +78,18 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 7,
-      "lastRunAt": "2026-09-03T02:13:56+00:00",
-      "lastSuccessAt": "2026-09-03T02:13:56+00:00",
+      "lastRunAt": "2026-09-03T02:34:56+00:00",
+      "lastSuccessAt": "2026-09-03T02:34:56+00:00",
       "consecutiveFailures": 0
     },
     "KAIST": {
-      "ok": false,
-      "lastStatus": "오류",
-      "lastError": "KAIST 요청이 3회 실패했습니다: <urlopen error timed out>",
-      "collectedThisRun": 0,
-      "lastRunAt": "2026-09-03T02:13:56+00:00",
-      "lastSuccessAt": "2026-09-03T11:03:49+09:00",
-      "consecutiveFailures": 1
+      "ok": true,
+      "lastStatus": "정상",
+      "lastError": null,
+      "collectedThisRun": 1,
+      "lastRunAt": "2026-09-03T02:34:56+00:00",
+      "lastSuccessAt": "2026-09-03T02:34:56+00:00",
+      "consecutiveFailures": 0
     }
   },
   "items": [
@@ -170,46 +170,6 @@
       "noticeType": "정식입찰",
       "projectNo": "公",
       "firstSeenAt": "2026-08-22T22:19:01+00:00"
-    },
-    {
-      "id": "ebnew709693561",
-      "title": "TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트 심사결과 공시 공고 (1)",
-      "translatedTitle": "TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트 심사결과 공시 공고 (1)",
-      "originalTitle": "TCL华星第8.6代印刷OLED生产线一期项目评标结果公示公告(1)",
-      "translatedSummary": "HongKao Lu",
-      "originalSummary": "烘烤炉",
-      "org": "광저우 화싱광전 YinShua 디스플레이 기술 유한공사",
-      "originalOrg": "广州华星光电印刷显示技术有限公司",
-      "translationIncomplete": true,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "광둥성",
-      "status": "진행중",
-      "dueDate": "2026-09-02",
-      "postedDate": "2026-08-28",
-      "keywords": [
-        "디스플레이 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "HongKao Lu",
-      "attachments": [],
-      "url": "https://www.ebnew.com/businessShow/709693561.html",
-      "originalUrl": "https://www.ebnew.com/businessShow/709693561.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "낙찰·수주결과",
-      "projectNo": "4197-2640CSOTGZT8/74",
-      "firstSeenAt": "2026-08-29T03:31:05+00:00"
     },
     {
       "id": "ebnew709723397",
@@ -2184,6 +2144,46 @@
       "noticeType": "정식입찰",
       "projectNo": "0664-2640SUMECF94",
       "firstSeenAt": "2026-08-29T03:31:05+00:00"
+    },
+    {
+      "id": "ebnew709764604",
+      "title": "TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트 낙찰 결과 공고 (1)",
+      "translatedTitle": "TCL CSOT(화싱광전) 제8.6세대YinShuaOLED 생산라인 YiQi 프로젝트 낙찰 결과 공고 (1)",
+      "originalTitle": "TCL华星第8.6代印刷OLED生产线一期项目中标结果公告(1)",
+      "translatedSummary": "HongKao Lu",
+      "originalSummary": "烘烤炉",
+      "org": "광저우 화싱광전 YinShua 디스플레이 기술 유한공사",
+      "originalOrg": "广州华星光电印刷显示技术有限公司",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "광둥성",
+      "status": "진행중",
+      "dueDate": null,
+      "postedDate": "2026-09-03",
+      "keywords": [
+        "디스플레이 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "HongKao Lu",
+      "attachments": [],
+      "url": "https://www.ebnew.com/businessShow/709764604.html",
+      "originalUrl": "https://www.ebnew.com/businessShow/709764604.html",
+      "source": "중국 비롄왕(EBNEW)",
+      "sourceCode": "EBNEW",
+      "sourceSiteUrl": "https://www.ebnew.com/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "낙찰·수주결과",
+      "projectNo": "4197-2640CSOTGZT8/74",
+      "firstSeenAt": "2026-09-03T02:34:56+00:00"
     },
     {
       "id": "ebnew709637359",
