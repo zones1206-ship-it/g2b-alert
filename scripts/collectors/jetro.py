@@ -403,10 +403,19 @@ def collect():
     for row in relevant:
         detail_url = DETAIL_URL_TMPL.format(xid=row.get("xid"), aid=row.get("aid"))
         try:
-            html = fetch(detail_url, DETAIL_HEADERS, retries=2)
+            # 상세 요청은 목록보다 시도 횟수를 줄여 뒀었는데(2회), 실제로
+            # 503이 한 번 나면 그 공고가 통째로 빠져 버린다. 빠진 공고는
+            # 다음 실행에 돌아올 때 firstSeenAt이 새로 찍혀 "신규 공고"로
+            # 다시 알림이 나간다(2026-09-04 실행에서 실제로 발생).
+            # 목록과 같은 3회로 맞춰 일시적 오류로 공고를 잃지 않게 한다.
+            html = fetch(detail_url, DETAIL_HEADERS, retries=MAX_RETRY_ATTEMPTS)
         except RuntimeError as exc:
             detail_failed += 1
-            print(f"[JETRO] 상세 요청 실패(건너뜀): {exc}")
+            # 여기까지 왔다는 것은 재시도를 다 쓴 것이다. 이 공고는 이번
+            # 실행 결과에서 빠지며, 다음에 돌아오면 신규로 인식된다는 점을
+            # 로그에 분명히 남긴다(docs/AUDIT-No014.md 참고).
+            print(f"[JETRO] 상세 요청 실패(이번 실행에서 제외됨 — "
+                  f"다음 실행에 돌아오면 신규로 인식된다): {exc}")
             continue
         fields = parse_detail(html)
         item = build_item(row, fields, detail_url)
