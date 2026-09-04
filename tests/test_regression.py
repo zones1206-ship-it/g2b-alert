@@ -1629,6 +1629,133 @@ class KancDeadlineParsingTest(unittest.TestCase):
         self.assertIsNone(kanc.extract_due_date("마감 표기 없음", "2026-08-01"))
 
 
+class LotIdentityLeakTest(unittest.TestCase):
+    """Y. 같은 signature를 가진 별개 로트가 남의 이력을 물려받는 문제 (No.019).
+
+    실측 — MOFCOM 4197-264BOECDCZ02 프로젝트의 로트 /02 두 건이 새로
+    올라왔는데, 이미 있던 로트 /03 과 제목·기관·게시일·마감일·공고종류가
+    모두 같았다. signature만 보던 두 곳에서 별개 공고가 같은 공고로 취급돼
+
+      1. 새 공고가 /03 의 firstSeenAt(이틀 전)을 물려받아 NEW 배지가 안 뜸
+      2. "사이트 재색인"으로 오판돼 **신규 공고 Telegram이 나가지 않음**
+
+    No.018에서 보존 로직만 고쳤는데 같은 문제가 이 두 곳에 남아 있었다.
+    """
+
+    OLD_SEEN = "2026-09-03T10:27:54+00:00"
+
+    def _lot(self, item_id, project, due="2026-09-16", seen=None):
+        item = {
+            "id": item_id, "sourceCode": "MOFCOM", "projectNo": project,
+            "title": "청두 BOE 광전 제4.5세대 TFT-LCD 생산라인 기술 개조 프로젝트",
+            "originalTitle": "成都京东方光电 第4.5代 TFT-LCD 生产线技术改造项目",
+            "originalOrg": "成都京东方光电科技有限公司", "org": "청두 BOE 광전",
+            "postedDate": "2026-08-26", "dueDate": due,
+            "noticeType": "정식입찰", "equipmentStatus": "장비",
+            "url": f"https://example.invalid/{item_id}.html",
+        }
+        if seen:
+            item["firstSeenAt"] = seen
+        return item
+
+    def test_signatures_really_collide(self):
+        """이 테스트의 전제 확인 — 두 로트의 지문이 실제로 같다."""
+        a = self._lot("mofcom-lot03", "4197-264BOECDCZ02/03")
+        b = self._lot("mofcom-lot02", "4197-264BOECDCZ02/02")
+        self.assertEqual(FA.announcement_signature(a), FA.announcement_signature(b))
+        self.assertNotEqual(FA.project_key(a), FA.project_key(b))
+
+    # --- 1) firstSeenAt 승계 --------------------------------------------
+
+    def test_new_lot_gets_its_own_first_seen(self):
+        """새 로트는 남의 발견 시각을 물려받지 않는다."""
+        existing = [self._lot("mofcom-lot03", "4197-264BOECDCZ02/03",
+                              seen=self.OLD_SEEN)]
+        incoming = [self._lot("mofcom-lot02", "4197-264BOECDCZ02/02")]
+        FA.stamp_first_seen(incoming, existing)
+        self.assertNotEqual(incoming[0]["firstSeenAt"], self.OLD_SEEN)
+
+    def test_reindexed_same_lot_still_inherits(self):
+        """반대로 같은 공고번호가 새 id를 받은 재색인은 그대로 이어받는다."""
+        existing = [self._lot("mofcom-old", "4197-264BOECDCZ02/03",
+                              seen=self.OLD_SEEN)]
+        incoming = [self._lot("mofcom-new", "4197-264BOECDCZ02/03")]
+        FA.stamp_first_seen(incoming, existing)
+        self.assertEqual(incoming[0]["firstSeenAt"], self.OLD_SEEN)
+
+    def test_same_id_always_inherits(self):
+        existing = [self._lot("mofcom-a", "4197-264BOECDCZ02/03",
+                              seen=self.OLD_SEEN)]
+        incoming = [self._lot("mofcom-a", "4197-264BOECDCZ02/03")]
+        FA.stamp_first_seen(incoming, existing)
+        self.assertEqual(incoming[0]["firstSeenAt"], self.OLD_SEEN)
+
+    def test_no_project_number_falls_back_to_signature(self):
+        """공고번호가 없는 출처에서는 종전대로 지문으로 이어받는다."""
+        old = self._lot("x-old", None, seen=self.OLD_SEEN)
+        new = self._lot("x-new", None)
+        old.pop("projectNo"); new.pop("projectNo")
+        FA.stamp_first_seen([new], [old])
+        self.assertEqual(new["firstSeenAt"], self.OLD_SEEN)
+
+    # --- 2) 신규 공고 Telegram ------------------------------------------
+
+    def _detect(self, before, after):
+        """notify_telegram의 신규 판정만 떼어내 그대로 재현한다."""
+        before_ids = {i.get("id") for i in before if i.get("id")}
+        before_signatures = {NT.announcement_signature(i) for i in before}
+        before_projects = {p for p in (NT.project_key(i) for i in before) if p}
+        new_items, reindexed = [], 0
+        for item in after:
+            if not item.get("id") or item["id"] in before_ids:
+                continue
+            key = NT.project_key(item)
+            if not (key and key not in before_projects):
+                if NT.announcement_signature(item) in before_signatures:
+                    reindexed += 1
+                    continue
+            if item.get("equipmentStatus") not in (None, "장비"):
+                continue
+            new_items.append(item)
+        return [i["id"] for i in new_items], reindexed
+
+    def test_new_lot_is_notified(self):
+        """새 로트는 신규 공고로 알린다 — 실측에서 누락된 그 2건이다."""
+        before = [self._lot("mofcom-lot03", "4197-264BOECDCZ02/03")]
+        after = before + [
+            self._lot("mofcom-lot02a", "4197-264BOECDCZ02/02"),
+            self._lot("mofcom-lot02b", "4197-264BOECDCZ02/02", due="2026-09-24"),
+        ]
+        new_ids, reindexed = self._detect(before, after)
+        self.assertEqual(set(new_ids), {"mofcom-lot02a", "mofcom-lot02b"})
+        self.assertEqual(reindexed, 0)
+
+    def test_true_reindex_is_still_suppressed(self):
+        """id만 바뀐 진짜 재색인은 여전히 알리지 않는다(중복 알림 방지)."""
+        before = [self._lot("mofcom-old", "4197-264BOECDCZ02/03")]
+        after = [self._lot("mofcom-new", "4197-264BOECDCZ02/03")]
+        new_ids, reindexed = self._detect(before, after)
+        self.assertEqual(new_ids, [])
+        self.assertEqual(reindexed, 1)
+
+    def test_reindex_without_project_number_still_suppressed(self):
+        before = [self._lot("old", None)]
+        after = [self._lot("new", None)]
+        for i in before + after:
+            i.pop("projectNo")
+        new_ids, reindexed = self._detect(before, after)
+        self.assertEqual(new_ids, [])
+        self.assertEqual(reindexed, 1)
+
+    def test_non_equipment_new_lot_not_notified(self):
+        """새 로트라도 장비가 아니면 알리지 않는다 — 기존 정책 그대로."""
+        before = [self._lot("lot03", "4197-264BOECDCZ02/03")]
+        item = self._lot("lot02", "4197-264BOECDCZ02/02")
+        item["equipmentStatus"] = "제외"
+        new_ids, _ = self._detect(before, [item])
+        self.assertEqual(new_ids, [])
+
+
 class RunModeHealthTest(unittest.TestCase):
     """X. 정기 실행과 수동 검증 실행의 분리 — 지시문 No.019.
 

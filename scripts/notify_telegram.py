@@ -113,6 +113,21 @@ def announcement_signature(item):
     )
 
 
+def project_key(item):
+    """출처 + 공고번호(scripts/fetch_announcements.py와 같은 기준).
+
+    signature가 같아도 공고번호가 다르면 별개 공고다. 실측에서 MOFCOM
+    4197-264BOECDCZ02 로트 /02 두 건이 새로 올라왔는데, 같은 프로젝트
+    로트 /03 과 제목·기관·게시일·마감일이 모두 같아 "재색인"으로 오판돼
+    **신규 공고 알림이 나가지 않았다**.
+    """
+    project_no = item.get("projectNo") or item.get("g2bBidNo")
+    if not project_no:
+        return None
+    return (item.get("sourceCode"),
+            re.sub(r"\s+", "", str(project_no)).strip().lower())
+
+
 def main():
     if len(sys.argv) != 3:
         print("사용법: python scripts/notify_telegram.py <이전 json> <최신 json>")
@@ -133,6 +148,7 @@ def main():
     # 으로도 확인해 재색인만으로 다시 발송하지 않는다. 마감일·공고유형이
     # 바뀌면 지문이 달라지므로 실제 정정·재공고는 그대로 알린다.
     before_signatures = {announcement_signature(item) for item in before_items}
+    before_projects = {p for p in (project_key(item) for item in before_items) if p}
     after_items = load_items(after_path)
 
     new_items = []
@@ -141,9 +157,13 @@ def main():
     for item in after_items:
         if not item.get("id") or item["id"] in before_ids:
             continue
-        if announcement_signature(item) in before_signatures:
-            reindexed += 1
-            continue
+        key = project_key(item)
+        if not (key and key not in before_projects):
+            # 공고번호가 이전에 없던 것이면 별개 공고이므로 지문 검사를
+            # 건너뛴다. 그 외에만 재색인 여부를 지문으로 판단한다.
+            if announcement_signature(item) in before_signatures:
+                reindexed += 1
+                continue
         # 재료·부품·용역·공사처럼 장비가 아닌 공고는 알리지 않는다.
         if item.get("equipmentStatus") not in (None, "장비"):
             not_equipment += 1

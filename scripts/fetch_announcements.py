@@ -283,11 +283,20 @@ def stamp_first_seen(all_items, existing_items):
         for item in existing_items
         if item.get("firstSeenAt")
     }
+    # 다만 signature만 보면 **별개 공고가 남의 발견 시각을 물려받는다**.
+    # MOFCOM 4197-264BOECDCZ02 의 로트 /02 와 /03 은 제목·기관·게시일·
+    # 마감일이 모두 같아 signature가 같은데, 실제로는 다른 공고다. 실측에서
+    # 새로 올라온 /02 두 건이 /03 의 firstSeenAt(이틀 전)을 물려받아 NEW
+    # 배지가 뜨지 않았다. 공고번호가 이전에 없던 것이면 별개 공고로 본다.
+    previous_projects = {p for p in (project_key(item) for item in existing_items) if p}
     now_iso = datetime.now().astimezone().isoformat(timespec="seconds")
     for item in all_items:
-        item["firstSeenAt"] = (previous_first_seen.get(item.get("id"))
-                               or previous_by_signature.get(announcement_signature(item))
-                               or now_iso)
+        inherited = previous_first_seen.get(item.get("id"))
+        if not inherited:
+            key = project_key(item)
+            if not (key and key not in previous_projects):
+                inherited = previous_by_signature.get(announcement_signature(item))
+        item["firstSeenAt"] = inherited or now_iso
 
 
 # 원문에서 취소·폐기가 확인된 공고는 마감일이 남아 있어도 붙들지 않는다.
