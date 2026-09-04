@@ -127,6 +127,17 @@ def run_collector(name, module, existing_items, log):
                 print(f"[{name}] 목록은 정상 수집했지만 조건에 맞는 공고가 없습니다"
                       f"(0건). 과거 공고 {len(fallback)}건은 그대로 둡니다.")
                 return fallback
+            # 게시판 최신 목록을 그대로 반영하는 출처라도, 마감 전 공고까지
+            # 버리면 안 된다. 실제로 KAIST에서 필터 통과 0건이 되면서 마감이
+            # 나흘 남은 공고가 데이터에서 사라진 적이 있다(2026-09-04).
+            # 마감이 지나면 아래 보존 로직이 알아서 놓아준다.
+            kept = [i for i in fallback
+                    if has_future_deadline(i) and not looks_cancelled(i)]
+            if kept:
+                print(f"[{name}] 목록은 정상 수집했지만 조건에 맞는 공고가 "
+                      f"없습니다(0건). 마감 전 공고 {len(kept)}건은 유지합니다.")
+                log[name]["count"] = len(kept)
+                return kept
             print(f"[{name}] 목록은 정상 수집했지만 조건에 맞는 공고가 없습니다(0건).")
             return []
         print(f"[{name}] 이번 실행에서 수집된 항목이 없어 기존 데이터를 유지합니다.")

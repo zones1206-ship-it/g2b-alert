@@ -1756,6 +1756,81 @@ class DisappearReappearTest(unittest.TestCase):
         self.assertEqual(self._run([], four), [])  # collected가 비면 손대지 않는다
 
 
+class HealthyZeroKeepsActiveTest(unittest.TestCase):
+    """AC. 정상 수집 0건일 때도 마감 전 공고는 지키기 — 지시문 No.021.
+
+    게시판 최신 목록을 그대로 반영하는 출처(KANC·NNFC·KRISS·JETRO·DGIST·
+    ITRI·KAIST)는 필터 통과 0건이면 기존 데이터를 통째로 버렸다. 실제로
+    KAIST에서 마감이 나흘 남은 공고가 이렇게 사라졌다(2026-09-04).
+
+    목록 수집 자체는 정상이므로 "출처 장애"로도 잡히지 않아, 조용히
+    사라지는 경로였다.
+    """
+
+    class _State:
+        fetched = True
+
+    class _EmptyModule:
+        FETCH_STATE = None
+
+        @staticmethod
+        def collect():
+            return []
+
+    def _module(self):
+        mod = self._EmptyModule()
+        mod.FETCH_STATE = self._State()
+        return mod
+
+    def _item(self, item_id, due, title="반도체 웨이퍼 노광장비 구매"):
+        return {"id": item_id, "sourceCode": "KAIST", "title": title,
+                "originalTitle": title, "originalOrg": "KAIST",
+                "projectNo": item_id, "dueDate": due, "postedDate": "2026-09-01",
+                "noticeType": "정식입찰", "equipmentStatus": "장비",
+                "firstSeenAt": "2026-09-03T00:00:00+09:00"}
+
+    def _run(self, previous):
+        log = {}
+        return FA.run_collector("KAIST", self._module(), previous, log), log
+
+    def test_active_notice_survives_healthy_zero(self):
+        out, log = self._run([self._item("kaist260270", "2999-01-01")])
+        self.assertEqual([i["id"] for i in out], ["kaist260270"])
+        self.assertEqual(log["KAIST"]["status"], "정상")
+        self.assertEqual(log["KAIST"]["count"], 1)
+
+    def test_expired_notice_is_released(self):
+        """마감이 지난 공고는 붙들지 않는다 — 영구 보존이 되면 안 된다."""
+        out, _ = self._run([self._item("old", "2020-01-01")])
+        self.assertEqual(out, [])
+
+    def test_mixture_keeps_only_active(self):
+        out, _ = self._run([self._item("live", "2999-01-01"),
+                            self._item("done", "2020-01-01")])
+        self.assertEqual([i["id"] for i in out], ["live"])
+
+    def test_cancelled_notice_is_released(self):
+        out, _ = self._run([self._item("cx", "2999-01-01", "[취소] 구매 공고")])
+        self.assertEqual(out, [])
+
+    def test_no_deadline_is_not_held_forever(self):
+        """마감일을 모르는 공고를 무기한 붙들지 않는다."""
+        out, _ = self._run([self._item("nodue", None)])
+        self.assertEqual(out, [])
+
+    def test_keep_expired_sources_unchanged(self):
+        """KOTRA/EBNEW/MOFCOM은 종전대로 과거 공고까지 그대로 둔다."""
+        previous = [dict(self._item("k1", "2020-01-01"), sourceCode="EBNEW")]
+        log = {}
+        out = FA.run_collector("EBNEW", self._module(), previous, log)
+        self.assertEqual([i["id"] for i in out], ["k1"])
+
+    def test_first_seen_is_preserved_across_zero_run(self):
+        kept, _ = self._run([self._item("kaist260270", "2999-01-01")])
+        FA.stamp_first_seen(kept, [self._item("kaist260270", "2999-01-01")])
+        self.assertEqual(kept[0]["firstSeenAt"], "2026-09-03T00:00:00+09:00")
+
+
 class HealthBannerScopeTest(unittest.TestCase):
     """Z. 화면 장애 배너는 정기 수집 기준만 본다 — 지시문 No.020.
 
