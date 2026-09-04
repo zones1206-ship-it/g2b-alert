@@ -413,10 +413,16 @@ def build_item(row, detail_fields, detail_url):
         "deliveryCondition": None,
         "paymentCondition": None,
         "eligibility": None,
-        # 화면에는 한국어 요약만 보여준다. 영어 원문은 originalSummary에
-        # 그대로 남으므로 정보가 사라지지는 않는다(지시문 No.015 10번).
+        # 화면에는 한국어 요약만 보여준다. 영어 원문은 아래 originalDescription에
+        # 그대로 남으므로 정보가 사라지지 않는다(지시문 No.015 10번).
         "description": korean_summary(summary, due),
-        "originalSummary": summary[:1200] or None,
+        # originalSummary가 아니라 originalDescription에 담는다.
+        # originalSummary는 "짧은 품목명"을 담는 자리이고 장비 판정기가
+        # 그 값을 읽는다(equipment_filter._title_text_of). 여기에 1,200자짜리
+        # 영어 공고 본문을 넣었더니 정형문구의 "system"이 장비 신호로 잡혀
+        # 부품·재료 공고 3건이 "제외"에서 "검토 필요"로 바뀌었다.
+        # 원문 보존은 판정에 영향을 주지 않는 자리에서 한다.
+        "originalDescription": summary[:1200] or None,
         "attachments": [],
         "url": detail_url,
         "originalUrl": detail_url,

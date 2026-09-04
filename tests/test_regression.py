@@ -1112,7 +1112,11 @@ class JetroDetailFailureTest(unittest.TestCase):
         item = jetro.collect()[0]
         self.assertRegex(item["description"], r"[가-힣]")
         self.assertNotIn("Nature and quantity", item["description"])
-        self.assertIn("Nature and quantity", item["originalSummary"])
+        # 원문은 보존하되 장비 판정기가 읽는 originalSummary가 아니라
+        # originalDescription에 담는다(영어 정형문구의 "system"이
+        # 장비 신호로 잡히던 문제).
+        self.assertIn("Nature and quantity", item["originalDescription"])
+        self.assertIsNone(item.get("originalSummary"))
         self.assertEqual(item["contractMethod"], "물품·용역 구매공고")
 
 
