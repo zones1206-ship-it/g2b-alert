@@ -16,7 +16,7 @@ import http.client
 import io
 import json
 import inspect
-from datetime import datetime
+from datetime import datetime, date
 import os
 import re
 import shutil
@@ -1372,6 +1372,124 @@ class ItriTraditionalGlossaryTest(unittest.TestCase):
         code = inspect.getsource(itri)
         self.assertIn('"대만 산업기술연구원(ITRI)"', code)
         self.assertNotIn('"ITRI(대만 산업기술연구원)"', code)
+
+
+class ActiveNoticePreservationTest(unittest.TestCase):
+    """S. 수집 범위 밖으로 밀린 진행 중 공고 보존 — 지시문 No.017.
+
+    수집기마다 조회 범위가 다르다(며칠치 / 몇 페이지 / 상위 N건). 아직
+    마감 전인 공고가 새 공고에 밀려 범위 밖으로 나가면 데이터에서 사라졌고,
+    firstSeenAt까지 없어져 다시 잡힐 때 신규로 재발송됐다.
+    실제로 EBNEW(조회 창)와 KAIST(페이지 깊이)에서 두 번 발생했다.
+    """
+
+    TODAY = date(2026, 9, 4)
+
+    def _item(self, item_id, due, **extra):
+        base = {"id": item_id, "dueDate": due, "sourceCode": "KAIST",
+                "title": "반도체 장비 구매", "firstSeenAt": "2026-08-01T00:00:00+09:00"}
+        base.update(extra)
+        return base
+
+    def _run(self, collected, fallback):
+        return FA.preserve_active_missing_items("TEST", collected, fallback,
+                                                today=self.TODAY)
+
+    def test_case1_active_missing_is_preserved(self):
+        """CASE 1 — 마감 전인데 목록에 없으면 유지한다."""
+        out = self._run([self._item("new1", "2026-09-30")],
+                        [self._item("old1", "2026-10-01")])
+        self.assertEqual({i["id"] for i in out}, {"new1", "old1"})
+
+    def test_case2_expired_missing_is_removed(self):
+        """CASE 2 — 이미 마감된 공고는 붙들지 않는다(영구 보존 금지)."""
+        out = self._run([self._item("new1", "2026-09-30")],
+                        [self._item("old1", "2026-08-01")])
+        self.assertEqual({i["id"] for i in out}, {"new1"})
+
+    def test_case3_cancelled_active_is_removed(self):
+        """CASE 3 — 취소·폐기 표기가 있으면 마감 전이어도 유지하지 않는다."""
+        for marker_field, marker in (("status", "취소"), ("title", "폐기 공고"),
+                                     ("noticeType", "철회")):
+            with self.subTest(marker=marker):
+                old = self._item("old1", "2026-10-01", **{marker_field: marker})
+                out = self._run([self._item("new1", "2026-09-30")], [old])
+                self.assertEqual({i["id"] for i in out}, {"new1"})
+
+    def test_case4_preserved_item_keeps_identity(self):
+        """CASE 4 — 되살린 공고는 id와 firstSeenAt이 그대로여야 한다.
+
+        그래야 다시 목록에 나타나도 신규로 잡히지 않는다.
+        """
+        old = self._item("old1", "2026-10-01",
+                         firstSeenAt="2026-07-15T10:00:00+09:00")
+        out = self._run([self._item("new1", "2026-09-30")], [old])
+        kept = next(i for i in out if i["id"] == "old1")
+        self.assertEqual(kept["firstSeenAt"], "2026-07-15T10:00:00+09:00")
+        self.assertIs(kept, old, "기존 item을 그대로 넘겨야 한다")
+
+    def test_case5_new_items_are_untouched(self):
+        """CASE 5 — 실제 신규 공고는 그대로 통과한다(알림을 막지 않는다)."""
+        out = self._run([self._item("brand-new", "2026-09-30")], [])
+        self.assertEqual([i["id"] for i in out], ["brand-new"])
+
+    def test_case6_empty_collection_is_not_touched(self):
+        """CASE 6 — 목록 자체가 실패한 경로는 건드리지 않는다.
+
+        그 경우는 run_collector가 이미 기존 데이터를 통째로 유지한다.
+        """
+        self.assertEqual(self._run([], [self._item("old1", "2026-10-01")]), [])
+
+    def test_missing_due_date_is_not_preserved(self):
+        """마감일을 모르는 공고를 붙들면 오래된 공고가 무한정 쌓인다."""
+        out = self._run([self._item("new1", "2026-09-30")],
+                        [self._item("old1", None)])
+        self.assertEqual({i["id"] for i in out}, {"new1"})
+
+    def test_still_present_item_is_not_duplicated(self):
+        """이미 수집된 공고를 다시 넣어 중복을 만들면 안 된다."""
+        same = self._item("dup", "2026-10-01")
+        out = self._run([same], [dict(same)])
+        self.assertEqual([i["id"] for i in out], ["dup"])
+
+    def test_repeated_runs_do_not_accumulate(self):
+        """CASE — 매 실행마다 보존분이 쌓이면 안 된다."""
+        fallback = [self._item("old1", "2026-10-01")]
+        run1 = self._run([self._item("new1", "2026-09-30")], fallback)
+        run2 = self._run([self._item("new1", "2026-09-30")], run1)
+        run3 = self._run([self._item("new1", "2026-09-30")], run2)
+        self.assertEqual(len(run3), 2, [i["id"] for i in run3])
+
+    def test_orchestrator_calls_preservation(self):
+        code = inspect.getsource(FA.run_collector)
+        self.assertIn("preserve_active_missing_items", code)
+
+
+class KaistPaginationTest(unittest.TestCase):
+    """T. KAIST 페이지네이션 — 진행 중 공고가 첫 페이지 밖으로 밀리는 문제.
+
+    지시문 No.017 7~11번. 이 게시판은 한 페이지에 10건뿐이라 새 공고
+    10건이면 마감 전 공고가 밀려났다. 페이지 이동은 평범한 GET 링크다.
+    """
+
+    def test_pagination_template_exists(self):
+        self.assertTrue(hasattr(kaist, "LIST_URL_TMPL"))
+        self.assertIn("GotoPage={page}", kaist.LIST_URL_TMPL)
+
+    def test_reads_multiple_pages(self):
+        self.assertGreaterEqual(kaist.MAX_LIST_PAGES, 3)
+        self.assertLessEqual(kaist.MAX_LIST_PAGES, 5,
+                             "과거 공고를 무제한으로 긁지 않는다")
+
+    def test_collect_uses_template(self):
+        code = inspect.getsource(kaist.collect)
+        self.assertIn("LIST_URL_TMPL.format(page=page)", code)
+        self.assertIn("MAX_LIST_PAGES", code)
+
+    def test_collect_stops_when_page_repeats(self):
+        """페이지 파라미터가 안 먹으면 같은 내용이 반복된다 — 그만 읽어야 한다."""
+        code = inspect.getsource(kaist.collect)
+        self.assertIn("if not fresh", code)
 
 
 if __name__ == "__main__":

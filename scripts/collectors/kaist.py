@@ -34,6 +34,20 @@ SOURCE_SITE_URL = "https://www.kaist.ac.kr/kr/html/footer/0815.html"
 
 LIST_URL = SOURCE_SITE_URL
 
+# 이 게시판은 한 페이지에 10건만 보여준다. 예전에는 첫 페이지만 읽어서,
+# 새 공고 10건이 올라오면 **아직 마감 전인 공고가 2페이지로 밀려 데이터에서
+# 사라졌다**(2026-09-04 "반도체 웨이퍼 노광장비 구매_260270", 마감 09-08).
+#
+# 페이지 이동은 평범한 GET 링크다(로그인·JS 불필요). 실제 페이지 HTML의
+# 페이지네이션 블록에서 확인했다:
+#   <a class='page-link' href='?site_dvs_cd=kr&menu_dvs_cd=0815&skey=&sval=&&GotoPage=2'>2</a>
+LIST_URL_TMPL = (SOURCE_SITE_URL
+                 + "?site_dvs_cd=kr&menu_dvs_cd=0815&skey=&sval=&&GotoPage={page}")
+
+# 3페이지 = 30건. 게시 빈도(하루 1~3건)를 보면 마감 전 공고를 넉넉히 덮는다.
+# 과거 공고를 전부 긁어오지는 않는다.
+MAX_LIST_PAGES = 3
+
 # Actions 러너에서 실측한 결과(2026-09 진단):
 #  - 정상 응답은 1~2초. 실패는 timeout까지 기다린 게 아니라 TLS 핸드셰이크
 #    단계에서 즉시 끊긴다(curl exit 35, tls=0.000000s, 0.65초만에 실패).
@@ -46,6 +60,7 @@ LIST_URL = SOURCE_SITE_URL
 REQUEST_TIMEOUT = 12
 MAX_RETRY_ATTEMPTS = 4
 RETRY_DELAY_SECONDS = 2
+PAGE_DELAY_SECONDS = 1.0  # 게시판에 부담을 주지 않도록 페이지 사이 대기
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
 
 HARD_EXCLUDE_TERMS = ["취소", "매각", "유찰", "재입찰 안내"]
@@ -225,9 +240,22 @@ FETCH_STATE = FetchState("KAIST")
 
 def collect():
     FETCH_STATE.reset()
-    html = fetch(LIST_URL)
-    rows = FETCH_STATE.mark(parse_list(FETCH_STATE.mark_page(html)),
-                            structure_ok=looks_like_empty_board(html))
+    rows = []
+    seen_urls = set()
+    for page in range(1, MAX_LIST_PAGES + 1):
+        html = fetch(LIST_URL_TMPL.format(page=page))
+        page_rows = FETCH_STATE.mark(parse_list(FETCH_STATE.mark_page(html)),
+                                     structure_ok=looks_like_empty_board(html))
+        if not page_rows:
+            break
+        fresh = [r for r in page_rows if r.get("url") not in seen_urls]
+        seen_urls.update(r.get("url") for r in page_rows)
+        rows.extend(fresh)
+        print(f"[KAIST] {page}페이지: {len(page_rows)}건 (새 항목 {len(fresh)}건)")
+        # 같은 내용이 다시 나오면 페이지 파라미터가 안 먹은 것이다 — 그만 읽는다.
+        if not fresh:
+            break
+        time.sleep(PAGE_DELAY_SECONDS)
     print(f"[KAIST] 조회 대상(raw): {len(rows)}건")
 
     included, excluded = [], {}

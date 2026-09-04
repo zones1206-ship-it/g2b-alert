@@ -133,6 +133,9 @@ def run_collector(name, module, existing_items, log):
         log[name] = {"status": "결과 없음(기존 유지)", "detail": None, "count": len(fallback)}
         return fallback
 
+    # 목록은 정상 수집됐다. 다만 수집 범위(며칠치/몇 페이지/상위 N건) 밖으로
+    # 밀린 **진행 중** 공고가 있으면 되살린다 — 자세한 이유는 아래 함수 참고.
+    items = preserve_active_missing_items(name, items, fallback)
     log[name] = {"status": "정상", "detail": None, "count": len(items)}
     return items
 
@@ -237,6 +240,71 @@ def stamp_first_seen(all_items, existing_items):
         item["firstSeenAt"] = (previous_first_seen.get(item.get("id"))
                                or previous_by_signature.get(announcement_signature(item))
                                or now_iso)
+
+
+# 원문에서 취소·폐기가 확인된 공고는 마감일이 남아 있어도 붙들지 않는다.
+# 새 상태머신을 만들지 않고 기존 status/title 표기를 그대로 본다.
+CANCELLED_MARKERS = ("취소", "폐기", "철회", "무효", "재공고로 대체")
+
+
+def looks_cancelled(item):
+    text = " ".join(str(item.get(f) or "")
+                    for f in ("status", "title", "originalTitle", "noticeType"))
+    return any(marker in text for marker in CANCELLED_MARKERS)
+
+
+def has_future_deadline(item, today=None):
+    """마감일이 오늘 이후인가. 마감일을 못 읽으면 False."""
+    due = item.get("dueDate")
+    if not due:
+        return False
+    try:
+        return datetime.strptime(due, "%Y-%m-%d").date() >= (today or date.today())
+    except ValueError:
+        return False
+
+
+def preserve_active_missing_items(name, collected, fallback, today=None):
+    """수집 범위 밖으로 밀린 **진행 중** 공고를 되살린다.
+
+    수집기마다 조회 범위가 다르다 — 며칠치만 보거나(LOOKBACK_DAYS), 앞
+    몇 페이지만 읽거나(MAX_LIST_PAGES), 검색 상위 N건만 가져온다. 그래서
+    **아직 마감 전인 공고가 새 공고에 밀려 목록 밖으로 나가면 데이터에서
+    사라졌다.** 실제로 두 번 발생했다.
+
+      - EBNEW: 게시일이 14일 조회 창을 벗어남(마감은 3주 뒤였다)
+      - KAIST: 첫 페이지 10건 밖으로 밀림(마감은 나흘 뒤였다)
+
+    공고가 사라지면 firstSeenAt까지 없어져, 나중에 다시 잡히면 "신규
+    공고"로 Telegram이 다시 나간다.
+
+    여기서는 **목록 수집이 정상이었을 때만** 동작한다(목록 자체가 실패하면
+    run_collector가 이미 기존 데이터를 통째로 유지한다). 되살리는 조건은
+    셋 다 만족해야 한다.
+
+      1. 직전 실행에 있던 공고인데 이번 결과에 없다
+      2. 마감일이 아직 남아 있다   ← 마감된 공고는 붙들지 않는다
+      3. 취소·폐기 표기가 없다     ← 취소된 공고도 붙들지 않는다
+
+    마감일이 지나면 자동으로 빠지므로 "영구 보존"이 되지 않는다."""
+    if not collected or not fallback:
+        return collected
+    collected_ids = {i.get("id") for i in collected}
+    revived = []
+    for old in fallback:
+        if old.get("id") in collected_ids:
+            continue
+        if not has_future_deadline(old, today):
+            continue
+        if looks_cancelled(old):
+            print(f"[{name}] 취소·폐기 표기가 있어 유지하지 않습니다: {old.get('id')}")
+            continue
+        revived.append(old)
+        print(f"[{name}] 진행 중 공고 유지: {old.get('id')} "
+              f"목록 범위 밖 / 마감 {old.get('dueDate')}")
+    if revived:
+        print(f"[{name}] 수집 범위 밖 진행 중 공고 {len(revived)}건을 유지했습니다.")
+    return collected + revived
 
 
 def is_still_open(item):
