@@ -169,6 +169,19 @@ def extract_due_date(text: str, registered_date: str = None):
         r"기간\s*[:：]?\s*\d{4}\.\d{1,2}\.\d{1,2}\.?(?:\([^)]*\))?\s*[-~]\s*(\d{4})\.(\d{1,2})\.(\d{1,2})",
     ]
     candidates = []
+    # "입찰서 제출시한" / "제출기한" 은 이 게시판에서 가장 정확한 마감 표기인데
+    # 위 패턴에 없어서 마감일이 비어 있는 공고가 있었다(2026-09 실측 5건).
+    # 표기가 두 가지다 — 둘 다 **마지막 날짜**가 마감이다.
+    #   "입찰서 제출시한 : 2026.08.28.(금) 14:00 ~ 2026.09.07. 14:00"
+    #   "가격입찰서 제출시한 : ~ 2026.08.14. 14:00"
+    #   "제출기한 : 2026.08.26.(수) 10:00 ~ 11:00"
+    submit = re.search(r"제출\s*(?:시한|기한)\s*[:：]\s*([^\n]{0,70})", text)
+    if submit:
+        dates = re.findall(r"(\d{4})\.(\d{1,2})\.(\d{1,2})", submit.group(1))
+        if dates:
+            y, mo, d = dates[-1]
+            candidates.append(f"{int(y):04d}-{int(mo):02d}-{int(d):02d}")
+
     for pattern in patterns:
         m = re.search(pattern, text)
         if m:

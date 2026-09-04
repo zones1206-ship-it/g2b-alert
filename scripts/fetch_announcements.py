@@ -201,6 +201,25 @@ def sort_key(item):
     return (0, due)
 
 
+def project_key(item):
+    """출처 + 공고번호. 같은 공고인지 판단하는 가장 강한 근거다.
+
+    signature(제목·기관·날짜)만으로는 부족하다 — 실제로 제목·기관·게시일·
+    마감일이 모두 같은 **별개 공고**가 있다.
+
+      JETRO  aid 2026090300090003 / …0004  (같은 장비 2건을 따로 공고)
+      MOFCOM 4197-254CSOTGZT11/10 / …/12   (한 프로젝트의 다른 로트)
+
+    반대로 사이트가 내부 id를 새로 매겨 재색인해도 공고번호는 그대로라,
+    재색인은 같은 공고로 알아본다.
+
+    공고번호가 없으면 None을 돌려주고, 호출부가 signature로 폴백한다."""
+    project_no = item.get("projectNo") or item.get("g2bBidNo")
+    if not project_no:
+        return None
+    return (item.get("sourceCode"), normalize_text(str(project_no)))
+
+
 def announcement_signature(item):
     """같은 공고인지 판단하는 지문. 사이트가 내부 id를 새로 부여해 재색인해도
     (MOFCOM에서 실제로 발생) 같은 공고임을 알아보기 위한 것이다.
@@ -290,19 +309,26 @@ def preserve_active_missing_items(name, collected, fallback, today=None):
     if not collected or not fallback:
         return collected
     collected_ids = {i.get("id") for i in collected}
-    # id만 보면 안 된다. 사이트가 같은 공고를 다시 색인해 id가 바뀌는 경우가
-    # 있는데(MOFCOM에서 실제로 발생), 그러면 옛 id가 "사라진 것"처럼 보여
-    # **같은 공고가 두 줄로 되살아난다.** 그래서 id와 함께 공고 동일성
-    # 기준인 signature(출처·원문 제목·원문 기관·게시일·마감일·공고유형)도
-    # 본다 — Telegram 중복 방지에 쓰는 것과 같은 기준이다.
+    collected_projects = {p for p in (project_key(i) for i in collected) if p}
     collected_signatures = {announcement_signature(i) for i in collected}
     revived = []
     for old in fallback:
         if old.get("id") in collected_ids:
             continue
-        if announcement_signature(old) in collected_signatures:
-            print(f"[{name}] 재색인으로 id만 바뀐 공고라 유지하지 않습니다: "
-                  f"{old.get('id')}")
+        # 같은 공고인지 판단할 때 signature만 보면 안 된다. 제목·기관·날짜가
+        # 같은 **별개 공고**가 실제로 있다(한 프로젝트의 여러 로트, 같은
+        # 장비를 여러 건으로 나눠 낸 공고). 그래서 공고번호를 먼저 본다 —
+        # 사이트가 내부 id를 새로 매겨도 공고번호는 그대로이므로 재색인은
+        # 잡아내고, 로트가 다르면 다른 공고로 본다.
+        old_project = project_key(old)
+        if old_project:
+            if old_project in collected_projects:
+                print(f"[{name}] 같은 공고번호가 이미 수집돼 유지하지 않습니다: "
+                      f"{old.get('id')} ({old.get('projectNo')})")
+                continue
+        elif announcement_signature(old) in collected_signatures:
+            # 공고번호가 없는 출처에서만 signature를 보조 수단으로 쓴다.
+            print(f"[{name}] 같은 공고로 보여 유지하지 않습니다: {old.get('id')}")
             continue
         if not has_future_deadline(old, today):
             continue

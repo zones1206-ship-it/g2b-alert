@@ -1518,5 +1518,178 @@ class KaistPaginationTest(unittest.TestCase):
         self.assertIn("if not fresh", code)
 
 
+
+class JetroDeadlineParsingTest(unittest.TestCase):
+    """U. JETRO 마감일 파싱 — 지시문 No.018.
+
+    JETRO 23건 중 19건에 마감일이 없었는데, 전부 원문에는 있었다.
+    라벨이 "Time-limit"(하이픈)인데 파서는 "time limit"(공백)만 찾았고,
+    일 우선 날짜 형식도 지원하지 않았다.
+    """
+
+    # 실제 원문에서 확인한 표기만 넣는다(예상 형식을 넣지 않는다).
+    REAL = [
+        ("⑺ Time-limit of tender : 3 : 00 PM, 31, August, 2026", "2026-08-31"),
+        ("⑺ Time limit of tender : 17 : 00 24 September, 2026", "2026-09-24"),
+        ("⑺ Time-limit for tender : 5 : 00 P.M. September 15, 2026", "2026-09-15"),
+        ("⑺ Time-limit for Tender : 17 : 00, September 24, 2026", "2026-09-24"),
+        ("⑺ Time limit of tender : By 10 : 00 29 October 2026.", "2026-10-29"),
+        ("⑺ Deadline for submission of documents : 17 : 00 1 September, 2026",
+         "2026-09-01"),
+        ("⑺ Time limit of the documents : 17 : 00 17 August, 2026", "2026-08-17"),
+    ]
+
+    def test_real_formats(self):
+        for text, expected in self.REAL:
+            with self.subTest(text=text[:40]):
+                self.assertEqual(jetro.parse_deadline(text), expected)
+
+    def test_hyphen_and_space_both_work(self):
+        """"Time-limit"과 "Time limit"이 섞여 쓰인다 — 둘 다 읽어야 한다."""
+        for label in ("Time-limit of tender", "Time limit of tender",
+                      "Time-limit for Tender"):
+            with self.subTest(label=label):
+                self.assertEqual(
+                    jetro.parse_deadline("⑺ " + label + " : 17 : 00, October 20, 2026"),
+                    "2026-10-20")
+
+    def test_tender_deadline_wins_over_application_forms(self):
+        """한 공고에 마감이 둘이면 **입찰 마감**을 골라야 한다.
+
+        ⑷ 자격심사 서류 마감(빠름) / ⑸ 입찰 마감(늦음)
+        """
+        text = ("⑷ Time-limit for the submission of application forms and relevant "
+                "documents for the qualification : 2 : 00 P.M. Sep. 25, 2026 "
+                "⑸ Time-limit for the submission of tenders ① By electronic bidding "
+                "system or mail : 4 : 00 P.M. Oct. 15, 2026")
+        self.assertEqual(jetro.parse_deadline(text), "2026-10-15")
+
+        text2 = ("⑺ Time-limit for the submission of application forms and relevant "
+                 "documents for the qualification : 12 : 00, 11 September, 2026 "
+                 "⑻ Time-limit for tender : 16 : 00, 15 September, 2026")
+        self.assertEqual(jetro.parse_deadline(text2), "2026-09-15")
+
+    def test_invalid_dates_are_rejected(self):
+        """없는 날짜를 만들어내면 안 된다."""
+        for text in ("⑺ Time-limit of tender : 31, February, 2026",
+                     "⑺ Time-limit of tender : 32 October 2026",
+                     "⑺ Time-limit of tender : 15, Foobar, 2026"):
+            with self.subTest(text=text[-24:]):
+                self.assertIsNone(jetro.parse_deadline(text))
+
+    def test_no_deadline_returns_none(self):
+        """마감 문구가 없으면 날짜를 만들지 않는다."""
+        self.assertIsNone(jetro.parse_deadline("⑴ Contracting entity : RIKEN"))
+        self.assertIsNone(jetro.parse_deadline("⑺ Time limit of the documents : "))
+        self.assertIsNone(jetro.parse_deadline(""))
+        self.assertIsNone(jetro.parse_deadline(None))
+
+    def test_output_is_iso_date_only(self):
+        """시간이 붙어 있어도 dueDate에는 날짜만 저장한다."""
+        out = jetro.parse_deadline(
+            "⑺ Time-limit for tender : 5 : 00 P.M. September 15, 2026")
+        self.assertRegex(out, r"^\d{4}-\d{2}-\d{2}$")
+
+
+class KancDeadlineParsingTest(unittest.TestCase):
+    """V. KANC 마감일 파싱 — "제출시한/제출기한" 라벨(No.018).
+
+    이 게시판에서 가장 정확한 마감 표기인데 파서에 없어서 5건이 비어 있었다.
+    """
+
+    def test_submission_deadline_range_takes_last_date(self):
+        """"2026.08.28 ~ 2026.09.07" 이면 마감은 뒤쪽이다."""
+        text = "가. 입찰서 제출시한 : 2026.08.28.(금) 14:00 ~ 2026.09.07. 14:00 ※"
+        self.assertEqual(kanc.extract_due_date(text, "2026-08-28"), "2026-09-07")
+
+    def test_open_ended_range(self):
+        text = "나. 가격입찰서 제출시한 : ~ 2026.08.14. 14:00 ※"
+        self.assertEqual(kanc.extract_due_date(text, "2026-08-07"), "2026-08-14")
+
+    def test_time_only_range_keeps_single_date(self):
+        """"10:00 ~ 11:00"처럼 시간만 범위인 경우 날짜는 하나다."""
+        text = "나. 제출기한 : 2026.08.26.(수) 10:00 ~ 11:00 限"
+        self.assertEqual(kanc.extract_due_date(text, "2026-08-18"), "2026-08-26")
+
+    def test_existing_patterns_still_work(self):
+        self.assertEqual(
+            kanc.extract_due_date("의견마감일시 : 2026.07.13", "2026-07-01"),
+            "2026-07-13")
+        self.assertEqual(
+            kanc.extract_due_date("공고기간 : 2026.08.01.(금) ~ 2026.08.20.", "2026-08-01"),
+            "2026-08-20")
+
+    def test_no_deadline_returns_none(self):
+        self.assertIsNone(kanc.extract_due_date("마감 표기 없음", "2026-08-01"))
+
+
+class AnnouncementIdentityTest(unittest.TestCase):
+    """W. 동일공고 판별 — signature 단독 의존 위험 (지시문 No.018 24~28번).
+
+    제목·기관·게시일·마감일이 모두 같은 **별개 공고**가 실제로 있다.
+    한 프로젝트의 여러 로트이거나, 같은 장비를 여러 건으로 나눈 공고다.
+    공고번호가 이를 구분한다.
+    """
+
+    TODAY = date(2026, 9, 4)
+
+    def _item(self, item_id, source="MOFCOM", project=None, due="2026-09-16"):
+        return {"id": item_id, "sourceCode": source, "projectNo": project,
+                "dueDate": due, "originalTitle": "같은 제목", "originalOrg": "같은 기관",
+                "postedDate": "2026-08-20", "noticeType": "정식입찰",
+                "firstSeenAt": "2026-08-20T00:00:00+09:00"}
+
+    def _run(self, collected, fallback):
+        return FA.preserve_active_missing_items("TEST", collected, fallback,
+                                                today=self.TODAY)
+
+    def test_project_key_uses_source_and_number(self):
+        self.assertEqual(FA.project_key(self._item("a", project="X-1")),
+                         ("MOFCOM", "x-1"))
+        self.assertIsNone(FA.project_key(self._item("a", project=None)))
+
+    def test_case_a_jetro_same_signature_different_project(self):
+        """CASE A — JETRO 제목·기관·날짜가 같아도 공고번호가 다르면 별개다."""
+        out = self._run([self._item("jetro-a", "JETRO", "2026090300090003")],
+                        [self._item("jetro-b", "JETRO", "2026090300090004")])
+        self.assertEqual({i["id"] for i in out}, {"jetro-a", "jetro-b"})
+
+    def test_case_b_mofcom_reindex_is_deduped(self):
+        """CASE B — id만 바뀐 재색인은 공고번호가 같으므로 중복을 만들지 않는다."""
+        out = self._run([self._item("mofcom-new", project="4197-254/10")],
+                        [self._item("mofcom-old", project="4197-254/10")])
+        self.assertEqual([i["id"] for i in out], ["mofcom-new"])
+
+    def test_different_lots_are_kept(self):
+        """같은 프로젝트라도 로트가 다르면 별개 공고다.
+
+        실제로 4197-254CSOTGZT11/10 과 /12 를 같은 공고로 잘못 보고
+        하나를 지웠던 적이 있다.
+        """
+        out = self._run([self._item("m10", project="4197-254CSOTGZT11/10")],
+                        [self._item("m12", project="4197-254CSOTGZT11/12")])
+        self.assertEqual({i["id"] for i in out}, {"m10", "m12"})
+
+    def test_case_d_same_signature_different_source(self):
+        """CASE D — 출처가 다르면 같은 공고로 보지 않는다."""
+        out = self._run([self._item("a", "EBNEW", project=None)],
+                        [self._item("b", "MOFCOM", project=None)])
+        self.assertEqual(len(out), 2)
+
+    def test_signature_fallback_when_no_project_number(self):
+        """공고번호가 없는 출처에서는 signature를 보조로 쓴다."""
+        out = self._run([self._item("x", project=None)],
+                        [self._item("y", project=None)])
+        self.assertEqual([i["id"] for i in out], ["x"])
+
+    def test_due_date_change_keeps_identity(self):
+        """dueDate가 null에서 실제 날짜로 바뀌어도 신규 공고가 아니다."""
+        before = {"id": "a", "sourceCode": "JETRO", "projectNo": "2026090300090003",
+                  "originalTitle": "T", "originalOrg": "O",
+                  "postedDate": "2026-08-01", "dueDate": None, "noticeType": "정식입찰"}
+        after = dict(before, dueDate="2026-10-19")
+        self.assertEqual(FA.project_key(before), FA.project_key(after))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

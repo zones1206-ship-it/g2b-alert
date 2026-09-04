@@ -216,39 +216,75 @@ def parse_list_date(text):
     return f"{int(m.group(3)):04d}-{month:02d}-{int(m.group(2)):02d}"
 
 
+def _to_iso(day, month_word, year):
+    """(일, 월 이름, 연) → "YYYY-MM-DD". 실제 존재하는 날짜만 돌려준다."""
+    month = MONTHS.get(month_word.strip(". ").lower()[:3])
+    if not month:
+        return None
+    try:
+        return datetime(int(year), month, int(day)).date().isoformat()
+    except ValueError:
+        # 2월 30일 같은 없는 날짜, 월/일이 뒤바뀐 값 등을 여기서 걸러낸다.
+        return None
+
+
+# 실제 JETRO 원문에서 확인된 날짜 표기만 지원한다(예상 형식을 넣지 않는다).
+#   "Sep. 25, 2026" / "September 15, 2026"      → 월 먼저
+#   "24 September, 2026" / "29 October 2026"    → 일 먼저
+#   "31, August, 2026"                          → 일 먼저(쉼표 구분)
+_DATE_PATTERNS = [
+    (re.compile(r"([A-Za-z]{3,9})\.?\s+(\d{1,2})\s*,\s*(\d{4})"),
+     lambda m: _to_iso(m.group(2), m.group(1), m.group(3))),
+    (re.compile(r"(\d{1,2})\s*,\s*([A-Za-z]{3,9})\s*,\s*(\d{4})"),
+     lambda m: _to_iso(m.group(1), m.group(2), m.group(3))),
+    (re.compile(r"(\d{1,2})\s+([A-Za-z]{3,9})\.?\s*,?\s*(\d{4})"),
+     lambda m: _to_iso(m.group(1), m.group(2), m.group(3))),
+]
+
+# 마감 라벨과 우선순위. 한 공고에 마감이 둘 있는 경우가 있다.
+#   ⑷ Time-limit for the submission of application forms …  ← 자격심사 서류
+#   ⑸ Time-limit for the submission of tenders …            ← 실제 입찰 마감
+# 입찰 마감을 골라야 하므로 "tender"가 들어간 라벨을 우선한다.
+_DEADLINE_LABELS = [
+    (1, r"time[-\s]?limit[^:;⑴-⒇]{0,90}?tenders?\b"),
+    (1, r"(?:tender|bid)\s+deadline"),
+    (2, r"deadline[^:;⑴-⒇]{0,60}?"),
+    (2, r"closing\s+date[^:;⑴-⒇]{0,60}?"),
+    (3, r"time[-\s]?limit[^:;⑴-⒇]{0,90}?"),
+]
+
+
 def parse_deadline(summary_text):
-    """요약 본문에서 마감일을 찾는다. 실제 표기 예:
-      "⑺ Time limit of tender : 3 : 00 PM, 23, Oct, 2026"
-      "Time limit for the submission of application forms : 5:00 PM, 3, Nov, 2026"
-    찾지 못하면 None을 반환한다(임의로 날짜를 만들지 않는다)."""
+    """요약 본문에서 입찰 마감일을 찾는다. 못 찾으면 None(날짜를 만들지 않는다).
+
+    실제 표기 예(원문에서 직접 확인):
+      "⑺ Time-limit of tender : 3 : 00 PM, 31, August, 2026"
+      "⑺ Time limit of tender : 17 : 00 24 September, 2026"
+      "⑺ Time-limit for tender : 5 : 00 P.M. September 15, 2026"
+      "⑸ Time-limit for the submission of tenders ① … : 4 : 00 P.M. Oct. 15, 2026"
+
+    라벨 표기가 기관마다 다르다 — "Time limit"과 "Time-limit"이 섞여 쓰이고
+    (하이픈 때문에 예전 정규식이 대부분을 놓쳤다), 구분자도 ':' 와 ';' 가
+    함께 쓰인다. 날짜도 월 먼저와 일 먼저가 모두 나온다.
+    """
     if not summary_text:
         return None
-    # 라벨 표기가 기관마다 다르다(실제 확인한 예):
-    #   "⑺ Time limit of tender : 3 : 00 PM, 23, Oct, 2026"
-    #   "⑺ Time limit for tender ; 15 : 00 7, October, 2026"
-    # 구분자도 ':' 와 ';' 가 섞여 쓰이므로 둘 다 받는다.
-    labels = [
-        r"time limit(?:\s+\w+){0,8}?",
-        r"deadline(?:\s+\w+){0,8}?",
-        r"due date(?:\s+\w+){0,8}?",
-        r"closing date(?:\s+\w+){0,8}?",
-    ]
-    for label in labels:
-        m = re.search(label + r"\s*[:;]\s*(.{0,90})", summary_text, re.I)
-        if not m:
-            continue
-        chunk = m.group(1)
-        d = re.search(r"(\d{1,2})\s*,\s*([A-Za-z]{3})[a-z]*\s*,\s*(\d{4})", chunk)
-        if d:
-            month = MONTHS.get(d.group(2).lower())
-            if month:
-                return f"{int(d.group(3)):04d}-{month:02d}-{int(d.group(1)):02d}"
-        d = re.search(r"([A-Za-z]{3})[a-z]*\s+(\d{1,2}),\s*(\d{4})", chunk)
-        if d:
-            month = MONTHS.get(d.group(1).lower())
-            if month:
-                return f"{int(d.group(3)):04d}-{month:02d}-{int(d.group(2)):02d}"
-    return None
+    best = None       # (우선순위, 날짜)
+    for rank, label in _DEADLINE_LABELS:
+        for m in re.finditer(label + r"\s*[^:;]{0,60}?[:;]\s*([^⑴-⒇]{0,90})",
+                             summary_text, re.I):
+            chunk = m.group(1)
+            for pattern, build in _DATE_PATTERNS:
+                found = pattern.search(chunk)
+                if not found:
+                    continue
+                iso = build(found)
+                if iso and (best is None or rank < best[0]):
+                    best = (rank, iso)
+                break
+        if best and best[0] == 1:
+            break     # 입찰 마감을 찾았으면 더 볼 필요가 없다
+    return best[1] if best else None
 
 
 def strip_tags(raw_html):
