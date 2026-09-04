@@ -786,14 +786,27 @@ class ChineseGlossaryTest(unittest.TestCase):
         out = ZT._apply_glossary("成都京东方光电2026年第4.5代TFT-LCD产线")
         self.assertIn("2026년 제4.5세대 TFT-LCD", out)
 
-    def test_company_names_are_not_invented(self):
-        """근거 없는 고유명사는 한국어로 창작하지 않는다(지시문 No.013 7번).
+    def test_verified_company_name_is_translated(self):
+        """공식 표기를 확인한 회사명은 한국어로 옮긴다(지시문 No.016 35번).
 
-        奕斯伟는 용어집에 없으므로 뜻을 지어내지 않고 그대로 남는다.
+        奕斯伟는 회사 자체 도메인(eswin.com, "北京奕斯伟科技集团有限公司-官网")
+        에서 공식 영문명을 확인했다. 한국어는 뜻을 지어낸 것이 아니라 중국어
+        발음 음역이며, 사전의 다른 회사들과 같은 방식이다.
         """
         out = ZT._apply_glossary("奕斯伟板级封装")
         self.assertIn("패널레벨 패키징", out)
-        self.assertIn("奕斯伟", out)
+        self.assertIn("이쓰웨이(ESWIN)", out)
+        self.assertNotIn("奕斯伟", out)
+
+    def test_unverified_terms_are_not_invented(self):
+        """확인하지 못한 표현은 뜻을 지어내지 않는다(지시문 No.013 7번).
+
+        "大台"는 공개 원문에도 설명이 없어 그대로 로마자 표기로 남긴다.
+        """
+        out, ok = ZT.translate("大台镭射显微镜")
+        self.assertIn("레이저 현미경", out)
+        self.assertIn("DaTai", out)
+        self.assertFalse(ok, "확인 못한 조각이 남았으면 미완료로 표시해야 한다")
 
 
 class FalseNegativeSafetyNetTest(unittest.TestCase):
