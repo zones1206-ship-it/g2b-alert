@@ -317,18 +317,21 @@ def preserve_active_missing_items(name, collected, fallback, today=None):
             continue
         # 같은 공고인지 판단할 때 signature만 보면 안 된다. 제목·기관·날짜가
         # 같은 **별개 공고**가 실제로 있다(한 프로젝트의 여러 로트, 같은
-        # 장비를 여러 건으로 나눠 낸 공고). 그래서 공고번호를 먼저 본다 —
-        # 사이트가 내부 id를 새로 매겨도 공고번호는 그대로이므로 재색인은
-        # 잡아내고, 로트가 다르면 다른 공고로 본다.
+        # 장비를 여러 건으로 나눠 낸 공고).
+        #
+        # 그렇다고 공고번호가 같다는 이유만으로 버려서도 안 된다. 한 공고번호
+        # 아래에 원공고와 정정·변경 공고가, 또 1차와 2차 공고가 별개 항목으로
+        # 함께 올라온다(EBNEW·MOFCOM에서 실제로 확인).
+        #
+        # 그래서 공고번호는 **지키는 근거**로만 쓴다. 번호가 이번 수집분에
+        # 없으면 확실히 별개 공고이므로 유지하고, 버리는 판단은 제목·기관·
+        # 날짜까지 모두 같을 때(= 내부 id만 바뀐 재색인)에만 내린다.
         old_project = project_key(old)
-        if old_project:
-            if old_project in collected_projects:
-                print(f"[{name}] 같은 공고번호가 이미 수집돼 유지하지 않습니다: "
-                      f"{old.get('id')} ({old.get('projectNo')})")
-                continue
+        if old_project and old_project not in collected_projects:
+            pass  # 공고번호가 다르다 — 별개 공고다
         elif announcement_signature(old) in collected_signatures:
-            # 공고번호가 없는 출처에서만 signature를 보조 수단으로 쓴다.
-            print(f"[{name}] 같은 공고로 보여 유지하지 않습니다: {old.get('id')}")
+            print(f"[{name}] 같은 공고로 보여 유지하지 않습니다: {old.get('id')} "
+                  f"({old.get('projectNo') or '공고번호 없음'})")
             continue
         if not has_future_deadline(old, today):
             continue

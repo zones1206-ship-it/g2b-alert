@@ -1682,6 +1682,31 @@ class AnnouncementIdentityTest(unittest.TestCase):
                         [self._item("y", project=None)])
         self.assertEqual([i["id"] for i in out], ["x"])
 
+    def test_correction_notice_shares_project_number(self):
+        """같은 공고번호 아래 원공고와 정정·변경 공고가 함께 올라온다.
+
+        EBNEW 0664-2640SUMECF94 에는 "2차 국제 입찰공고 (1)", "(2)",
+        "2차 재입찰 정정·변경 공고 (1)" 세 건이 별개 항목으로 있다.
+        공고번호가 같다는 이유로 원공고를 버리면 진행 중 공고가 사라진다.
+        """
+        original = dict(self._item("ebnew-a", "EBNEW", "0664-2640SUMECF94"),
+                        originalTitle="반도체 장비 2차 국제 입찰공고")
+        correction = dict(self._item("ebnew-b", "EBNEW", "0664-2640SUMECF94"),
+                          originalTitle="반도체 장비 2차 재입찰 정정·변경 공고")
+        out = self._run([correction], [original])
+        self.assertEqual({i["id"] for i in out}, {"ebnew-a", "ebnew-b"})
+
+    def test_second_round_notice_shares_project_number(self):
+        """MOFCOM 4197-264BOECDCZ02/03 의 1차·2차 공고도 마찬가지다."""
+        first = dict(self._item("mofcom-1", project="4197-264BOECDCZ02/03",
+                                due="2026-09-16"),
+                     originalTitle="국제 입찰공고 (1)", postedDate="2026-08-26")
+        second = dict(self._item("mofcom-2", project="4197-264BOECDCZ02/03",
+                                 due="2026-09-24"),
+                      originalTitle="국제 입찰공고 (2)", postedDate="2026-09-03")
+        out = self._run([second], [first])
+        self.assertEqual({i["id"] for i in out}, {"mofcom-1", "mofcom-2"})
+
     def test_due_date_change_keeps_identity(self):
         """dueDate가 null에서 실제 날짜로 바뀌어도 신규 공고가 아니다."""
         before = {"id": "a", "sourceCode": "JETRO", "projectNo": "2026090300090003",
