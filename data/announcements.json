@@ -1,13 +1,13 @@
 {
-  "updatedAt": "2026-09-04T05:53:00+00:00",
+  "updatedAt": "2026-09-04T06:04:04+00:00",
   "sourceHealth": {
     "KANC": {
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 12,
-      "lastRunAt": "2026-09-04T05:53:00+00:00",
-      "lastSuccessAt": "2026-09-04T05:53:00+00:00",
+      "lastRunAt": "2026-09-04T06:04:04+00:00",
+      "lastSuccessAt": "2026-09-04T06:04:04+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -16,19 +16,19 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 8,
-      "lastRunAt": "2026-09-04T05:53:00+00:00",
-      "lastSuccessAt": "2026-09-04T05:53:00+00:00",
+      "lastRunAt": "2026-09-04T06:04:04+00:00",
+      "lastSuccessAt": "2026-09-04T06:04:04+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
     "KOTRA": {
-      "ok": true,
-      "lastStatus": "정상",
-      "lastError": null,
+      "ok": false,
+      "lastStatus": "오류",
+      "lastError": "이 GitHub Actions 러너 IP에서 KOTRA(www.kotra.or.kr:443)에 TCP 연결이 되지 않습니다 — 러너 IP에 따른 선택적 차단으로 보입니다(다른 러너에서는 정상 수집되는 실행이 있다).",
       "collectedThisRun": 0,
-      "lastRunAt": "2026-09-04T05:53:00+00:00",
+      "lastRunAt": "2026-09-04T06:04:04+00:00",
       "lastSuccessAt": "2026-09-04T05:53:00+00:00",
-      "consecutiveFailures": 0,
+      "consecutiveFailures": 1,
       "failureAlertSent": false
     },
     "EBNEW": {
@@ -36,8 +36,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 21,
-      "lastRunAt": "2026-09-04T05:53:00+00:00",
-      "lastSuccessAt": "2026-09-04T05:53:00+00:00",
+      "lastRunAt": "2026-09-04T06:04:04+00:00",
+      "lastSuccessAt": "2026-09-04T06:04:04+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -46,8 +46,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 9,
-      "lastRunAt": "2026-09-04T05:53:00+00:00",
-      "lastSuccessAt": "2026-09-04T05:53:00+00:00",
+      "lastRunAt": "2026-09-04T06:04:04+00:00",
+      "lastSuccessAt": "2026-09-04T06:04:04+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -56,8 +56,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 3,
-      "lastRunAt": "2026-09-04T05:53:00+00:00",
-      "lastSuccessAt": "2026-09-04T05:53:00+00:00",
+      "lastRunAt": "2026-09-04T06:04:04+00:00",
+      "lastSuccessAt": "2026-09-04T06:04:04+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -66,8 +66,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 23,
-      "lastRunAt": "2026-09-04T05:53:00+00:00",
-      "lastSuccessAt": "2026-09-04T05:53:00+00:00",
+      "lastRunAt": "2026-09-04T06:04:04+00:00",
+      "lastSuccessAt": "2026-09-04T06:04:04+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -76,8 +76,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 1,
-      "lastRunAt": "2026-09-04T05:53:00+00:00",
-      "lastSuccessAt": "2026-09-04T05:53:00+00:00",
+      "lastRunAt": "2026-09-04T06:04:04+00:00",
+      "lastSuccessAt": "2026-09-04T06:04:04+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -86,8 +86,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 1,
-      "lastRunAt": "2026-09-04T05:53:00+00:00",
-      "lastSuccessAt": "2026-09-04T05:53:00+00:00",
+      "lastRunAt": "2026-09-04T06:04:04+00:00",
+      "lastSuccessAt": "2026-09-04T06:04:04+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -96,10 +96,10 @@
       "lastStatus": "오류",
       "lastError": "KAIST 요청이 4회 실패했습니다: <urlopen error timed out>",
       "collectedThisRun": 0,
-      "lastRunAt": "2026-09-04T05:53:00+00:00",
+      "lastRunAt": "2026-09-04T06:04:04+00:00",
       "lastSuccessAt": "2026-09-04T05:04:39+00:00",
-      "consecutiveFailures": 2,
-      "failureAlertSent": false
+      "consecutiveFailures": 3,
+      "failureAlertSent": true
     }
   },
   "items": [
@@ -285,6 +285,55 @@
       "equipmentName": "시험기",
       "quantity": "1식",
       "firstSeenAt": "2026-08-28T05:54:00+00:00"
+    },
+    {
+      "id": "cid5636",
+      "title": "[공고 제2026-31호] (변경공고) 화합물반도체 전략 파운드리 구축을 위한 법률자문 용역 입찰",
+      "org": "한국나노기술원",
+      "country": "국내",
+      "countryCode": "KR",
+      "status": "진행중",
+      "dueDate": "2026-09-07",
+      "postedDate": "2026-08-20",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고유형: 정식입찰 · 공고번호: 제2026-31호",
+      "attachments": [
+        {
+          "name": "2 입찰공고문(변경).pdf",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5636&filename=5636_202608280909550410.pdf"
+        },
+        {
+          "name": "3 화합물반도체 전략 파운드리 구축을 위한 법률자문_제안요청서_최종 수정(협조).hwp",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5636&filename=5636_202608280909550571.hwp"
+        },
+        {
+          "name": "4 화합물반도체 전략 파운드리 구축을 위한 법률자문_과업지시서_수정.hwp",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5636&filename=5636_202608280909550572.hwp"
+        },
+        {
+          "name": "5 긴급입찰사유서_한국나노기술원 전략 파운드리 구축을 위한 법률자문 용역.hwp",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5636&filename=5636_202608280909550723.hwp"
+        },
+        {
+          "name": "6 입찰관련서식.hwp",
+          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5636&filename=5636_202608280909550884.hwp"
+        }
+      ],
+      "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5636&hcid=38",
+      "source": "한국나노기술원",
+      "sourceCode": "KANC",
+      "noticeType": "정식입찰",
+      "equipmentStatus": "제외",
+      "equipmentReason": "장비 구매가 아님이 분명함 (신호: 용역)",
+      "industry": "반도체",
+      "firstSeenAt": "2026-08-20T22:21:07+00:00"
     },
     {
       "id": "nttidB000000006124Jl2qZ4",
@@ -2459,55 +2508,6 @@
       "equipmentReason": "장비 구매가 아님이 분명함 (신호: 대형 스크린)",
       "industry": "디스플레이",
       "firstSeenAt": "2026-09-03T10:45:54+09:00"
-    },
-    {
-      "id": "cid5636",
-      "title": "[공고 제2026-31호] (변경공고) 화합물반도체 전략 파운드리 구축을 위한 법률자문 용역 입찰",
-      "org": "한국나노기술원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": null,
-      "postedDate": "2026-08-20",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 정식입찰 · 공고번호: 제2026-31호",
-      "attachments": [
-        {
-          "name": "2 입찰공고문(변경).pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5636&filename=5636_202608280909550410.pdf"
-        },
-        {
-          "name": "3 화합물반도체 전략 파운드리 구축을 위한 법률자문_제안요청서_최종 수정(협조).hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5636&filename=5636_202608280909550571.hwp"
-        },
-        {
-          "name": "4 화합물반도체 전략 파운드리 구축을 위한 법률자문_과업지시서_수정.hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5636&filename=5636_202608280909550572.hwp"
-        },
-        {
-          "name": "5 긴급입찰사유서_한국나노기술원 전략 파운드리 구축을 위한 법률자문 용역.hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5636&filename=5636_202608280909550723.hwp"
-        },
-        {
-          "name": "6 입찰관련서식.hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5636&filename=5636_202608280909550884.hwp"
-        }
-      ],
-      "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5636&hcid=38",
-      "source": "한국나노기술원",
-      "sourceCode": "KANC",
-      "noticeType": "정식입찰",
-      "equipmentStatus": "제외",
-      "equipmentReason": "장비 구매가 아님이 분명함 (신호: 용역)",
-      "industry": "반도체",
-      "firstSeenAt": "2026-08-20T22:21:07+00:00"
     },
     {
       "id": "kotra26CN0C3",
