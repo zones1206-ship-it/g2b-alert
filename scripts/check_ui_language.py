@@ -84,7 +84,8 @@ FORBIDDEN_UI_STRINGS = [
 
 def _load_items():
     path = os.path.join(ROOT, "data", "announcements.json")
-    data = json.loads(io.open(path, encoding="utf-8").read())
+    with io.open(path, encoding="utf-8") as fp:
+        data = json.loads(fp.read())
     return data.get("items") or []
 
 

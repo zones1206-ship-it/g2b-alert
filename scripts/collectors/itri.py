@@ -306,7 +306,9 @@ def build_item(row):
         "keywords": categories,
         "classificationStatus": None if categories else "미분류/검토 필요",
         "budget": None,
-        "contractMethod": "견적 요청(詢價案)",
+        # 화면에 그대로 보이는 값이라 한자를 넣지 않는다. 원문 용어(詢價案)는
+        # 이 파일 맨 위 설명에 남겨 두었다(지시문 No.015~016 화면 한국어화).
+        "contractMethod": "견적 요청",
         "deliveryCondition": f"이행기한 {row['deliveryDue']}" if row.get("deliveryDue") else None,
         "paymentCondition": None,
         "eligibility": None,
