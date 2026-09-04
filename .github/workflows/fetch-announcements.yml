@@ -97,6 +97,22 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python scripts/notify_source_health.py data/announcements.json
 
+      # 아침 정기 실행의 맨 마지막에 사이트 주소를 한 통 보낸다. 공고
+      # 메시지마다 링크를 붙이면 공고가 열 건일 때 링크도 열 번 나가므로,
+      # 신규 공고 수와 무관하게 실행당 1건만 보낸다. 신규 공고가 0건이거나
+      # 장애/복구 알림이 없어도 보낸다.
+      #
+      # 손으로 돌린 검증 실행에서는 보내지 않는다. cron 문자열까지 확인해
+      # 나중에 다른 주기가 추가돼도 아침 실행에서만 나가게 한다
+      # (github.event.schedule은 schedule 이벤트에서 그 실행을 일으킨 cron을
+      # 담는다 — GitHub Actions 공식 컨텍스트).
+      - name: Notify site link via Telegram (07:00 KST 정기 실행만)
+        if: github.event_name == 'schedule' && github.event.schedule == '0 22 * * *'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python scripts/notify_site_link.py
+
       - name: Commit updated data
         run: |
           rm -f data/announcements.before.json

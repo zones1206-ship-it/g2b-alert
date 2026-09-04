@@ -40,6 +40,7 @@ from collectors.common import (DetailFetchFailed,                  # noqa: E402
                                looks_like_empty_board)
 import fetch_announcements as FA                                   # noqa: E402
 import notify_telegram as NT                                       # noqa: E402
+import notify_site_link as SITELINK                                # noqa: E402
 from notify_source_health import decide_actions                    # noqa: E402
 import check_data_drift as DRIFT                                   # noqa: E402
 import check_ui_language as UILANG                                 # noqa: E402
@@ -1627,6 +1628,171 @@ class KancDeadlineParsingTest(unittest.TestCase):
 
     def test_no_deadline_returns_none(self):
         self.assertIsNone(kanc.extract_due_date("마감 표기 없음", "2026-08-01"))
+
+
+class SiteLinkNotificationTest(unittest.TestCase):
+    """AD. 아침 정기 실행 끝에 사이트 링크 한 통 — 지시문 No.024.
+
+    공고 메시지마다 링크를 붙이면 공고가 열 건일 때 링크도 열 번 나간다.
+    사용자가 원한 것은 "아침에 사이트로 바로 들어갈 링크 하나"이므로,
+    신규 공고 수와 무관하게 실행당 1건만, 맨 마지막에 보낸다.
+
+    발송 여부는 워크플로의 if 조건이 정한다. 파이썬 쪽에는 실행 모드를
+    보는 코드를 두지 않았다 — 신규 공고 알림 정책을 건드리지 않기 위해서다.
+    """
+
+    WORKFLOW = os.path.join(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__))), ".github", "workflows",
+        "fetch-announcements.yml")
+    SCRIPT = os.path.join(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__))), "scripts", "notify_site_link.py")
+
+    def setUp(self):
+        with io.open(self.WORKFLOW, encoding="utf-8") as f:
+            self.workflow = f.read()
+
+    def _step_names(self):
+        return re.findall(r"^      - name: (.+)$", self.workflow, re.M)
+
+    def _site_step_block(self):
+        m = re.search(r"^      - name: Notify site link[^\n]*\n(?:^        .*\n|^\n)*",
+                      self.workflow, re.M)
+        self.assertIsNotNone(m, "사이트 링크 스텝을 찾지 못했습니다")
+        return m.group(0)
+
+    # --- 언제 보내는가 ---------------------------------------------------
+
+    def test_only_on_schedule_event(self):
+        """CASE D·E — 손으로 돌린 실행에서는 보내지 않는다."""
+        block = self._site_step_block()
+        self.assertIn("github.event_name == 'schedule'", block)
+
+    def test_pinned_to_the_morning_cron(self):
+        """나중에 다른 주기가 추가돼도 아침 실행에서만 나가야 한다."""
+        block = self._site_step_block()
+        self.assertIn("github.event.schedule == '0 22 * * *'", block)
+        # 워크플로가 실제로 그 cron으로 돌고 있어야 조건이 의미가 있다
+        self.assertIn("- cron: \"0 22 * * *\"", self.workflow)
+
+    def test_other_steps_have_no_if_condition(self):
+        """이 스텝에만 if가 붙어야 한다 — 다른 스텝은 실패가 곧 중단이다."""
+        conditions = re.findall(r"^        if: (.+)$", self.workflow, re.M)
+        self.assertEqual(len(conditions), 1, f"if 조건이 늘었습니다: {conditions}")
+
+    # --- 어디서 보내는가 -------------------------------------------------
+
+    def test_sent_after_every_other_telegram_step(self):
+        """CASE A·C — 신규 공고와 장애/복구 알림이 모두 끝난 뒤에 보낸다."""
+        names = self._step_names()
+        order = {n: i for i, n in enumerate(names)}
+        site = next(i for n, i in order.items() if n.startswith("Notify site link"))
+        new = next(i for n, i in order.items() if n.startswith("Notify new announcements"))
+        health = next(i for n, i in order.items() if n.startswith("Notify source collection"))
+        self.assertGreater(site, new)
+        self.assertGreater(site, health)
+
+    def test_sent_before_commit_but_cannot_block_it(self):
+        """발송 실패가 그날 수집 결과를 잃게 만들면 안 된다."""
+        names = self._step_names()
+        order = {n: i for i, n in enumerate(names)}
+        site = next(i for n, i in order.items() if n.startswith("Notify site link"))
+        commit = next(i for n, i in order.items() if n.startswith("Commit updated data"))
+        self.assertLess(site, commit)
+        # 스크립트가 발송 실패에 0이 아닌 코드로 끝나면 커밋이 막힌다
+        with io.open(self.SCRIPT, encoding="utf-8") as f:
+            source = f.read()
+        self.assertNotIn("SystemExit", source)
+        self.assertNotIn("sys.exit", source)
+        self.assertNotIn("raise", source)
+
+    def test_reuses_existing_secrets(self):
+        """새 Secret을 만들지 않는다."""
+        block = self._site_step_block()
+        self.assertIn("secrets.TELEGRAM_BOT_TOKEN", block)
+        self.assertIn("secrets.TELEGRAM_CHAT_ID", block)
+        self.assertEqual(len(re.findall(r"secrets\.\w+", block)), 2)
+
+    # --- 무엇을 보내는가 -------------------------------------------------
+
+    def test_message_is_exactly_three_lines(self):
+        """CASE B — 설명이나 공고 요약을 붙이지 않는다."""
+        self.assertEqual(
+            SITELINK.MESSAGE,
+            "장비 프로젝트 레이더\n전체 공고 확인\n"
+            "https://zones1206-ship-it.github.io/g2b-alert/")
+
+    def test_link_is_the_live_site(self):
+        self.assertEqual(SITELINK.SITE_URL,
+                         "https://zones1206-ship-it.github.io/g2b-alert/")
+        self.assertTrue(SITELINK.MESSAGE.endswith(SITELINK.SITE_URL),
+                        "링크가 마지막 줄에 그대로 있어야 클릭된다")
+
+    def test_preview_card_is_suppressed(self):
+        """기존 알림과 같게 미리보기 카드를 띄우지 않는다."""
+        self.assertIs(SITELINK.send_telegram, NT.send_telegram)
+        self.assertIn("disable_web_page_preview", inspect.getsource(NT.send_telegram))
+
+    # --- 보내는 횟수 -----------------------------------------------------
+
+    def test_sends_exactly_once_per_run(self):
+        """CASE A·B — 신규 공고가 0건이든 10건이든 링크는 1건이다."""
+        sent = []
+        original = SITELINK.send_telegram
+        SITELINK.send_telegram = lambda t, c, m: (sent.append(m), True)[1]
+        saved = dict(os.environ)
+        try:
+            os.environ["TELEGRAM_BOT_TOKEN"] = "t"
+            os.environ["TELEGRAM_CHAT_ID"] = "c"
+            SITELINK.main()
+        finally:
+            SITELINK.send_telegram = original
+            os.environ.clear()
+            os.environ.update(saved)
+        self.assertEqual(len(sent), 1)
+        self.assertEqual(sent[0], SITELINK.MESSAGE)
+
+    def test_no_send_without_credentials(self):
+        sent = []
+        original = SITELINK.send_telegram
+        SITELINK.send_telegram = lambda t, c, m: (sent.append(m), True)[1]
+        saved = dict(os.environ)
+        try:
+            os.environ.pop("TELEGRAM_BOT_TOKEN", None)
+            os.environ.pop("TELEGRAM_CHAT_ID", None)
+            SITELINK.main()
+        finally:
+            SITELINK.send_telegram = original
+            os.environ.clear()
+            os.environ.update(saved)
+        self.assertEqual(sent, [])
+
+    def test_send_failure_is_swallowed(self):
+        """발송 실패가 예외로 번지지 않는다."""
+        original = SITELINK.send_telegram
+        SITELINK.send_telegram = lambda t, c, m: False
+        saved = dict(os.environ)
+        try:
+            os.environ["TELEGRAM_BOT_TOKEN"] = "t"
+            os.environ["TELEGRAM_CHAT_ID"] = "c"
+            SITELINK.main()  # 예외가 나면 테스트 실패
+        finally:
+            SITELINK.send_telegram = original
+            os.environ.clear()
+            os.environ.update(saved)
+
+    # --- 기존 정책 보호 --------------------------------------------------
+
+    def test_new_notice_policy_untouched(self):
+        """신규 공고 알림은 실행 모드를 여전히 보지 않는다(No.019 정책)."""
+        source = inspect.getsource(NT)
+        self.assertNotIn("RUN_MODE", source)
+        self.assertNotIn("notify_site_link", source)
+
+    def test_site_link_script_does_not_read_run_mode(self):
+        """발송 여부 판단은 워크플로에만 둔다 — 두 곳에서 정하지 않는다."""
+        with io.open(self.SCRIPT, encoding="utf-8") as f:
+            source = f.read()
+        self.assertNotIn("RUN_MODE", source)
 
 
 class DisappearReappearTest(unittest.TestCase):
