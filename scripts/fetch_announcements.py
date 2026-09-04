@@ -140,7 +140,27 @@ def run_collector(name, module, existing_items, log):
     return items
 
 
-def build_source_health(log, previous_health, now_iso):
+SCHEDULED = "scheduled"
+MANUAL = "manual-validation"
+
+
+def run_mode():
+    """이번 실행이 정기 수집인지 수동 검증인지 돌려준다.
+
+    왜 필요한가 — No.018 검증 때 한 시간 안에 Actions를 4번 손으로 돌렸고,
+    그중 3번 KAIST가 timeout 났다. 사이트는 멀쩡했고(같은 시각 로컬에서
+    4.6초에 정상 수집) 검증 실행 자체가 만든 실패였는데, 연속 실패가 그대로
+    쌓여 임계값 3회에 닿아 **실제 장애 알림이 사용자에게 발송됐다**.
+
+    수동 검증은 수집도 하고 데이터도 갱신하지만, 정기 운영의 장애 판단까지
+    오염시켜서는 안 된다. RUN_MODE가 없으면 정기 실행으로 본다(로컬에서
+    돌릴 때 기존 동작이 그대로 유지되도록).
+    """
+    value = (os.environ.get("RUN_MODE") or "").strip().lower()
+    return MANUAL if value == MANUAL else SCHEDULED
+
+
+def build_source_health(log, previous_health, now_iso, mode=SCHEDULED):
     """수집원별 상태를 계산한다 — 수집이 실패해도 워크플로는 성공으로 끝나기
     때문에, 어느 수집원이 언제부터 고장났는지 여기에 남겨야 알 수 있다.
 
@@ -161,6 +181,14 @@ def build_source_health(log, previous_health, now_iso):
         prev = previous_health.get(name, {})
         succeeded = info["status"] == "정상"
         prev_failures = prev.get("consecutiveFailures", 0) or 0
+        if succeeded:
+            failures = 0
+        elif mode == MANUAL:
+            # 수동 검증에서의 실패는 세지 않는다. 실패했다는 사실 자체는
+            # lastStatus/lastError에 그대로 남으므로 로그에서는 보인다.
+            failures = prev_failures
+        else:
+            failures = prev_failures + 1
         health[name] = {
             "ok": succeeded,
             "lastStatus": info["status"],
@@ -168,8 +196,9 @@ def build_source_health(log, previous_health, now_iso):
             "collectedThisRun": info["count"] if succeeded else 0,
             "lastRunAt": now_iso,
             "lastSuccessAt": now_iso if succeeded else prev.get("lastSuccessAt"),
-            "consecutiveFailures": 0 if succeeded else prev_failures + 1,
+            "consecutiveFailures": failures,
             "failureAlertSent": bool(prev.get("failureAlertSent")),
+            "lastRunMode": mode,
         }
     return health
 
@@ -359,6 +388,11 @@ def is_still_open(item):
 
 
 def main():
+    mode = run_mode()
+    print(f"RUN_MODE={mode}")
+    if mode == MANUAL:
+        print("수동 검증 실행입니다 — 수집은 정상 수행하되 연속 실패를 세지 "
+              "않고 장애/복구 알림도 보내지 않습니다.")
     existing_items, previous_health = load_existing_data()
     run_started = datetime.now()
 
@@ -377,7 +411,8 @@ def main():
     all_items.sort(key=sort_key)
 
     now = datetime.now().astimezone()
-    source_health = build_source_health(log, previous_health, now.isoformat(timespec="seconds"))
+    source_health = build_source_health(
+        log, previous_health, now.isoformat(timespec="seconds"), mode)
     output = {
         "updatedAt": now.isoformat(timespec="seconds"),
         "sourceHealth": source_health,

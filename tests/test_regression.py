@@ -1629,6 +1629,185 @@ class KancDeadlineParsingTest(unittest.TestCase):
         self.assertIsNone(kanc.extract_due_date("마감 표기 없음", "2026-08-01"))
 
 
+class RunModeHealthTest(unittest.TestCase):
+    """X. 정기 실행과 수동 검증 실행의 분리 — 지시문 No.019.
+
+    No.018 검증 때 한 시간 안에 Actions를 4번 손으로 돌렸고, 그중 3번
+    KAIST가 timeout 났다. 사이트는 멀쩡했는데(같은 시각 로컬에서 4.6초에
+    정상 수집) 연속 실패가 그대로 쌓여 임계값 3회에 닿아 **실제 장애
+    알림이 사용자에게 발송됐다**. 검증 실행이 만든 가짜 장애였다.
+
+    정책: 수동 검증 실행은 수집과 데이터 갱신은 그대로 하되,
+      - 연속 실패를 세지 않는다
+      - 장애/복구 Telegram을 보내지 않는다
+      - 신규 공고 알림은 그대로 보낸다(실제 신규 공고는 검증 중에도 진짜다)
+    """
+
+    NOW = "2026-09-05T07:00:00+09:00"
+
+    def setUp(self):
+        self._saved = os.environ.get("RUN_MODE")
+
+    def tearDown(self):
+        if self._saved is None:
+            os.environ.pop("RUN_MODE", None)
+        else:
+            os.environ["RUN_MODE"] = self._saved
+
+    def _fail_log(self, name="KAIST"):
+        return {name: {"status": "오류", "detail": "timed out", "count": 1}}
+
+    def _ok_log(self, name="KAIST", count=3):
+        return {name: {"status": "정상", "detail": None, "count": count}}
+
+    def _health(self, failures=0, alerted=False):
+        return {"KAIST": {"consecutiveFailures": failures,
+                          "failureAlertSent": alerted,
+                          "lastSuccessAt": "2026-09-04T14:04:00+09:00"}}
+
+    # --- run_mode() 판정 -------------------------------------------------
+
+    def test_run_mode_defaults_to_scheduled(self):
+        """RUN_MODE가 없으면 정기 실행으로 본다(로컬 실행 기존 동작 유지)."""
+        os.environ.pop("RUN_MODE", None)
+        self.assertEqual(FA.run_mode(), FA.SCHEDULED)
+
+    def test_run_mode_reads_env(self):
+        for value, expected in (("scheduled", FA.SCHEDULED),
+                                ("manual-validation", FA.MANUAL),
+                                ("MANUAL-VALIDATION", FA.MANUAL),
+                                (" manual-validation ", FA.MANUAL),
+                                ("", FA.SCHEDULED),
+                                ("아무거나", FA.SCHEDULED)):
+            with self.subTest(value=value):
+                os.environ["RUN_MODE"] = value
+                self.assertEqual(FA.run_mode(), expected)
+
+    # --- CASE A/B: 정기 실행의 실패 누적 ---------------------------------
+
+    def test_case_a_scheduled_failure_counts_once(self):
+        """CASE A — 정기 실행 실패 1회 → 연속 실패 1회."""
+        h = FA.build_source_health(self._fail_log(), self._health(0),
+                                   self.NOW, FA.SCHEDULED)
+        self.assertEqual(h["KAIST"]["consecutiveFailures"], 1)
+        self.assertFalse(h["KAIST"]["ok"])
+
+    def test_case_b_three_scheduled_failures_alert_once(self):
+        """CASE B — 정기 실행 3회 실패 → 장애 알림 정확히 1회."""
+        health = self._health(0)
+        sent = 0
+        for _ in range(5):
+            health = FA.build_source_health(self._fail_log(), health,
+                                            self.NOW, FA.SCHEDULED)
+            actions = decide_actions(health)
+            for code, kind, _msg in actions:
+                if kind == "failure":
+                    sent += 1
+                    health[code]["failureAlertSent"] = True
+        self.assertEqual(health["KAIST"]["consecutiveFailures"], 5)
+        self.assertEqual(sent, 1, "4회·5회에도 다시 보내면 안 된다")
+
+    def test_case_c_recovery_alert_once(self):
+        """CASE C — 정기 실행에서 복구 → 복구 알림 정확히 1회."""
+        health = FA.build_source_health(self._ok_log(), self._health(3, True),
+                                        self.NOW, FA.SCHEDULED)
+        self.assertEqual(health["KAIST"]["consecutiveFailures"], 0)
+        self.assertEqual(health["KAIST"]["lastSuccessAt"], self.NOW)
+        kinds = [k for _c, k, _m in decide_actions(health)]
+        self.assertEqual(kinds, ["recovery"])
+
+        # 복구 알림을 보낸 뒤 플래그가 내려가면 다시 보내지 않는다
+        health["KAIST"]["failureAlertSent"] = False
+        self.assertEqual(decide_actions(health), [])
+
+    # --- CASE D: 수동 검증이 운영 장애를 오염시키지 않는다 ---------------
+
+    def test_case_d_manual_failures_do_not_accumulate(self):
+        """CASE D — 수동 검증 3회 실패 → 연속 실패가 늘지 않고 알림도 없다."""
+        health = self._health(0)
+        for _ in range(3):
+            health = FA.build_source_health(self._fail_log(), health,
+                                            self.NOW, FA.MANUAL)
+        self.assertEqual(health["KAIST"]["consecutiveFailures"], 0)
+        self.assertEqual(decide_actions(health), [])
+        # 실패했다는 사실 자체는 남아야 한다 — 숨기지 않는다
+        self.assertFalse(health["KAIST"]["ok"])
+        self.assertEqual(health["KAIST"]["lastStatus"], "오류")
+        self.assertEqual(health["KAIST"]["lastError"], "timed out")
+        self.assertEqual(health["KAIST"]["lastRunMode"], FA.MANUAL)
+
+    def test_manual_failure_keeps_existing_count(self):
+        """이미 쌓인 정기 실행 실패 횟수를 수동 검증이 지우지도 늘리지도 않는다."""
+        health = FA.build_source_health(self._fail_log(), self._health(2),
+                                        self.NOW, FA.MANUAL)
+        self.assertEqual(health["KAIST"]["consecutiveFailures"], 2)
+
+    def test_manual_failure_never_reaches_threshold(self):
+        """수동 검증만으로는 임계값에 닿을 수 없다 — No.018 사고의 재발 방지."""
+        health = self._health(0)
+        for _ in range(10):
+            health = FA.build_source_health(self._fail_log(), health,
+                                            self.NOW, FA.MANUAL)
+            self.assertEqual(decide_actions(health), [])
+
+    # --- CASE E: 수동 검증 뒤 정기 실행 -----------------------------------
+
+    def test_case_e_manual_then_scheduled_ok_sends_nothing(self):
+        """CASE E — 수동 검증 실패 뒤 정기 실행이 정상이면 알림이 없다.
+
+        수동 실패가 쌓이지 않았으므로 장애 알림도, 그에 딸린 복구 알림도
+        애초에 생기지 않는다.
+        """
+        health = self._health(0)
+        for _ in range(3):
+            health = FA.build_source_health(self._fail_log(), health,
+                                            self.NOW, FA.MANUAL)
+        health = FA.build_source_health(self._ok_log(), health,
+                                        self.NOW, FA.SCHEDULED)
+        self.assertTrue(health["KAIST"]["ok"])
+        self.assertEqual(decide_actions(health), [])
+
+    def test_manual_success_still_recorded(self):
+        """수동 검증이라도 성공은 그대로 반영한다 — 수집은 진짜로 했다."""
+        health = FA.build_source_health(self._ok_log(), self._health(2),
+                                        self.NOW, FA.MANUAL)
+        self.assertTrue(health["KAIST"]["ok"])
+        self.assertEqual(health["KAIST"]["consecutiveFailures"], 0)
+        self.assertEqual(health["KAIST"]["lastSuccessAt"], self.NOW)
+
+    def test_real_outage_still_alerts_after_manual_runs(self):
+        """수동 검증을 아무리 돌려도 진짜 장애 감지는 죽지 않는다."""
+        health = self._health(0)
+        for _ in range(4):
+            health = FA.build_source_health(self._fail_log(), health,
+                                            self.NOW, FA.MANUAL)
+        for _ in range(3):
+            health = FA.build_source_health(self._fail_log(), health,
+                                            self.NOW, FA.SCHEDULED)
+        self.assertEqual(health["KAIST"]["consecutiveFailures"], 3)
+        self.assertEqual([k for _c, k, _m in decide_actions(health)], ["failure"])
+
+    # --- CASE F: 신규 공고 알림은 실행 모드와 무관하다 --------------------
+
+    def test_case_f_new_notice_alert_policy_unchanged(self):
+        """CASE F — 신규 공고 알림은 RUN_MODE를 보지 않는다.
+
+        장애 알림과 신규 공고 알림은 별개 기능이다. 검증 실행 중에 발견한
+        신규 공고도 실제 신규 공고이므로 정책을 바꾸지 않는다.
+        """
+        source = inspect.getsource(NT)
+        self.assertNotIn("RUN_MODE", source)
+        self.assertNotIn("manual-validation", source)
+
+    def test_run_mode_recorded_in_health(self):
+        """어떤 모드로 돌았는지 상태에 남아 로그·데이터로 확인할 수 있다."""
+        for mode in (FA.SCHEDULED, FA.MANUAL):
+            with self.subTest(mode=mode):
+                h = FA.build_source_health(self._ok_log(), self._health(),
+                                           self.NOW, mode)
+                self.assertEqual(h["KAIST"]["lastRunMode"], mode)
+
+
 class AnnouncementIdentityTest(unittest.TestCase):
     """W. 동일공고 판별 — signature 단독 의존 위험 (지시문 No.018 24~28번).
 

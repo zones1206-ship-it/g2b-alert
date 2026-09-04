@@ -11,6 +11,13 @@ permissions:
 jobs:
   fetch:
     runs-on: ubuntu-latest
+    # 정기 수집인지 손으로 돌린 검증인지 구분한다. 수동 검증 실행은 수집과
+    # 데이터 갱신은 그대로 하되, 연속 실패를 세지 않고 장애/복구 Telegram도
+    # 보내지 않는다 — No.018 검증 때 한 시간에 4번 돌린 실행이 KAIST 연속
+    # 실패로 누적돼 실제 장애 알림이 발송된 적이 있다. 신규 공고 알림은
+    # 이와 무관하게 평소대로 나간다(실제 신규 공고는 검증 중에도 진짜다).
+    env:
+      RUN_MODE: ${{ github.event_name == 'schedule' && 'scheduled' || 'manual-validation' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7

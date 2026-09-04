@@ -36,6 +36,7 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from notify_telegram import send_telegram  # 발송 로직은 기존 것을 그대로 재사용
+from fetch_announcements import run_mode, MANUAL
 from collectors.common import SOURCES
 
 for _stream in (sys.stdout, sys.stderr):
@@ -127,6 +128,18 @@ def main():
     actions = decide_actions(source_health)
     if not actions:
         print("보낼 장애/복구 알림이 없습니다(임계값 미만이거나 이미 알린 장애).")
+        return
+
+    # 수동 검증 실행에서는 장애/복구를 알리지 않는다. 검증하려고 손으로 여러
+    # 번 돌린 실행이 실제 장애처럼 알림을 내보내면(No.018에서 KAIST로 실제
+    # 발생) 운영자가 진짜 장애와 구분할 수 없다. 보낼 뻔한 내용은 로그에
+    # 남겨 검증 중에도 확인할 수 있게 한다.
+    if run_mode() == MANUAL:
+        print(f"RUN_MODE={MANUAL} — 장애/복구 알림을 보내지 않습니다. "
+              f"보낼 뻔한 알림 {len(actions)}건:")
+        for code, kind, message in actions:
+            print(f"--- [{MANUAL}] {code} ({kind}) ---")
+            print(message)
         return
 
     bot_token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
