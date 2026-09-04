@@ -434,10 +434,15 @@ def build_item(row: dict):
 
     # 카드 화면 기본 표시(title/org)에는 한자가 남지 않는다(용어집 치환 +
     # pypinyin 로마자 표기 폴백으로 항상 한자를 제거한다 — zh_translate 참고).
-    # title_ok/org_ok가 하나라도 False면 일부가 로마자 표기(발음 표기)
-    # 폴백을 썼다는 뜻이라 translationIncomplete=true로 내부 표시해
-    # 번역 품질 검토 대상임을 남긴다.
-    translation_incomplete = not (title_ok and org_ok and summary_ok)
+    # 이 배지는 "사용자가 무엇을 사는 공고인지 읽을 수 있는가"를 뜻한다.
+    # 그래서 제목과 품목만 본다(지시문 No.014 9번).
+    #
+    # 발주기관(org)은 뺐다. 회사 고유명은 애초에 한국어 대응어가 없어
+    # 로마자로 남는 것이 정상이며("청두 YiCheng 집적회로 유한공사"),
+    # 그것만으로 공고를 못 읽는 것은 아니다. 기관을 아예 확정하지 못한
+    # 경우는 org가 None이 되어 화면에 "확인 필요"로 따로 표시되므로
+    # 이 배지로 중복해서 알릴 필요가 없다.
+    translation_incomplete = not (title_ok and summary_ok)
 
     return {
         "id": f"ebnew{re.search(r'(\d+)', row['url']).group(1)}",

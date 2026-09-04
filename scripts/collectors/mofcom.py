@@ -185,9 +185,10 @@ def build_item(row: dict):
 
     # 카드 화면 기본 표시(title/org)에는 한자가 남지 않는다 — zh_translate가
     # 용어집 치환 후 남은 한자를 pypinyin으로 로마자 표기까지 하기 때문.
-    # 일부라도 로마자 표기 폴백을 썼으면 translationIncomplete=true로
-    # 내부 표시해 번역 품질 검토 대상임을 남긴다.
-    translation_incomplete = not (title_ok and org_ok and summary_ok)
+    # 배지 기준은 EBNEW와 같다 — "무엇을 사는 공고인지 읽을 수 있는가"라서
+    # 제목과 품목만 본다. 회사 고유명이 로마자로 남는 것은 정상이므로
+    # org는 제외한다(지시문 No.014 9번, collectors/ebnew.py의 같은 부분 참고).
+    translation_incomplete = not (title_ok and summary_ok)
 
     return {
         "id": f"mofcom{row['fdid']}",

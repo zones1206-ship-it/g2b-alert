@@ -15,6 +15,7 @@
 import http.client
 import io
 import json
+import inspect
 import os
 import shutil
 import sys
@@ -788,6 +789,176 @@ class ChineseGlossaryTest(unittest.TestCase):
         out = ZT._apply_glossary("奕斯伟板级封装")
         self.assertIn("패널레벨 패키징", out)
         self.assertIn("奕斯伟", out)
+
+
+class FalseNegativeSafetyNetTest(unittest.TestCase):
+    """I. 장비 False Negative 안전망 — "모른다"와 "아니다"를 구분한다.
+
+    지시문 No.014 12~20번. 산업 근거가 없다는 것이 곧 "산업이 무관하다"는
+    뜻은 아니다. 상세를 못 읽었거나 제목이 짧아 산업 단어가 안 보일 수도
+    있다. 그래서 팹 공정 장비 이름이 분명하면 제외하지 않고 검토로 남긴다.
+    """
+
+    def _classify(self, title, source="EBNEW", description=None):
+        return EF.classify({"sourceCode": source, "title": title,
+                            "originalTitle": None, "description": description,
+                            "keywords": []})
+
+    # 지시문 20번 Synthetic 케이스 (번호, 제목, 출처, 본문, 허용 판정)
+    SYNTHETIC = [
+        (1, "8인치 웨이퍼 프로버 구매", "EBNEW", None, {"장비", "검토 필요"}),
+        (2, "반도체 웨이퍼 건식 식각 장비", "EBNEW", None, {"장비"}),
+        (3, "Plasma Processing System", "EBNEW", None, {"장비", "검토 필요"}),
+        (4, "Germanium Semiconductor Detector 구매", "JETRO",
+            "방사선 치료용 의료 영상 장비에 사용한다.", {"제외"}),
+        (5, "입찰공고(제2026-060호) 200mm 클러스터 ALD 장비 외 11종 유틸리티 연결 공사",
+            "NNFC", None, {"제외"}),
+        (6, "반도체 공정 모니터링 장비 1식", "KANC", None, {"장비"}),
+        (7, "LED 대형 전광판 구매", "EBNEW", None, {"제외"}),
+        (8, "MOCVD 1SET 구매", "KANC", None, {"장비"}),
+        (9, "중적외선 레이저 시스템", "KRISS", None, {"제외"}),
+    ]
+
+    def test_synthetic_cases(self):
+        for n, title, src, desc, allowed in self.SYNTHETIC:
+            with self.subTest(case=n):
+                verdict, reason = self._classify(title, source=src, description=desc)
+                self.assertIn(verdict, allowed,
+                              f"CASE {n}: {title[:44]} → {verdict} ({reason})")
+
+    # 산업 근거가 없어도 바로 버리면 안 되는 팹 공정 장비 이름.
+    # No.013 규칙에서는 전부 제외로 떨어지던 것들이다.
+    STRONG_WITHOUT_INDUSTRY = [
+        "stepper", "etcher", "tester", "plating system", "inspection system",
+        "metrology system", "plasma processing system",
+        "스테퍼", "시험기", "연마 장비", "도금 장비", "검사 장비", "계측 장비",
+        "플라즈마 처리 장비", "본더",
+    ]
+
+    def test_strong_equipment_goes_to_review_not_exclude(self):
+        for term in self.STRONG_WITHOUT_INDUSTRY:
+            with self.subTest(term=term):
+                verdict, reason = self._classify(term + " 구매")
+                self.assertEqual(verdict, "검토 필요",
+                                 f"{term} → {verdict} ({reason})")
+
+    # 장비처럼 보여도 산업이 명백히 다르면 제외를 유지한다(지시문 15번).
+    UNRELATED_BUT_EQUIPMENT_LIKE = [
+        "방사선 치료 시스템 구매", "의료 영상 검사 장비 1식",
+        "항공관제 시스템 구축", "경마 영상 판독 장비",
+        "식품 이물 검사 장비", "축산 사육 자동화 설비",
+        "정수장 수질 계측 장비", "자동차 정비 진단 장비",
+    ]
+
+    def test_unrelated_industry_stays_excluded(self):
+        for title in self.UNRELATED_BUT_EQUIPMENT_LIKE:
+            with self.subTest(title=title):
+                verdict, reason = self._classify(title)
+                self.assertEqual(verdict, "제외", f"{title} → {verdict} ({reason})")
+
+    def test_unrelated_terms_do_not_match_common_wording(self):
+        """짧은 한국어를 넣으면 부분 문자열로 오작동한다.
+
+        실제로 "수의"를 넣었더니 정부 계약방식 "소액수의계약"에 걸려
+        멀쩡한 KANC 공고가 수의학으로 분류됐다. 같은 사고를 막는다.
+        """
+        safe = [
+            "[사전규격공개] 웨이퍼 결함 검출기 구매 · 계약방법: 소액수의-2인이상 견적제출",
+            "반도체 검사 장비 구매 · 계약방법: 특정수의계약(총액)",
+            "설계 제약 조건을 반영한 반도체 노광장비 구매",
+            "반도체 웨이퍼 검사료 산정 기준을 포함한 검사 장비 구매",
+            "광학 조리개 모듈을 포함한 반도체 웨이퍼 검사 장비",
+        ]
+        for title in safe:
+            with self.subTest(title=title[:30]):
+                verdict, reason = self._classify(title, source="KANC")
+                self.assertNotIn("다른 분야", reason,
+                                 f"{title[:40]} → {verdict} ({reason})")
+
+    def test_kriss_stays_excluded(self):
+        """No.013에서 제외한 건이 안전망 때문에 다시 올라오면 안 된다(19번)."""
+        verdict, reason = self._classify("새글 중적외선 레이저 시스템", source="KRISS")
+        self.assertEqual(verdict, "제외")
+        self.assertIn("일반 연구·계측 장비", reason)
+
+    def test_generic_instruments_do_not_flood_review(self):
+        """일반 측정기·레이저·현미경만으로 검토에 올리지 않는다(18번)."""
+        for title in ("일반 측정기 1식 구매", "레이저 시스템 구매",
+                      "광학 현미경 1대", "항온조 구매"):
+            with self.subTest(title=title):
+                verdict, _ = self._classify(title, source="KRISS")
+                self.assertEqual(verdict, "제외", title)
+
+    def test_missing_detail_does_not_force_exclude(self):
+        """상세를 못 읽어 본문이 비어도, 제목의 장비 근거는 살아 있어야 한다.
+
+        상세 수집 실패는 "데이터 부족"이지 "산업 무관"이 아니다(24번).
+        """
+        # 제목에 산업 근거가 있으면 본문이 없어도 장비다.
+        verdict, _ = self._classify("8인치 웨이퍼 프로버 구매", description=None)
+        self.assertEqual(verdict, "장비")
+        # 제목에 팹 공정 장비 이름만 있으면 제외가 아니라 검토다.
+        verdict, _ = self._classify("Plasma Processing System", description=None)
+        self.assertEqual(verdict, "검토 필요")
+
+
+class DetailTranslationTest(unittest.TestCase):
+    """J. 상세 품목명 번역 — "…机"가 로마자 Ji 로 떨어지지 않는지.
+
+    지시문 No.014 1~6번. 실제 운영 데이터 17건에서 확인된 표현만 고정한다.
+    """
+
+    # (원문 품목명, 결과에 있어야 할 표현)
+    REAL_PRODUCTS = [
+        ("自动光学检测机", "자동광학검사(AOI) 장비"),
+        ("湿法刻蚀机", "습식 식각기"),
+        ("涂布机", "코터"),
+        ("炉前自动光学检测机", "노 투입 전"),
+        ("封装系统集成电路,自动光学检测机", "집적회로"),
+        ("晶背清洗设备", "웨이퍼 이면"),
+        ("玻璃基封装载板研发试验线", "캐리어 기판"),
+        ("8吋D-POLY炉管设备,半导体芯片", "퍼니스 튜브"),
+        ("大台镭射显微镜", "레이저 현미경"),
+    ]
+
+    def test_real_products_are_readable(self):
+        for zh, expected in self.REAL_PRODUCTS:
+            with self.subTest(product=zh):
+                out, _ok = ZT.translate(zh)
+                self.assertIn(expected, out, f"{zh} → {out}")
+
+    def test_no_leftover_ji(self):
+        """"机" 한 글자가 "Ji" 로 남는 것이 이번 작업의 핵심 증상이었다."""
+        for zh, _ in self.REAL_PRODUCTS:
+            with self.subTest(product=zh):
+                out, _ok = ZT.translate(zh)
+                self.assertNotRegex(out, r"(?<![A-Za-z])Ji(?![A-Za-z])", f"{zh} → {out}")
+
+    def test_equipment_word_is_not_duplicated(self):
+        """"…机" 뒤에 "设备"가 붙어도 "장비 장비"가 되면 안 된다."""
+        out, _ = ZT.translate("湿法刻蚀机设备采购项目招标结果公告")
+        self.assertNotIn("장비 장비", out)
+        self.assertIn("습식 식각기", out)
+
+    def test_unverified_proper_noun_is_kept(self):
+        """뜻을 확인하지 못한 조각은 지어내지 않는다(지시문 6번).
+
+        "大台"는 공개 원문에도 설명이 없어 그대로 둔다.
+        """
+        out, ok = ZT.translate("大台镭射显微镜")
+        self.assertIn("DaTai", out)
+        self.assertFalse(ok, "확인 못한 조각이 남았으면 미완료로 표시해야 한다")
+
+    def test_flag_ignores_company_name_romanisation(self):
+        """회사 고유명이 로마자로 남은 것만으로 미완료 처리하지 않는다(9번).
+
+        배지 계산은 제목과 품목만 본다 — collectors/ebnew.py 참고.
+        """
+        src = inspect.getsource(ebnew.build_item)
+        self.assertIn("not (title_ok and summary_ok)", src)
+        self.assertNotIn("org_ok and summary_ok", src)
+        src2 = inspect.getsource(mofcom.build_item)
+        self.assertIn("not (title_ok and summary_ok)", src2)
 
 
 if __name__ == "__main__":

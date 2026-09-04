@@ -61,8 +61,10 @@ def main():
         # translationIncomplete 판정 방식은 수집기(ebnew.build_item)와 똑같이
         # 맞춘다. 제목만 보고 플래그를 지우면 다음 수집 때 다시 켜져서
         # "번역 미완료" 배지가 매일 깜빡인다.
+        # org는 보지 않는다 — 회사 고유명이 로마자로 남는 것은 정상이다
+        # (지시문 No.014 9번, collectors/ebnew.py의 같은 부분 참고).
         _, summary_ok = zh_translate.translate(item.get("originalSummary") or "")
-        ok = title_ok and org_ok and summary_ok
+        ok = title_ok and summary_ok
 
         engines[info["engine"]] = engines.get(info["engine"], 0) + 1
         if info["engine"] == "glossary" and info["reason"]:
