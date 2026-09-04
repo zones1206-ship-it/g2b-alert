@@ -1611,6 +1611,12 @@ class KancDeadlineParsingTest(unittest.TestCase):
         text = "나. 제출기한 : 2026.08.26.(수) 10:00 ~ 11:00 限"
         self.assertEqual(kanc.extract_due_date(text, "2026-08-18"), "2026-08-26")
 
+    def test_submission_period_label(self):
+        """"제출기간"은 날짜 사이에 시각이 끼어 있어 기존 "...기간" 패턴이
+        놓치던 표기다(KANC 제2026-31호 실측)."""
+        text = "- 제출기간: 2026.08.28. 14:00 ~ 2026.09.07. 14:00 - 제출장소:"
+        self.assertEqual(kanc.extract_due_date(text, "2026-08-20"), "2026-09-07")
+
     def test_existing_patterns_still_work(self):
         self.assertEqual(
             kanc.extract_due_date("의견마감일시 : 2026.07.13", "2026-07-01"),
