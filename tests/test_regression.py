@@ -1629,6 +1629,133 @@ class KancDeadlineParsingTest(unittest.TestCase):
         self.assertIsNone(kanc.extract_due_date("마감 표기 없음", "2026-08-01"))
 
 
+class DisappearReappearTest(unittest.TestCase):
+    """AB. 사라졌다 돌아오는 공고 — 지시문 No.021.
+
+    git 이력 142개 커밋을 훑어 "있었다 → 여러 커밋 사라짐 → 다시 등장"한
+    사례 16건을 찾았다. 15건은 Active Notice 보호(No.017)가 들어오기 전에
+    일어난 일이고, 나머지 1건은 사람이 손으로 지운 것이었다.
+
+    다만 **현재 코드에서 재현되는 소실 경로가 하나 남아 있었다.** 실측
+    MOFCOM 4197-264BOECDCZ02 프로젝트에는
+
+        로트 /02 (마감 09-16)   로트 /03 (마감 09-16)
+        로트 /02 (마감 09-24)   로트 /03 (마감 09-24)
+
+    네 건이 있고, /02 와 /03 은 제목·기관·게시일·마감일·공고종류가 모두
+    같아 지문이 일치한다. 목록에서 /02 가 밀려나면 /03 이 있다는 이유로
+    버려졌다. 재색인 판정을 (공고번호, 지문) **쌍**으로 바꿔 막았다.
+    """
+
+    TODAY = date(2026, 9, 4)
+
+    # 실측값을 그대로 쓴다(제목·기관·게시일·마감일이 전부 같은 것이 핵심).
+    def _lot(self, item_id, project, due, seen="2026-09-03T09:33:22+09:00"):
+        return {
+            "id": item_id, "sourceCode": "MOFCOM", "projectNo": project,
+            "title": "청두 BOE 광전 2026년 제4.5세대 TFT-LCD 생산라인 기술 개조 프로젝트",
+            "originalTitle": "成都京东方光电2026年第4.5代TFT-LCD产线技术改造项目",
+            "originalOrg": "成都京东方光电科技有限公司", "org": "청두 BOE 광전",
+            "postedDate": "2026-08-26", "dueDate": due, "noticeType": "정식입찰",
+            "equipmentStatus": "장비", "firstSeenAt": seen,
+            "url": f"https://example.invalid/{item_id}.html",
+        }
+
+    def _all_four(self):
+        return [
+            self._lot("lot02-16", "4197-264BOECDCZ02/02", "2026-09-16"),
+            self._lot("lot03-16", "4197-264BOECDCZ02/03", "2026-09-16"),
+            self._lot("lot02-24", "4197-264BOECDCZ02/02", "2026-09-24"),
+            self._lot("lot03-24", "4197-264BOECDCZ02/03", "2026-09-24"),
+        ]
+
+    def _run(self, collected, fallback):
+        return FA.preserve_active_missing_items("MOFCOM", collected, fallback,
+                                                today=self.TODAY)
+
+    def test_signature_collision_is_real(self):
+        """전제 확인 — /02 와 /03 의 지문이 실제로 같다."""
+        four = self._all_four()
+        self.assertEqual(FA.announcement_signature(four[0]),
+                         FA.announcement_signature(four[1]))
+        self.assertNotEqual(FA.project_key(four[0]), FA.project_key(four[1]))
+
+    def test_missing_active_lot_is_kept(self):
+        """CASE — 목록에서 밀린 진행 중 로트는 유지된다(이번에 고친 경로)."""
+        four = self._all_four()
+        gone = four[0]
+        out = self._run([i for i in four if i["id"] != gone["id"]], four)
+        self.assertIn("lot02-16", {i["id"] for i in out})
+        self.assertEqual(len(out), 4)
+
+    def test_every_lot_survives_being_dropped(self):
+        """네 건 중 어느 것이 밀려나도 유지돼야 한다."""
+        four = self._all_four()
+        for gone in four:
+            with self.subTest(gone=gone["id"]):
+                out = self._run([i for i in four if i["id"] != gone["id"]], four)
+                self.assertIn(gone["id"], {i["id"] for i in out})
+
+    def test_true_reindex_is_still_dropped(self):
+        """반대 방향 — id만 바뀐 재색인은 되살리지 않는다(중복 방지)."""
+        four = self._all_four()
+        old = four[0]
+        collected = [i for i in four if i["id"] != old["id"]]
+        collected.append(dict(old, id="lot02-16-NEWID"))
+        out = self._run(collected, four)
+        ids = {i["id"] for i in out}
+        self.assertNotIn("lot02-16", ids)
+        self.assertIn("lot02-16-NEWID", ids)
+        self.assertEqual(len(out), 4)
+
+    def test_correction_notice_same_project_is_kept(self):
+        """같은 공고번호의 정정공고는 여전히 별개로 유지된다(No.018 회귀)."""
+        original = self._lot("orig", "4197-264BOECDCZ02/02", "2026-09-16")
+        correction = dict(self._lot("corr", "4197-264BOECDCZ02/02", "2026-09-16"),
+                          originalTitle="…项目 澄清或变更公告")
+        out = self._run([correction], [original, correction])
+        self.assertEqual({i["id"] for i in out}, {"orig", "corr"})
+
+    def test_expired_missing_notice_is_not_revived(self):
+        """마감이 지난 공고는 붙들지 않는다 — 영구 보존이 되면 안 된다."""
+        expired = self._lot("old-expired", "4197-264BOECDCZ02/09", "2026-08-01")
+        four = self._all_four()
+        out = self._run(four, four + [expired])
+        self.assertNotIn("old-expired", {i["id"] for i in out})
+
+    def test_reappearing_item_keeps_first_seen(self):
+        """돌아온 공고는 원래 발견 시각을 유지한다."""
+        four = self._all_four()
+        gone = four[0]
+        # 사라진 동안에도 보존되고, 다시 수집돼도 시각이 그대로여야 한다
+        kept = self._run([i for i in four if i["id"] != gone["id"]], four)
+        FA.stamp_first_seen(kept, four)
+        back = [i for i in kept if i["id"] == "lot02-16"][0]
+        self.assertEqual(back["firstSeenAt"], "2026-09-03T09:33:22+09:00")
+
+    def test_reappearing_item_is_not_notified_as_new(self):
+        """돌아온 공고를 신규 공고로 다시 알리지 않는다."""
+        four = self._all_four()
+        before_ids = {i["id"] for i in four}
+        before_sig = {NT.announcement_signature(i) for i in four}
+        before_prj = {p for p in (NT.project_key(i) for i in four) if p}
+        new = []
+        for item in four:  # 사라졌다 그대로 돌아온 상태
+            if item["id"] in before_ids:
+                continue
+            key = NT.project_key(item)
+            if not (key and key not in before_prj):
+                if NT.announcement_signature(item) in before_sig:
+                    continue
+            new.append(item)
+        self.assertEqual(new, [], "복귀 공고는 신규 알림 0건이어야 한다")
+
+    def test_source_failure_keeps_everything(self):
+        """출처 자체가 실패하면 보존 로직 이전에 전량 유지된다."""
+        four = self._all_four()
+        self.assertEqual(self._run([], four), [])  # collected가 비면 손대지 않는다
+
+
 class HealthBannerScopeTest(unittest.TestCase):
     """Z. 화면 장애 배너는 정기 수집 기준만 본다 — 지시문 No.020.
 

@@ -347,8 +347,11 @@ def preserve_active_missing_items(name, collected, fallback, today=None):
     if not collected or not fallback:
         return collected
     collected_ids = {i.get("id") for i in collected}
-    collected_projects = {p for p in (project_key(i) for i in collected) if p}
     collected_signatures = {announcement_signature(i) for i in collected}
+    # 재색인은 내부 id만 바뀌고 공고번호와 지문은 그대로다. 그래서 둘을
+    # **쌍으로** 본다 — 어느 한쪽만 같은 것은 재색인이 아니다.
+    collected_pairs = {(project_key(i), announcement_signature(i))
+                       for i in collected if project_key(i)}
     revived = []
     for old in fallback:
         if old.get("id") in collected_ids:
@@ -365,11 +368,21 @@ def preserve_active_missing_items(name, collected, fallback, today=None):
         # 없으면 확실히 별개 공고이므로 유지하고, 버리는 판단은 제목·기관·
         # 날짜까지 모두 같을 때(= 내부 id만 바뀐 재색인)에만 내린다.
         old_project = project_key(old)
-        if old_project and old_project not in collected_projects:
-            pass  # 공고번호가 다르다 — 별개 공고다
-        elif announcement_signature(old) in collected_signatures:
-            print(f"[{name}] 같은 공고로 보여 유지하지 않습니다: {old.get('id')} "
-                  f"({old.get('projectNo') or '공고번호 없음'})")
+        old_signature = announcement_signature(old)
+        if old_project:
+            # 공고번호가 있으면 지문 단독으로 판단하지 않는다. 실제로 로트
+            # /02(마감 09-16)와 로트 /03(마감 09-16)은 제목·기관·게시일·
+            # 마감일·공고종류가 모두 같아 지문이 일치한다 — 지문만 보면
+            # 목록에서 밀린 /02 를 /03 이 있다는 이유로 버리게 된다.
+            if (old_project, old_signature) not in collected_pairs:
+                pass  # 공고번호와 지문이 함께 일치하지 않는다 — 별개 공고다
+            else:
+                print(f"[{name}] 재색인으로 보여 유지하지 않습니다: "
+                      f"{old.get('id')} ({old.get('projectNo')})")
+                continue
+        elif old_signature in collected_signatures:
+            # 공고번호가 없는 출처에서만 지문을 단독으로 쓴다.
+            print(f"[{name}] 같은 공고로 보여 유지하지 않습니다: {old.get('id')}")
             continue
         if not has_future_deadline(old, today):
             continue
