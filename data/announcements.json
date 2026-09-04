@@ -1,13 +1,13 @@
 {
-  "updatedAt": "2026-09-04T05:04:39+00:00",
+  "updatedAt": "2026-09-04T05:29:35+00:00",
   "sourceHealth": {
     "KANC": {
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 12,
-      "lastRunAt": "2026-09-04T05:04:39+00:00",
-      "lastSuccessAt": "2026-09-04T05:04:39+00:00",
+      "lastRunAt": "2026-09-04T05:29:35+00:00",
+      "lastSuccessAt": "2026-09-04T05:29:35+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -16,8 +16,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 8,
-      "lastRunAt": "2026-09-04T05:04:39+00:00",
-      "lastSuccessAt": "2026-09-04T05:04:39+00:00",
+      "lastRunAt": "2026-09-04T05:29:35+00:00",
+      "lastSuccessAt": "2026-09-04T05:29:35+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -26,8 +26,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 1,
-      "lastRunAt": "2026-09-04T05:04:39+00:00",
-      "lastSuccessAt": "2026-09-04T05:04:39+00:00",
+      "lastRunAt": "2026-09-04T05:29:35+00:00",
+      "lastSuccessAt": "2026-09-04T05:29:35+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -36,8 +36,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 21,
-      "lastRunAt": "2026-09-04T05:04:39+00:00",
-      "lastSuccessAt": "2026-09-04T05:04:39+00:00",
+      "lastRunAt": "2026-09-04T05:29:35+00:00",
+      "lastSuccessAt": "2026-09-04T05:29:35+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -46,8 +46,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 9,
-      "lastRunAt": "2026-09-04T05:04:39+00:00",
-      "lastSuccessAt": "2026-09-04T05:04:39+00:00",
+      "lastRunAt": "2026-09-04T05:29:35+00:00",
+      "lastSuccessAt": "2026-09-04T05:29:35+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -56,8 +56,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 3,
-      "lastRunAt": "2026-09-04T05:04:39+00:00",
-      "lastSuccessAt": "2026-09-04T05:04:39+00:00",
+      "lastRunAt": "2026-09-04T05:29:35+00:00",
+      "lastSuccessAt": "2026-09-04T05:29:35+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -66,8 +66,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 23,
-      "lastRunAt": "2026-09-04T05:04:39+00:00",
-      "lastSuccessAt": "2026-09-04T05:04:39+00:00",
+      "lastRunAt": "2026-09-04T05:29:35+00:00",
+      "lastSuccessAt": "2026-09-04T05:29:35+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -76,8 +76,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 1,
-      "lastRunAt": "2026-09-04T05:04:39+00:00",
-      "lastSuccessAt": "2026-09-04T05:04:39+00:00",
+      "lastRunAt": "2026-09-04T05:29:35+00:00",
+      "lastSuccessAt": "2026-09-04T05:29:35+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
@@ -86,19 +86,19 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 1,
-      "lastRunAt": "2026-09-04T05:04:39+00:00",
-      "lastSuccessAt": "2026-09-04T05:04:39+00:00",
+      "lastRunAt": "2026-09-04T05:29:35+00:00",
+      "lastSuccessAt": "2026-09-04T05:29:35+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false
     },
     "KAIST": {
-      "ok": true,
-      "lastStatus": "정상",
-      "lastError": null,
-      "collectedThisRun": 3,
-      "lastRunAt": "2026-09-04T05:04:39+00:00",
+      "ok": false,
+      "lastStatus": "오류",
+      "lastError": "KAIST 요청이 4회 실패했습니다: <urlopen error timed out>",
+      "collectedThisRun": 0,
+      "lastRunAt": "2026-09-04T05:29:35+00:00",
       "lastSuccessAt": "2026-09-04T05:04:39+00:00",
-      "consecutiveFailures": 0,
+      "consecutiveFailures": 1,
       "failureAlertSent": false
     }
   },
