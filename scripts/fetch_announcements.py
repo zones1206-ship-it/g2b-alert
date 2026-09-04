@@ -290,9 +290,19 @@ def preserve_active_missing_items(name, collected, fallback, today=None):
     if not collected or not fallback:
         return collected
     collected_ids = {i.get("id") for i in collected}
+    # id만 보면 안 된다. 사이트가 같은 공고를 다시 색인해 id가 바뀌는 경우가
+    # 있는데(MOFCOM에서 실제로 발생), 그러면 옛 id가 "사라진 것"처럼 보여
+    # **같은 공고가 두 줄로 되살아난다.** 그래서 id와 함께 공고 동일성
+    # 기준인 signature(출처·원문 제목·원문 기관·게시일·마감일·공고유형)도
+    # 본다 — Telegram 중복 방지에 쓰는 것과 같은 기준이다.
+    collected_signatures = {announcement_signature(i) for i in collected}
     revived = []
     for old in fallback:
         if old.get("id") in collected_ids:
+            continue
+        if announcement_signature(old) in collected_signatures:
+            print(f"[{name}] 재색인으로 id만 바뀐 공고라 유지하지 않습니다: "
+                  f"{old.get('id')}")
             continue
         if not has_future_deadline(old, today):
             continue

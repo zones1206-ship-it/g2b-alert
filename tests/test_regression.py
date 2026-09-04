@@ -1460,6 +1460,32 @@ class ActiveNoticePreservationTest(unittest.TestCase):
         run3 = self._run([self._item("new1", "2026-09-30")], run2)
         self.assertEqual(len(run3), 2, [i["id"] for i in run3])
 
+    def test_reindexed_item_is_not_duplicated(self):
+        """사이트가 같은 공고를 새 id로 다시 색인하면 옛 id를 되살리면 안 된다.
+
+        MOFCOM에서 실제로 발생했다 — 옛 id가 "목록에서 사라진 것"처럼 보여
+        같은 공고가 두 줄이 됐다. id뿐 아니라 signature(공고 동일성 기준)도
+        확인해야 한다.
+        """
+        common = dict(dueDate="2026-09-16", sourceCode="MOFCOM",
+                      originalTitle="广州华星第8.5代 TFT-LCD 项目",
+                      originalOrg="华星光电", postedDate="2026-08-20",
+                      noticeType="정식입찰")
+        collected = [dict(common, id="mofcom-new")]
+        fallback = [dict(common, id="mofcom-old")]
+        out = self._run(collected, fallback)
+        self.assertEqual([i["id"] for i in out], ["mofcom-new"])
+
+    def test_genuinely_different_item_is_still_preserved(self):
+        """제목이 다르면 별개 공고이므로 정상적으로 되살린다."""
+        base = dict(dueDate="2026-09-16", sourceCode="MOFCOM",
+                    originalOrg="华星光电", postedDate="2026-08-20",
+                    noticeType="정식입찰")
+        collected = [dict(base, id="mofcom-new", originalTitle="공고 A")]
+        fallback = [dict(base, id="mofcom-old", originalTitle="공고 B")]
+        out = self._run(collected, fallback)
+        self.assertEqual({i["id"] for i in out}, {"mofcom-new", "mofcom-old"})
+
     def test_orchestrator_calls_preservation(self):
         code = inspect.getsource(FA.run_collector)
         self.assertIn("preserve_active_missing_items", code)
