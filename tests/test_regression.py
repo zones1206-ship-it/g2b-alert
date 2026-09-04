@@ -1629,6 +1629,112 @@ class KancDeadlineParsingTest(unittest.TestCase):
         self.assertIsNone(kanc.extract_due_date("마감 표기 없음", "2026-08-01"))
 
 
+class HealthBannerScopeTest(unittest.TestCase):
+    """Z. 화면 장애 배너는 정기 수집 기준만 본다 — 지시문 No.020.
+
+    No.019에서 Telegram만 분리했더니, 수동 검증 실행에서 난 실패가 여전히
+    `ok: false` 로 남아 **사용자 화면에 장애 배너로 떴다**. 사용자에게는
+    실제 장애와 구분되지 않는다.
+
+    배너 조건에 `lastRunMode !== "manual-validation"` 을 더해 정기 수집
+    기준 상태만 보여준다. 수동 실행 실패는 sourceHealth와 Actions 로그에
+    그대로 남는다(숨기는 것이 아니라 사용자 화면에만 올리지 않는다).
+
+    app.js는 브라우저에서 돌아가므로 여기서는 조건이 살아 있는지만 지킨다.
+    실제 렌더링은 브라우저에서 두 경우를 직접 확인했다.
+    """
+
+    APP_JS = os.path.join(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__))), "app.js")
+
+    def setUp(self):
+        with io.open(self.APP_JS, encoding="utf-8") as f:
+            self.source = f.read()
+
+    def _banner_filter(self):
+        m = re.search(r"const failing = Object\.entries\(health\)[\s\S]{0,320}?;",
+                      self.source)
+        self.assertIsNotNone(m, "배너 필터를 찾지 못했습니다 — app.js 구조가 바뀌었습니다")
+        return m.group(0)
+
+    def test_banner_filters_out_manual_validation(self):
+        block = self._banner_filter()
+        self.assertIn("manual-validation", block)
+        self.assertIn("lastRunMode", block)
+
+    def test_banner_still_shows_scheduled_failures(self):
+        """정기 수집 실패는 계속 보여야 한다 — 장애를 숨기면 안 된다."""
+        self.assertIn("h.ok === false", self._banner_filter())
+
+    def test_manual_failure_state_is_still_recorded(self):
+        """CASE G — 화면에는 안 띄우되 상태에는 남는다."""
+        prev = {"KAIST": {"consecutiveFailures": 0, "failureAlertSent": False,
+                          "lastSuccessAt": "2026-09-04T06:34:38+00:00"}}
+        log = {"KAIST": {"status": "오류", "detail": "timed out", "count": 1}}
+        h = FA.build_source_health(log, prev, "2026-09-04T09:00:00+09:00",
+                                   FA.MANUAL)["KAIST"]
+        self.assertFalse(h["ok"])
+        self.assertEqual(h["lastStatus"], "오류")
+        self.assertEqual(h["lastError"], "timed out")
+        self.assertEqual(h["lastRunMode"], FA.MANUAL)
+        # 배너가 거르는 근거가 되는 필드가 실제로 채워져 있어야 한다
+        self.assertNotEqual(h["lastRunMode"], FA.SCHEDULED)
+
+    def test_scheduled_failure_reaches_banner_condition(self):
+        prev = {"KAIST": {"consecutiveFailures": 2, "failureAlertSent": False}}
+        log = {"KAIST": {"status": "오류", "detail": "timed out", "count": 1}}
+        h = FA.build_source_health(log, prev, "2026-09-04T09:00:00+09:00",
+                                   FA.SCHEDULED)["KAIST"]
+        self.assertFalse(h["ok"])
+        self.assertEqual(h["lastRunMode"], FA.SCHEDULED)
+        self.assertEqual(h["consecutiveFailures"], 3)
+
+
+class RecoveryAlertOnceTest(unittest.TestCase):
+    """AA. 복구 알림은 정확히 1회 — 지시문 No.020 (CASE I, J).
+
+    KAIST는 No.018에서 failureAlertSent=true 가 됐고, No.019 수동 실행에서
+    정상 수집됐지만 수동 모드라 복구 알림을 보내지 않아 플래그가 남아 있다.
+    다음 정기 실행에서 복구 알림이 1회 나가고, 그 뒤로는 나가지 않아야 한다.
+    """
+
+    NOW = "2026-09-05T07:00:00+09:00"
+
+    def _ok_log(self):
+        return {"KAIST": {"status": "정상", "detail": None, "count": 3}}
+
+    def test_case_i_recovery_sent_once_then_never(self):
+        health = {"KAIST": {"consecutiveFailures": 0, "failureAlertSent": True,
+                            "lastSuccessAt": "2026-09-04T06:34:38+00:00"}}
+        sent = 0
+        for _ in range(4):
+            health = FA.build_source_health(self._ok_log(), health,
+                                            self.NOW, FA.SCHEDULED)
+            for code, kind, _m in decide_actions(health):
+                if kind == "recovery":
+                    sent += 1
+                    health[code]["failureAlertSent"] = False
+        self.assertEqual(sent, 1, "CASE J — 복구 알림이 반복되면 안 된다")
+        self.assertFalse(health["KAIST"]["failureAlertSent"])
+        self.assertEqual(health["KAIST"]["consecutiveFailures"], 0)
+
+    def test_manual_success_does_not_clear_the_pending_recovery(self):
+        """수동 실행이 정상이어도 복구 알림 권리를 없애지 않는다.
+
+        플래그를 그대로 두어야 다음 정기 실행에서 복구를 알릴 수 있다 —
+        지금 KAIST가 놓인 상태가 정확히 이것이다.
+        """
+        health = FA.build_source_health(
+            self._ok_log(),
+            {"KAIST": {"consecutiveFailures": 0, "failureAlertSent": True}},
+            self.NOW, FA.MANUAL)
+        self.assertTrue(health["KAIST"]["failureAlertSent"])
+        self.assertTrue(health["KAIST"]["ok"])
+        # 정기 실행이 오면 그때 복구를 알린다
+        kinds = [k for _c, k, _m in decide_actions(health)]
+        self.assertEqual(kinds, ["recovery"])
+
+
 class LotIdentityLeakTest(unittest.TestCase):
     """Y. 같은 signature를 가진 별개 로트가 남의 이력을 물려받는 문제 (No.019).
 

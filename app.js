@@ -958,7 +958,12 @@ function renderSourceHealth() {
   const el = document.getElementById("sourceHealthNotice");
   if (!el) return;
   const health = state.data.sourceHealth || {};
-  const failing = Object.entries(health).filter(([, h]) => h && h.ok === false);
+  // 배너는 정기 수집(scheduled) 기준 상태만 보여준다. 검증하려고 손으로 돌린
+  // 실행에서 난 실패까지 띄우면 사용자에게는 실제 장애와 구분되지 않는다
+  // (No.018에서 수동 실행 3회 연속 timeout이 실제 장애 알림까지 갔다).
+  // 수동 실행 실패는 sourceHealth와 Actions 로그에 그대로 남는다.
+  const failing = Object.entries(health).filter(
+    ([, h]) => h && h.ok === false && h.lastRunMode !== "manual-validation");
   if (failing.length === 0) {
     el.hidden = true;
     el.textContent = "";
