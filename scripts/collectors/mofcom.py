@@ -45,9 +45,12 @@ import urllib.error
 import urllib.parse
 from datetime import datetime, timedelta
 
-from .common import normalize_text, FetchState, NETWORK_EXCEPTIONS, should_retry, retry_delay
+from .common import normalize_text, FetchState, NETWORK_EXCEPTIONS, should_retry, retry_delay, previous_index, keep_or_defer, DetailFetchFailed
 from . import zh_translate
 from .ebnew import is_relevant_list_stage, is_equipment_purchase, match_categories
+
+# 직전 실행에서 수집한 이 출처의 공고. fetch_announcements가 채워 준다.
+PREVIOUS_ITEMS = []
 
 SOURCE_NAME = "중국국제초표망(MOFCOM)"
 SOURCE_CODE = "MOFCOM"
@@ -154,8 +157,9 @@ def build_item(row: dict):
     try:
         detail_html = fetch(detail_url)
     except RuntimeError as exc:
-        print(f"[MOFCOM] 상세 페이지 요청 실패(건너뜀): {exc}")
-        return None
+        # "장비 아님"(None)과 구분해야 기존 공고를 지키지 않고 버리는
+        # 일이 없다(collectors/common.py의 DetailFetchFailed 참고).
+        raise DetailFetchFailed(str(exc)) from exc
 
     detail_text = strip_tags(detail_html)
 
@@ -242,6 +246,9 @@ def collect():
 
     items = []
     seen_ids = set()
+    prev_index = previous_index(PREVIOUS_ITEMS)
+    detail_kept = 0
+    detail_deferred = 0
     seen_title_date = set()
     stats = {"raw": 0, "not_relevant": 0, "duplicate": 0, "included": 0, "translate_failed": 0, "excluded_after_detail": 0}
 
@@ -299,7 +306,16 @@ def collect():
                 seen_ids.add(fdid)
                 seen_title_date.add(dedup_key)
                 row["publishTime"] = posted_date
-                item = build_item(row)
+                try:
+                    item = build_item(row)
+                except DetailFetchFailed as exc:
+                    kept = keep_or_defer(prev_index, f"mofcom{fdid}", "MOFCOM", exc)
+                    if kept:
+                        items.append(kept)
+                        detail_kept += 1
+                    else:
+                        detail_deferred += 1
+                    continue
                 if item is None:
                     stats["excluded_after_detail"] += 1
                     continue
@@ -315,6 +331,9 @@ def collect():
                 break
             time.sleep(REQUEST_DELAY_SECONDS)
 
+    if detail_kept or detail_deferred:
+        print(f"[MOFCOM] 상세 요청 실패 처리: 기존 공고 유지 {detail_kept}건 / "
+              f"신규라 보류 {detail_deferred}건")
     print(f"[MOFCOM] 조회 대상(raw): {stats['raw']}건")
     print(f"[MOFCOM] 같은 공고 재색인으로 중복 제거: {stats['duplicate']}건")
     print(f"[MOFCOM] 관련성 낮아 제외(1차/2차, 제목 기준): {stats['not_relevant']}건")

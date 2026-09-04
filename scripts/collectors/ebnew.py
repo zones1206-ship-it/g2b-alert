@@ -35,10 +35,13 @@ import urllib.error
 import urllib.parse
 from datetime import datetime, timedelta
 
-from .common import normalize_text, FetchState, NETWORK_EXCEPTIONS, should_retry, retry_delay, looks_like_empty_board
+from .common import normalize_text, FetchState, NETWORK_EXCEPTIONS, should_retry, retry_delay, looks_like_empty_board, previous_index, keep_or_defer, DetailFetchFailed
 from . import zh_translate
 from . import zh_ko_argos
 from . import translation_memory
+
+# 직전 실행에서 수집한 이 출처의 공고. fetch_announcements가 채워 준다.
+PREVIOUS_ITEMS = []
 
 SOURCE_NAME = "중국 비롄왕(EBNEW)"
 SOURCE_CODE = "EBNEW"
@@ -249,6 +252,22 @@ def parse_search_results(raw_html: str):
     return rows
 
 
+def is_still_open(row):
+    """검색 결과 행의 마감일이 아직 지나지 않았는지.
+
+    검색 목록에 `截止时间`(투찰 마감)이 함께 들어온다. 게시일이 조회 창
+    (LOOKBACK_DAYS)을 벗어났더라도 이 값이 오늘 이후면 아직 응찰 가능한
+    공고이므로 버리지 않는다.
+
+    마감일을 못 읽으면 False를 돌려준다 — 확실하지 않은 것을 붙들어
+    오래된 공고가 무한정 쌓이게 하지 않는다."""
+    due = (row.get("fields") or {}).get("截止时间") or ""
+    m = re.match(r"(\d{4}-\d{2}-\d{2})", due.strip())
+    if not m:
+        return False
+    return m.group(1) >= datetime.now().date().isoformat()
+
+
 def is_relevant_list_stage(text: str):
     """1차(하드 제외)+2차(산업 관련성) 판정만 한다. 목록 단계(제목만 있고
     아직 상세 페이지를 안 읽은 시점)에서 명백히 무관한 것을 먼저 걸러내
@@ -387,8 +406,9 @@ def build_item(row: dict):
     try:
         detail_html = fetch(row["url"])
     except RuntimeError as exc:
-        print(f"[EBNEW] 상세 페이지 요청 실패(건너뜀): {exc}")
-        return None
+        # None을 돌려주면 호출부가 "장비 공고가 아니라 걸러냈다"와
+        # 구분하지 못한다. 일시 장애임을 알리는 전용 예외를 쓴다.
+        raise DetailFetchFailed(str(exc)) from exc
 
     detail_text = strip_tags(detail_html)
 
@@ -503,6 +523,9 @@ def collect():
 
     items = []
     seen_ids = set()
+    prev_index = previous_index(PREVIOUS_ITEMS)
+    detail_kept = 0
+    detail_deferred = 0
     seen_title_date = set()  # 같은 공고가 검색어마다 다른 내부 ID로 잡히는 경우의 중복 제거용
     stats = {"raw": 0, "not_relevant": 0, "duplicate": 0, "included": 0, "translate_failed": 0, "excluded_after_detail": 0}
 
@@ -524,8 +547,19 @@ def collect():
             stop_keyword = False
             for row in rows:
                 if row["date"] and row["date"] < cutoff:
+                    # 검색 결과가 최신순이라 여기부터는 더 오래된 공고뿐이다.
+                    # 다음 페이지는 보지 않는다.
                     stop_keyword = True
-                    break
+                    # 다만 **게시일이 오래됐다고 끝난 공고는 아니다.**
+                    # 마감일이 남아 있으면 지금도 응찰 가능한 공고이므로
+                    # 조회 창 밖이라는 이유만으로 버리지 않는다.
+                    #
+                    # 실제로 이것 때문에 공고를 놓쳤다: 게시일 2026-08-20인
+                    # "半导体设备第二批国际招标公告"(마감 2026-09-11)이
+                    # 09-03에는 수집됐다가 09-04에 조회 창이 하루 밀리면서
+                    # 사라졌다. 원본에는 그대로 살아 있었다.
+                    if not is_still_open(row):
+                        break
 
                 item_id_m = re.search(r"(\d+)", row["url"])
                 if not item_id_m:
@@ -549,7 +583,16 @@ def collect():
 
                 seen_ids.add(raw_id)
                 seen_title_date.add(dedup_key)
-                item = build_item(row)
+                try:
+                    item = build_item(row)
+                except DetailFetchFailed as exc:
+                    kept = keep_or_defer(prev_index, f"ebnew{raw_id}", "EBNEW", exc)
+                    if kept:
+                        items.append(kept)
+                        detail_kept += 1
+                    else:
+                        detail_deferred += 1
+                    continue
                 if item is None:
                     # 상세 페이지 요청 실패 또는(제목만으론 안 보이던) 3차
                     # 장비 구매 성격 확인 실패 — 둘 다 build_item이 None을
@@ -566,6 +609,9 @@ def collect():
                 break
             time.sleep(REQUEST_DELAY_SECONDS)
 
+    if detail_kept or detail_deferred:
+        print(f"[EBNEW] 상세 요청 실패 처리: 기존 공고 유지 {detail_kept}건 / "
+              f"신규라 보류 {detail_deferred}건")
     print(f"[EBNEW] 조회 대상(raw): {stats['raw']}건")
     print(f"[EBNEW] 같은 공고 재색인으로 중복 제거: {stats['duplicate']}건")
     print(f"[EBNEW] 관련성 낮아 제외(1차/2차, 제목 기준): {stats['not_relevant']}건")

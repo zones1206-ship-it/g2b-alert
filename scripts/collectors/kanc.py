@@ -33,7 +33,11 @@ import html as html_lib
 import urllib.request
 import urllib.error
 
-from .common import normalize_text, TGV_STRONG_TERMS, FetchState, NETWORK_EXCEPTIONS, should_retry, retry_delay, looks_like_empty_board
+from .common import normalize_text, TGV_STRONG_TERMS, FetchState, NETWORK_EXCEPTIONS, should_retry, retry_delay, looks_like_empty_board, previous_index, keep_or_defer
+
+# 직전 실행에서 수집한 이 출처의 공고. fetch_announcements가 채워 준다.
+# 상세 페이지가 일시적으로 실패해도 목록에 있는 공고를 잃지 않기 위한 것이다.
+PREVIOUS_ITEMS = []
 
 SOURCE_NAME = "한국나노기술원"
 SOURCE_CODE = "KANC"
@@ -305,6 +309,11 @@ def collect():
     """KANC 게시판을 최근 LOOKBACK_DAYS일 범위로 수집해 표준 스키마 아이템 리스트를 반환한다."""
     FETCH_STATE.reset()
     from datetime import datetime, timedelta
+    # 상세 요청이 일시적으로 실패해도 목록에 있는 공고를 잃지 않기 위해
+    # 직전 실행 결과를 조회용으로 만들어 둔다(collectors/common.py 참고).
+    prev_index = previous_index(PREVIOUS_ITEMS)
+    detail_kept = 0
+    detail_deferred = 0
 
     cutoff = (datetime.now() - timedelta(days=LOOKBACK_DAYS)).date()
 
@@ -357,7 +366,12 @@ def collect():
             try:
                 detail_html = fetch_html(DETAIL_URL_TMPL.format(page=page, cid=row["cid"]))
             except RuntimeError as exc:
-                print(f"[KANC cid={row['cid']}] 상세 페이지 요청 실패(건너뜀): {exc}")
+                kept = keep_or_defer(prev_index, f"cid{row['cid']}", "KANC", exc)
+                if kept:
+                    items.append(kept)
+                    detail_kept += 1
+                else:
+                    detail_deferred += 1
                 continue
 
             item = build_item(row["cid"], row["title"], row["list_date"], detail_html)
@@ -376,6 +390,9 @@ def collect():
     print(f"[KANC] 매각/취소 등 하드 제외: {stats['hard_excluded']}건")
     print(f"[KANC] 서비스성(용역/위탁/교육 등) 제외: {stats['service_excluded']}건")
     print(f"[KANC] 신호 없음 제외: {stats['no_signal_excluded']}건")
+    if detail_kept or detail_deferred:
+        print(f"[KANC] 상세 요청 실패 처리: 기존 공고 유지 {detail_kept}건 / "
+              f"신규라 보류 {detail_deferred}건")
     print(f"[KANC] 최종 포함: {stats['included']}건 (사전규격 {stats['pre_spec']}건 / 정식입찰 {stats['formal']}건)")
 
     return items

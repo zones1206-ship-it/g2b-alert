@@ -16,6 +16,7 @@ import http.client
 import io
 import json
 import inspect
+from datetime import datetime
 import os
 import re
 import shutil
@@ -32,7 +33,9 @@ from collectors import equipment_filter as EF                      # noqa: E402
 from collectors import zh_translate as ZT                          # noqa: E402
 from collectors import kanc, nnfc, ebnew, mofcom, kriss            # noqa: E402
 from collectors import jetro, dgist, itri, kaist, kotra            # noqa: E402
-from collectors.common import (FetchState, NETWORK_EXCEPTIONS,     # noqa: E402
+from collectors.common import (DetailFetchFailed,                  # noqa: E402
+                               previous_index, keep_or_defer,
+                               FetchState, NETWORK_EXCEPTIONS,
                                should_retry, retry_delay,
                                looks_like_empty_board)
 import fetch_announcements as FA                                   # noqa: E402
@@ -1201,6 +1204,111 @@ class RegionLabelTest(unittest.TestCase):
         for zh in ("中国四川省", "上海/市辖区/嘉定区", "广东省深圳市"):
             with self.subTest(zh=zh):
                 self.assertNotRegex(ZT.translate_region(zh), pinyin)
+
+
+class DetailPreservationHelperTest(unittest.TestCase):
+    """O. 상세 실패 보존 공용 도구 — 6개 수집기가 함께 쓰는 부분.
+
+    지시문 No.016 10·20번. "목록에 있는데 상세만 실패"와 "공고가 삭제됨"을
+    구분하는 것이 핵심이다.
+    """
+
+    def test_previous_index_skips_items_without_id(self):
+        idx = previous_index([{"id": "a"}, {"no-id": 1}, None and {} or {"id": "b"}])
+        self.assertEqual(set(idx), {"a", "b"})
+
+    def test_previous_index_handles_empty(self):
+        self.assertEqual(previous_index(None), {})
+        self.assertEqual(previous_index([]), {})
+
+    def test_keep_returns_existing_item(self):
+        idx = previous_index([{"id": "cid1", "title": "기존", "firstSeenAt": "2026-08-01"}])
+        kept = keep_or_defer(idx, "cid1", "KANC", "503")
+        self.assertIsNotNone(kept)
+        self.assertEqual(kept["firstSeenAt"], "2026-08-01")
+
+    def test_defer_returns_none_for_new_id(self):
+        idx = previous_index([{"id": "cid1"}])
+        self.assertIsNone(keep_or_defer(idx, "cid999", "KANC", "503"))
+
+    def test_detail_fetch_failed_is_distinct_from_none(self):
+        """'장비가 아님'(None)과 '상세를 못 읽음'(예외)은 달라야 한다."""
+        self.assertTrue(issubclass(DetailFetchFailed, RuntimeError))
+
+
+class CollectorPreservationWiringTest(unittest.TestCase):
+    """P. 6개 수집기 + JETRO 가 보존 구조를 실제로 갖췄는지.
+
+    구조가 제각각이라 CASE A~G를 수집기마다 전부 모의하기는 어렵다.
+    대신 "보존이 가능한 상태인지"를 코드 기준으로 고정한다 — 이 배선이
+    빠지면 상세 실패 시 공고가 다시 사라진다.
+    """
+
+    # (모듈, 수집기 태그)
+    TARGETS = [(kanc, "KANC"), (nnfc, "NNFC"), (kriss, "KRISS"),
+               (kotra, "KOTRA"), (ebnew, "EBNEW"), (mofcom, "MOFCOM"),
+               (jetro, "JETRO")]
+
+    def test_all_declare_previous_items(self):
+        """orchestrator는 이 속성이 있는 수집기에만 직전 결과를 넘긴다."""
+        for module, tag in self.TARGETS:
+            with self.subTest(source=tag):
+                self.assertTrue(hasattr(module, "PREVIOUS_ITEMS"),
+                                f"{tag}: PREVIOUS_ITEMS 선언 없음")
+                self.assertIsInstance(module.PREVIOUS_ITEMS, list)
+
+    def test_all_use_preservation_on_detail_failure(self):
+        source = inspect.getsource
+        for module, tag in self.TARGETS:
+            with self.subTest(source=tag):
+                code = source(module)
+                self.assertRegex(
+                    code, r"keep_or_defer|previous_by_id",
+                    f"{tag}: 상세 실패 시 기존 공고를 찾는 코드가 없음")
+
+    def test_no_collector_silently_skips_detail_failure(self):
+        """예전의 '상세 페이지 요청 실패(건너뜀)' 패턴이 남아 있으면 안 된다."""
+        for module, tag in self.TARGETS:
+            with self.subTest(source=tag):
+                self.assertNotIn("실패(건너뜀)", inspect.getsource(module),
+                                 f"{tag}: 아직 그냥 건너뛴다")
+
+    def test_orchestrator_feeds_previous_items(self):
+        code = inspect.getsource(FA.run_collector)
+        self.assertIn('hasattr(module, "PREVIOUS_ITEMS")', code)
+        self.assertIn("module.PREVIOUS_ITEMS = fallback", code)
+
+
+class EbnewLookbackTest(unittest.TestCase):
+    """Q. EBNEW 조회 창 — 마감 전 공고를 창 밖이라고 버리지 않는지.
+
+    지시문 No.016 1~8번. 게시일 2026-08-20 / 마감 2026-09-11 공고가
+    조회 창(14일)이 하루 밀리면서 사라졌던 문제다. 원본에는 살아 있었다.
+    """
+
+    def _row(self, due):
+        return {"fields": {"截止时间": due}} if due is not None else {}
+
+    def test_future_deadline_is_open(self):
+        self.assertTrue(ebnew.is_still_open(self._row("2099-01-01 10:00:00")))
+
+    def test_past_deadline_is_closed(self):
+        self.assertFalse(ebnew.is_still_open(self._row("2000-01-01 10:00:00")))
+
+    def test_today_is_still_open(self):
+        today = datetime.now().date().isoformat()
+        self.assertTrue(ebnew.is_still_open(self._row(today + " 09:00:00")))
+
+    def test_unknown_deadline_is_not_kept(self):
+        """마감일을 못 읽으면 붙들지 않는다 — 오래된 공고가 쌓이면 안 된다."""
+        for row in (self._row(""), self._row("미정"), self._row(None), {}, {"fields": {}}):
+            with self.subTest(row=row):
+                self.assertFalse(ebnew.is_still_open(row))
+
+    def test_cutoff_keeps_open_notice(self):
+        """조회 창 밖이어도 마감 전이면 남는다는 규칙이 코드에 있는지."""
+        code = inspect.getsource(ebnew.collect)
+        self.assertIn("is_still_open(row)", code)
 
 
 if __name__ == "__main__":

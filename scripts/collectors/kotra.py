@@ -50,7 +50,11 @@ import urllib.request
 import urllib.error
 from datetime import datetime, date, timedelta
 
-from .common import normalize_text, TGV_STRONG_TERMS, FetchState, should_retry, retry_delay, looks_like_empty_board
+from .common import normalize_text, TGV_STRONG_TERMS, FetchState, should_retry, retry_delay, looks_like_empty_board, previous_index, keep_or_defer
+
+# 직전 실행에서 수집한 이 출처의 공고. fetch_announcements가 채워 준다.
+# 상세 페이지가 일시적으로 실패해도 목록에 있는 공고를 잃지 않기 위한 것이다.
+PREVIOUS_ITEMS = []
 
 SOURCE_NAME = "대한무역투자진흥공사"
 SOURCE_CODE = "KOTRA"
@@ -402,6 +406,11 @@ FETCH_STATE = FetchState("KOTRA")
 def collect():
     """KOTRA 사업신청 목록에서 반도체/디스플레이/TGV 관련 프로젝트만 수집한다."""
     FETCH_STATE.reset()
+    # 상세 요청이 일시적으로 실패해도 목록에 있는 공고를 잃지 않기 위해
+    # 직전 실행 결과를 조회용으로 만들어 둔다(collectors/common.py 참고).
+    prev_index = previous_index(PREVIOUS_ITEMS)
+    detail_kept = 0
+    detail_deferred = 0
     if not can_reach_kotra():
         # 이 러너 IP에서는 KOTRA에 닿지 않는다. 요청마다 timeout을 기다리지
         # 않고 바로 장애로 알린다(기존 데이터는 orchestrator가 유지한다).
@@ -441,7 +450,12 @@ def collect():
                 try:
                     detail_html = fetch(DETAIL_URL_TMPL.format(biz_no=card["biz_no"]))
                 except RuntimeError as exc:
-                    print(f"[KOTRA {card['biz_no']}] 상세 페이지 요청 실패(건너뜀): {exc}")
+                    kept = keep_or_defer(prev_index, f"kotra{card['biz_no']}", "KOTRA", exc)
+                    if kept:
+                        items.append(kept)
+                        detail_kept += 1
+                    else:
+                        detail_deferred += 1
                     continue
 
                 item = build_item(card["biz_no"], card["title"], detail_html)
@@ -458,6 +472,9 @@ def collect():
     print(f"[KOTRA] 조회 대상(raw): {stats['raw']}건")
     print(f"[KOTRA] 제목 단계에서 관련성 없어 제외: {stats['title_prefiltered_out']}건")
     print(f"[KOTRA] 상세 확인 후 관련성 없어 제외: {stats['detail_excluded']}건")
+    if detail_kept or detail_deferred:
+        print(f"[KOTRA] 상세 요청 실패 처리: 기존 공고 유지 {detail_kept}건 / "
+              f"신규라 보류 {detail_deferred}건")
     print(f"[KOTRA] 최종 포함: {stats['included']}건")
 
     return items

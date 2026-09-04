@@ -35,7 +35,11 @@ import html as html_lib
 import urllib.request
 import urllib.error
 
-from .common import normalize_text, TGV_STRONG_TERMS, FetchState, NETWORK_EXCEPTIONS, should_retry, retry_delay, looks_like_empty_board
+from .common import normalize_text, TGV_STRONG_TERMS, FetchState, NETWORK_EXCEPTIONS, should_retry, retry_delay, looks_like_empty_board, previous_index, keep_or_defer
+
+# 직전 실행에서 수집한 이 출처의 공고. fetch_announcements가 채워 준다.
+# 상세 페이지가 일시적으로 실패해도 목록에 있는 공고를 잃지 않기 위한 것이다.
+PREVIOUS_ITEMS = []
 
 SOURCE_NAME = "한국표준과학연구원"
 SOURCE_CODE = "KRISS"
@@ -243,6 +247,11 @@ def collect():
     공고만 포함한다(전체 공고를 무조건 다 가져오지 않는다)."""
     FETCH_STATE.reset()
     from datetime import datetime, timedelta
+    # 상세 요청이 일시적으로 실패해도 목록에 있는 공고를 잃지 않기 위해
+    # 직전 실행 결과를 조회용으로 만들어 둔다(collectors/common.py 참고).
+    prev_index = previous_index(PREVIOUS_ITEMS)
+    detail_kept = 0
+    detail_deferred = 0
 
     cutoff = (datetime.now() - timedelta(days=LOOKBACK_DAYS)).date().isoformat()
 
@@ -286,7 +295,12 @@ def collect():
             try:
                 detail_html = fetch_html(DETAIL_URL_TMPL.format(list_no=row["list_no"]))
             except RuntimeError as exc:
-                print(f"[KRISS list_no={row['list_no']}] 상세 페이지 요청 실패(건너뜀): {exc}")
+                kept = keep_or_defer(prev_index, f"kriss{row['list_no']}", "KRISS", exc)
+                if kept:
+                    items.append(kept)
+                    detail_kept += 1
+                else:
+                    detail_deferred += 1
                 continue
 
             item = build_item(row, detail_html)
@@ -300,6 +314,9 @@ def collect():
     print(f"[KRISS] 하드 제외: {stats['hard_excluded']}건")
     print(f"[KRISS] 서비스성 제외: {stats['service_excluded']}건")
     print(f"[KRISS] 신호 없음 제외: {stats['no_signal_excluded']}건")
+    if detail_kept or detail_deferred:
+        print(f"[KRISS] 상세 요청 실패 처리: 기존 공고 유지 {detail_kept}건 / "
+              f"신규라 보류 {detail_deferred}건")
     print(f"[KRISS] 최종 포함: {stats['included']}건")
 
     return items

@@ -298,3 +298,50 @@ class FetchState:
     def summary(self):
         return (f"network={self.network_fetched} parse={self.parse_succeeded} "
                 f"items={self.item_count} filtered={self.filtered_count}")
+
+
+# ---------------------------------------------------------------------------
+# 상세 페이지 일시 실패로 기존 공고를 잃지 않기 위한 공용 도구
+# ---------------------------------------------------------------------------
+# 목록에는 분명히 있는 공고인데 상세 페이지만 실패한 것은 "공고가 삭제된 것"이
+# 아니라 "이번에 상세를 못 읽은 것"이다. 둘을 같게 처리하면 공고가 데이터에서
+# 사라지고 firstSeenAt까지 없어져, 다음 실행에 돌아올 때 "신규 공고"로
+# 오인되어 Telegram이 다시 나간다(2026-09-04 JETRO에서 실제로 발생).
+#
+# 사용법 — 수집기에서:
+#   PREVIOUS_ITEMS = []                      # 모듈 상단에 선언(orchestrator가 채운다)
+#   prev = previous_index(PREVIOUS_ITEMS)    # collect() 시작부
+#   ...
+#   except RuntimeError as exc:
+#       kept = keep_or_defer(prev, f"cid{row['cid']}", "KANC", exc)
+#       if kept: items.append(kept)
+#       continue
+
+
+class DetailFetchFailed(RuntimeError):
+    """상세 페이지 요청이 실패했다는 신호.
+
+    "장비 공고가 아니라 걸러냈다"(정상)와 "상세를 못 읽었다"(일시 장애)를
+    호출부에서 구분하기 위해 따로 둔다. 둘 다 None으로 돌려주면 일시 장애
+    때문에 빠진 공고를 삭제된 공고와 똑같이 취급하게 된다."""
+
+
+def previous_index(previous_items):
+    """직전 실행 결과를 id로 찾을 수 있게 만든다."""
+    return {i.get("id"): i for i in (previous_items or []) if i.get("id")}
+
+
+def keep_or_defer(prev_index, item_id, tag, exc):
+    """상세 실패 시 유지할 기존 공고를 돌려준다(없으면 None).
+
+    반환값이 있으면 호출부가 그대로 결과에 넣으면 된다. None이면 처음 보는
+    공고라 유지할 것이 없다는 뜻이며, 목록 정보만으로 상세를 지어내지 않고
+    다음 실행으로 미룬다."""
+    kept = prev_index.get(item_id)
+    if kept:
+        print(f"[{tag}] 상세 요청 실패 — 목록에는 있으므로 기존 공고 유지: "
+              f"{item_id} ({exc})")
+    else:
+        print(f"[{tag}] 상세 요청 실패 — 기존 데이터가 없는 신규 공고라 "
+              f"이번 실행에서는 보류: {item_id} ({exc})")
+    return kept
