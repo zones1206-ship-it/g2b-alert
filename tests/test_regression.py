@@ -1324,5 +1324,55 @@ class EbnewLookbackTest(unittest.TestCase):
         self.assertIn("is_still_open(row)", code)
 
 
+class ItriTraditionalGlossaryTest(unittest.TestCase):
+    """R. ITRI 번체 용어집 — 첫 수집 건에서 로마자로 떨어진 표현들.
+
+    지시문 No.016 31~32번. ITRI는 오랫동안 0건이었다가 2026-09-04에
+    처음 공고가 들어왔고, 그 제목이 "전력반도체Yong테스트장비JiaoZheng"
+    처럼 로마자 섞인 상태로 나왔다.
+    """
+
+    CASES = [
+        ("功率半導體用測試設備校正 (內詳規格型號)",
+         ["전력", "반도체", "테스트", "교정", "상세 별도", "규격", "형번"]),
+        ("半導體設備使用費用", ["반도체", "장비", "사용", "비용"]),
+        ("晶圓專用清洗機", ["웨이퍼", "전용", "세정기"]),
+        ("面板檢測機", ["패널", "검사기"]),
+    ]
+
+    def test_real_titles_are_korean(self):
+        for zh, expected in self.CASES:
+            with self.subTest(title=zh[:16]):
+                out, ok = itri.translate_tw(zh)
+                for word in expected:
+                    self.assertIn(word, out, f"{zh} → {out}")
+                self.assertTrue(ok, f"{zh} → {out} (미완료로 남음)")
+
+    def test_no_romanisation_left(self):
+        pinyin = re.compile(r"(?<![A-Za-z])[A-Z][a-z]+(?:[A-Z][a-z]+)+")
+        for zh, _ in self.CASES:
+            with self.subTest(title=zh[:16]):
+                out, _ok = itri.translate_tw(zh)
+                self.assertNotRegex(out, pinyin, f"{zh} → {out}")
+
+    def test_single_char_term_does_not_break_compounds(self):
+        """"用" 한 글자를 넣어도 "使用"·"費用"이 깨지면 안 된다."""
+        out, _ = itri.translate_tw("使用費用專用")
+        self.assertIn("사용", out)
+        self.assertIn("비용", out)
+        self.assertIn("전용", out)
+
+    def test_words_are_separated(self):
+        """치환 결과가 통째로 붙어 있으면 읽을 수 없다."""
+        out, _ = itri.translate_tw("功率半導體用測試設備校正")
+        self.assertNotIn("반도체용테스트", out)
+        self.assertIn(" ", out)
+
+    def test_org_label_is_korean_first(self):
+        code = inspect.getsource(itri)
+        self.assertIn('"대만 산업기술연구원(ITRI)"', code)
+        self.assertNotIn('"ITRI(대만 산업기술연구원)"', code)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

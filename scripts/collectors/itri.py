@@ -74,6 +74,13 @@ TW_TERMS = {
     "維修": "유지보수", "保養": "정비", "服務": "서비스", "整合": "통합",
     "技術": "기술", "支援": "지원", "展區": "전시구역", "計畫": "과제",
     "生產": "생산", "加工": "가공", "訂製": "주문제작", "規格": "규격",
+    # 2026-09-04 첫 ITRI 수집 건에서 로마자로 떨어졌던 표현들.
+    # "用"은 한 글자라 "使用"·"費用" 같은 낱말을 깨뜨릴 수 있어
+    # 자주 쓰는 조합어를 함께 넣는다(같은 사전에서 긴 표기가 먼저 치환된다).
+    "校正": "교정", "型號": "형번", "內詳": "상세 별도",
+    "使用": "사용", "應用": "응용", "費用": "비용",
+    "專用": "전용", "通用": "범용", "採用": "채용", "用": "용",
+    "清洗機": "세정기", "檢測機": "검사기", "蝕刻機": "식각기",
     "及": " 및 ", "與": " 및 ", "之": " ",
 }
 
@@ -231,8 +238,13 @@ def translate_tw(text):
     replaced = 0
     for src, dst in sorted(TW_TERMS.items(), key=lambda kv: len(kv[0]), reverse=True):
         if src in result:
-            result = result.replace(src, dst)
+            # 앞뒤에 공백을 둔다. 넣지 않으면 "전력반도체용테스트장비교정"
+            # 처럼 통째로 붙어 읽기 어렵다. 남는 공백은 아래에서 합친다.
+            result = result.replace(src, " " + dst + " ")
             replaced += 1
+    result = re.sub(r"\s+", " ", result).strip()
+    result = re.sub(r"\(\s+", "(", result)
+    result = re.sub(r"\s+\)", ")", result)
     romanized, _ok = zh_translate.translate(result)
     # 용어집이 하나도 안 걸렸거나 한자가 많이 남아 로마자로 떨어졌으면
     # 제목만으로 내용 파악이 어렵다고 보고 미완료로 표시한다.
@@ -283,7 +295,7 @@ def build_item(row):
         "translatedTitle": ko_title,
         "originalTitle": original_title,
         "translationIncomplete": not ok,
-        "org": "ITRI(대만 산업기술연구원)",
+        "org": "대만 산업기술연구원(ITRI)",
         "originalOrg": "工業技術研究院",
         "country": "대만",
         "countryCode": SOURCE_COUNTRY_CODE,
