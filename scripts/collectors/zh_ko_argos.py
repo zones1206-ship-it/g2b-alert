@@ -52,7 +52,9 @@ COMPANY_TERMS = dict(zh_translate.COMPANY_TERMS)
 # 넣지 않는다 — MOFCOM 번역 결과를 바꾸지 않기 위해서다.
 ORG_NAME_TERMS = {
     # (1) 공식 영문명 확인됨
-    "沈阳铁路信号": "선양철도신호(Shenyang Railway Signal)",  # syxh.crsc.cn 자사 영문 표기
+    # 자사 영문 표기는 syxh.crsc.cn 에서 확인했으나, 한국어 이름이 이미
+    # 앞에 있으므로 화면에 영문을 중복해 두지 않는다(지시문 No.015 5번).
+    "沈阳铁路信号": "선양철도신호",
     "深圳职业技术大学": "선전직업기술대학(Shenzhen Polytechnic University)",  # english.szpu.edu.cn
     "深南电路": "선난(Shennan Circuits)",                    # 선전 상장사 深南电路(002916)
     "芯联微电子": "신롄 마이크로전자(Xinlian Microelectronics)",
@@ -73,7 +75,10 @@ REGION_TERMS.update({"南通": "난퉁", "南通市": "난퉁"})
 # 기존 사전은 山西(산시)와 구분하려고 "산시성(陕西)"처럼 한자를 병기해 두었고,
 # 그 한자가 다시 로마자로 떨어져 "산시성(ShanXi)"로 보인다. EBNEW에서는
 # 중국 정부 공식 로마자 표기(Shaanxi)를 써서 구분한다.
-REGION_TERMS.update({"陕西": "산시성(Shaanxi)", "陕西省": "산시성(Shaanxi)"})
+# 陕西(섬서)와 山西(산서)는 한국어로 둘 다 "산시성"이라 구분이 필요하다.
+# 로마자 대신 한국어 한자음으로 구분한다(화면에 외국어를 남기지 않는다).
+REGION_TERMS.update({"陕西": "산시성(섬서)", "陕西省": "산시성(섬서)",
+                     "山西": "산시성(산서)", "山西省": "산시성(산서)"})
 
 # 기존 반도체/TGV 용어집 + 지시문 5번 목록 중 기존 용어집에 없던 항목,
 # 그리고 PoC에서 Argos가 실제로 틀린 표현만 보강한다.

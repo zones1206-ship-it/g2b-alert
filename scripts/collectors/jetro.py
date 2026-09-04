@@ -42,6 +42,11 @@ from datetime import datetime, timedelta
 from .common import TGV_STRONG_TERMS, FetchState, NETWORK_EXCEPTIONS, should_retry, retry_delay
 from . import en_ko_argos, en_translate, translation_memory
 
+# 직전 실행에서 수집한 이 출처의 공고. fetch_announcements.run_collector가
+# 수집 직전에 채워 준다(이 속성을 선언한 수집기만 받는다). 상세 페이지가
+# 일시적으로 실패해도 목록에 있는 공고를 잃지 않기 위한 것이다.
+PREVIOUS_ITEMS = []
+
 SOURCE_NAME = "JETRO (일본)"
 SOURCE_CODE = "JETRO"
 SOURCE_SITE_URL = "https://www.jetro.go.jp/en/database/procurement/"
@@ -286,6 +291,82 @@ def search_list(keyword, page):
         raise RuntimeError("JETRO 목록 응답이 JSON이 아닙니다(차단 또는 형식 변경 가능성)")
 
 
+# JETRO 공고 종류(paKind)는 사이트에서 정해진 값이라 그대로 대응시킬 수 있다.
+# 목록에 없는 값이 나오면 화면에 영어를 그대로 내보내지 않고 비운다 —
+# 뜻을 지어내는 것보다 안 보여주는 편이 낫고, 원문은 링크로 확인할 수 있다.
+NOTICE_KIND_KO = {
+    "notice of procurement (goods & services)": "물품·용역 구매공고",
+    "notice of procurement (construction)": "공사 구매공고",
+    "future procurement plan": "조달 예정 계획",
+    "public offering proposal": "공모 제안",
+    "request for comments": "의견 조회",
+    "results of procurement": "구매 결과 공고",
+}
+
+# 요약 본문의 번호 라벨. JETRO 공고는 ⑴~⑻ 형식이 거의 고정이라 필요한
+# 항목만 뽑아 한국어로 재구성한다. 영어 본문을 통째로 기계번역하면 법률
+# 문구까지 어색하게 옮겨져 오히려 읽기 어렵다.
+_HANGUL_RE = re.compile(r"[가-힣]")
+
+_SUMMARY_LABELS = [
+    ("품목·수량", r"nature and quantity[^:;]*"),
+    ("납품기한", r"delivery period[^:;]*"),
+    ("납품장소", r"delivery place[^:;]*"),
+]
+
+
+def _summary_field(summary_text, pattern):
+    """라벨 뒤 값을 다음 번호(⑴⑵…)나 라벨 전까지 잘라 온다."""
+    m = re.search(pattern + r"\s*[:;]\s*(.*?)(?=[⑴-⒇①-⑳]|$)", summary_text, re.I | re.S)
+    if not m:
+        return None
+    return normalize(m.group(1)).strip(" .;:") or None
+
+
+def korean_summary(summary_text, due_date):
+    """영어 요약에서 사용자가 꼭 봐야 하는 항목만 뽑아 한국어로 만든다.
+
+    반환값이 None이면 뽑을 것이 없었다는 뜻이다(원문은 originalSummary에
+    그대로 남고 화면에는 원문 링크가 있다)."""
+    if not summary_text:
+        return None
+    parts = []
+    for label, pattern in _SUMMARY_LABELS:
+        value = _summary_field(summary_text, pattern)
+        if not value:
+            continue
+        if label == "품목·수량":
+            # 제목과 같은 경로(전문용어 보호 + Argos)로 옮긴다. 검증에
+            # 실패하면 영어를 그대로 두는 기존 폴백이 그대로 동작한다.
+            ko, _ok, _info = en_ko_argos.translate_title(value[:200])
+            value = ko or value
+        elif label == "납품기한":
+            value = _to_korean_date(value) or value
+        elif label == "납품장소":
+            # 기관명 사전을 태운다("RIKEN" → "일본 이화학연구소(RIKEN)").
+            value = (en_translate.translate_org(value[:120]) or (value,))[0] or value
+            # 사전에 없어 영어 문장이 그대로 남으면 아예 싣지 않는다.
+            # 화면에 읽을 수 없는 영어를 남기느니 빼는 편이 낫고, 원문은
+            # originalSummary와 원문 링크에 그대로 있다.
+            if not _HANGUL_RE.search(value):
+                continue
+        parts.append(f"{label}: {value}")
+    if due_date:
+        parts.append(f"입찰 마감: {due_date}")
+    return " · ".join(parts) if parts else None
+
+
+def _to_korean_date(text):
+    """"26, March, 2027" 같은 표기를 2027-03-26 으로 바꾼다."""
+    m = re.search(r"(\d{1,2})\s*,\s*([A-Za-z]{3})[a-z]*\s*,\s*(\d{4})", text)
+    if m and MONTHS.get(m.group(2).lower()):
+        return f"{int(m.group(3)):04d}-{MONTHS[m.group(2).lower()]:02d}-{int(m.group(1)):02d}"
+    m = re.search(r"([A-Za-z]{3})[a-z]*\s+(\d{1,2}),\s*(\d{4})", text)
+    if m and MONTHS.get(m.group(1).lower()):
+        return f"{int(m.group(3)):04d}-{MONTHS[m.group(1).lower()]:02d}-{int(m.group(2)):02d}"
+    return None
+
+
 def build_item(row, detail_fields, detail_url):
     import html as html_lib
     original_title = normalize(html_lib.unescape(row.get("title") or ""))
@@ -327,11 +408,15 @@ def build_item(row, detail_fields, detail_url):
         "classificationStatus": None if categories else "미분류/검토 필요",
         "budget": None,
         "currency": None,
-        "contractMethod": normalize(html_lib.unescape(row.get("paKind") or "")) or None,
+        "contractMethod": NOTICE_KIND_KO.get(
+            normalize(html_lib.unescape(row.get("paKind") or "")).lower()) or None,
         "deliveryCondition": None,
         "paymentCondition": None,
         "eligibility": None,
-        "description": summary[:1200] or None,
+        # 화면에는 한국어 요약만 보여준다. 영어 원문은 originalSummary에
+        # 그대로 남으므로 정보가 사라지지는 않는다(지시문 No.015 10번).
+        "description": korean_summary(summary, due),
+        "originalSummary": summary[:1200] or None,
         "attachments": [],
         "url": detail_url,
         "originalUrl": detail_url,
@@ -400,6 +485,11 @@ def collect():
     cutoff = (datetime.now() - timedelta(days=LOOKBACK_DAYS)).date()
     items = []
     detail_failed = 0
+    detail_kept = 0
+    detail_skipped_new = 0
+    # 직전 실행 결과(fetch_announcements가 채워 준다). 상세 요청이 일시적으로
+    # 실패했을 때 "목록에는 있는 공고"를 잃지 않기 위해 쓴다.
+    previous_by_id = {i.get("id"): i for i in (PREVIOUS_ITEMS or []) if i.get("id")}
     for row in relevant:
         detail_url = DETAIL_URL_TMPL.format(xid=row.get("xid"), aid=row.get("aid"))
         try:
@@ -411,11 +501,22 @@ def collect():
             html = fetch(detail_url, DETAIL_HEADERS, retries=MAX_RETRY_ATTEMPTS)
         except RuntimeError as exc:
             detail_failed += 1
-            # 여기까지 왔다는 것은 재시도를 다 쓴 것이다. 이 공고는 이번
-            # 실행 결과에서 빠지며, 다음에 돌아오면 신규로 인식된다는 점을
-            # 로그에 분명히 남긴다(docs/AUDIT-No014.md 참고).
-            print(f"[JETRO] 상세 요청 실패(이번 실행에서 제외됨 — "
-                  f"다음 실행에 돌아오면 신규로 인식된다): {exc}")
+            # 재시도를 다 썼다. 다만 **목록에는 분명히 있는 공고**이므로
+            # "삭제된 공고"가 아니라 "이번에 상세만 못 읽은 공고"다. 둘을
+            # 같게 처리하면 공고가 데이터에서 사라지고 firstSeenAt까지 없어져
+            # 다음 실행에 신규로 재발송된다(지시문 No.015 17~20번).
+            kept = previous_by_id.get(f"jetro{row.get('xid')}")
+            if kept:
+                detail_kept += 1
+                items.append(kept)
+                print(f"[JETRO] 상세 요청 실패 — 목록에는 있으므로 기존 수집분을 "
+                      f"그대로 유지합니다({kept.get('id')}): {exc}")
+            else:
+                # 처음 보는 공고라 유지할 기존 데이터가 없다. 목록 정보만으로
+                # 상세를 지어내지 않는다 — 다음 실행으로 미룬다.
+                detail_skipped_new += 1
+                print(f"[JETRO] 상세 요청 실패 — 기존 데이터가 없는 신규 공고라 "
+                      f"이번 실행에서는 보류합니다: {exc}")
             continue
         fields = parse_detail(html)
         item = build_item(row, fields, detail_url)
@@ -429,7 +530,8 @@ def collect():
         time.sleep(REQUEST_DELAY_SECONDS)
 
     incomplete = sum(1 for i in items if i.get("translationIncomplete"))
-    print(f"[JETRO] 상세 요청 실패: {detail_failed}건")
+    print(f"[JETRO] 상세 요청 실패: {detail_failed}건"
+          f"(기존 수집분 유지 {detail_kept}건 / 신규라 보류 {detail_skipped_new}건)")
     print(f"[JETRO] 최종 포함: {len(items)}건 (번역 미완료 {incomplete}건)")
     # 이번에 새로 검증을 통과한 번역을 기억해 둔다 — 같은 원문이 다음 실행에
     # 다른 한국어로 바뀌지 않게 하기 위해서다(Argos 출력이 실행마다 다르다).

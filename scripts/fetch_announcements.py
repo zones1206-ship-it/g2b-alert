@@ -98,6 +98,13 @@ def run_collector(name, module, existing_items, log):
     """수집기를 실행한다. 실패하면 해당 소스의 기존 데이터를 그대로 반환해
     다른 수집원이나 이미 저장된 데이터에 영향을 주지 않는다."""
     fallback = [item for item in existing_items if item.get("sourceCode") == name]
+    # 상세 페이지 한 건이 일시적으로 실패했다고 그 공고를 잃으면 안 된다.
+    # 공고가 데이터에서 빠지면 firstSeenAt까지 사라져, 다음 실행에 돌아올 때
+    # "신규 공고"로 오인되어 Telegram이 다시 나간다(2026-09-04에 실제로 발생).
+    # 그래서 직전 실행 결과가 필요한 수집기에는 넘겨준다. 이 속성을 선언한
+    # 수집기만 받으며, 나머지 수집기의 동작은 그대로다.
+    if hasattr(module, "PREVIOUS_ITEMS"):
+        module.PREVIOUS_ITEMS = fallback
     try:
         items = module.collect()
     except Exception as exc:  # noqa: BLE001

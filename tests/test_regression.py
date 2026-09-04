@@ -17,6 +17,7 @@ import io
 import json
 import inspect
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -38,6 +39,7 @@ import fetch_announcements as FA                                   # noqa: E402
 import notify_telegram as NT                                       # noqa: E402
 from notify_source_health import decide_actions                    # noqa: E402
 import check_data_drift as DRIFT                                   # noqa: E402
+import check_ui_language as UILANG                                 # noqa: E402
 
 
 # 수집기별 (모듈, fetch 함수명, 최대 시도 횟수)
@@ -959,6 +961,242 @@ class DetailTranslationTest(unittest.TestCase):
         self.assertNotIn("org_ok and summary_ok", src)
         src2 = inspect.getsource(mofcom.build_item)
         self.assertIn("not (title_ok and summary_ok)", src2)
+
+
+DETAIL_HTML = (
+    "<table>"
+    "<tr><th>Publishing date</th><td>Sep 02, 2026</td></tr>"
+    "<tr><th>Procurement entity</th><td>RIKEN</td></tr>"
+    "<tr><th>Summay of notice</th><td>"
+    "❷ Nature and quantity of the products to be purchased : "
+    "wafer etching system 1 set ❸ Delivery period : 26, March, 2027 "
+    "❻ Time limit of tender : 3 : 00 PM, 14, September, 2026"
+    "</td></tr></table>"
+)
+
+
+class JetroDetailFailureTest(unittest.TestCase):
+    """K. JETRO 상세 일시 실패 — 목록에 있는 공고를 잃지 않는지.
+
+    지시문 No.015 16~27번. 상세 페이지 503은 "공고가 사라진 것"이 아니라
+    "이번에 상세만 못 읽은 것"이다. 둘을 같게 처리하면 공고가 데이터에서
+    빠지고 firstSeenAt까지 없어져 다음 실행에 신규로 재발송된다.
+    """
+
+    def setUp(self):
+        self._search = jetro.search_list
+        self._fetch = jetro.fetch
+        self._sleep = time.sleep
+        self._prev = jetro.PREVIOUS_ITEMS
+        time.sleep = lambda _s: None
+
+    def tearDown(self):
+        jetro.search_list = self._search
+        jetro.fetch = self._fetch
+        jetro.PREVIOUS_ITEMS = self._prev
+        time.sleep = self._sleep
+
+    def _list_rows(self, xids):
+        return [{"xid": x, "aid": f"a{x}", "title": "semiconductor wafer etching system",
+                 "date": "Sep 02, 2026",
+                 "paKind": "Notice of Procurement (Goods & Services)"} for x in xids]
+
+    def _install(self, xids, failing_xids=(), list_fails=False):
+        rows = self._list_rows(xids)
+        served = {"n": 0}
+
+        def fake_search(keyword, page):
+            if list_fails:
+                raise RuntimeError("목록 실패(모의)")
+            if page > 0 or served["n"] > 0:
+                return {"items": [], "pagination": {"total": len(rows), "perPage": 30}}
+            served["n"] += 1
+            return {"items": rows, "pagination": {"total": len(rows), "perPage": 30}}
+
+        def fake_fetch(url, headers, retries=3):
+            for x in failing_xids:
+                if f"/{x}/" in url:
+                    raise RuntimeError("HTTP Error 503: Service Unavailable")
+            return DETAIL_HTML
+
+        jetro.search_list = fake_search
+        jetro.fetch = fake_fetch
+
+    def _previous(self, xid, first_seen="2026-09-01T00:00:00+09:00"):
+        return {"id": f"jetro{xid}", "sourceCode": "JETRO",
+                "title": "기존 한국어 제목", "org": "일본 이화학연구소(RIKEN)",
+                "firstSeenAt": first_seen, "dueDate": "2026-10-19",
+                "equipmentStatus": "장비", "description": "품목·수량: 기존 요약"}
+
+    def test_case_a_normal(self):
+        """CASE A — 목록·상세 모두 정상이면 새로 수집한 내용으로 갱신된다."""
+        self._install([101])
+        jetro.PREVIOUS_ITEMS = []
+        items = jetro.collect()
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["id"], "jetro101")
+        self.assertNotEqual(items[0]["title"], "기존 한국어 제목")
+
+    def test_case_b_detail_failure_keeps_existing(self):
+        """CASE B — 목록에는 있는데 상세만 503이면 기존 수집분을 유지한다."""
+        self._install([101, 102], failing_xids=[102])
+        jetro.PREVIOUS_ITEMS = [self._previous(102)]
+        items = jetro.collect()
+        ids = {i["id"] for i in items}
+        self.assertEqual(ids, {"jetro101", "jetro102"},
+                         "상세 실패 공고가 사라지면 안 된다")
+
+    def test_case_c_first_seen_preserved(self):
+        """CASE C — 유지된 공고의 firstSeenAt이 그대로여야 한다."""
+        self._install([101, 102], failing_xids=[102])
+        jetro.PREVIOUS_ITEMS = [self._previous(102, "2026-08-15T09:00:00+09:00")]
+        items = jetro.collect()
+        kept = next(i for i in items if i["id"] == "jetro102")
+        self.assertEqual(kept["firstSeenAt"], "2026-08-15T09:00:00+09:00")
+        self.assertEqual(kept["title"], "기존 한국어 제목")
+
+    def test_case_d_recovery_is_not_new(self):
+        """CASE D — 다음 실행에 상세가 복구돼도 신규 알림이 나가면 안 된다.
+
+        공고가 중간 실행에서 빠지지 않았으므로 직전 스냅샷에 그대로 있고,
+        notify_telegram의 신규 판정(id/signature)에 걸리지 않는다.
+        """
+        self._install([101, 102], failing_xids=[102])
+        jetro.PREVIOUS_ITEMS = [self._previous(102)]
+        run_b = jetro.collect()
+        self._install([101, 102])                    # 상세 복구
+        jetro.PREVIOUS_ITEMS = run_b
+        run_c = jetro.collect()
+        before_ids = {i["id"] for i in run_b}
+        self.assertIn("jetro102", before_ids)
+        new_ids = {i["id"] for i in run_c} - before_ids
+        self.assertEqual(new_ids, set(), "복귀한 공고가 신규로 잡히면 안 된다")
+
+    def test_case_e_list_failure_raises(self):
+        """CASE E — 목록 자체가 실패하면 수집 결과가 비어 orchestrator가
+        기존 데이터를 유지한다(run_collector의 기존 동작)."""
+        self._install([101], list_fails=True)
+        jetro.PREVIOUS_ITEMS = [self._previous(101)]
+        items = jetro.collect()
+        self.assertEqual(items, [])
+
+    def test_case_f_real_removal_is_dropped(self):
+        """CASE F — 목록에서 실제로 빠진 공고는 유지하지 않는다."""
+        self._install([101])
+        jetro.PREVIOUS_ITEMS = [self._previous(101), self._previous(999)]
+        items = jetro.collect()
+        self.assertEqual({i["id"] for i in items}, {"jetro101"})
+
+    def test_case_g_new_id_detail_failure_is_deferred(self):
+        """CASE G — 기존 데이터가 없는 신규 공고는 상세 실패 시 보류한다.
+
+        목록 정보만으로 상세를 지어내지 않는다.
+        """
+        self._install([101, 555], failing_xids=[555])
+        jetro.PREVIOUS_ITEMS = [self._previous(101)]
+        items = jetro.collect()
+        self.assertEqual({i["id"] for i in items}, {"jetro101"})
+
+    def test_partial_failure_keeps_count(self):
+        """지시문 23번 — 23건 중 1건 상세 실패해도 23건이어야 한다."""
+        xids = list(range(200, 223))
+        self._install(xids, failing_xids=[210])
+        jetro.PREVIOUS_ITEMS = [self._previous(210)]
+        items = jetro.collect()
+        self.assertEqual(len(items), len(xids))
+
+    def test_summary_is_korean_and_original_kept(self):
+        """상세본문은 한국어로, 영어 원문은 originalSummary에 남는다."""
+        self._install([101])
+        jetro.PREVIOUS_ITEMS = []
+        item = jetro.collect()[0]
+        self.assertRegex(item["description"], r"[가-힣]")
+        self.assertNotIn("Nature and quantity", item["description"])
+        self.assertIn("Nature and quantity", item["originalSummary"])
+        self.assertEqual(item["contractMethod"], "물품·용역 구매공고")
+
+
+class UserFacingLanguageTest(unittest.TestCase):
+    """L. 사용자 화면 언어 — 한국어로 통일됐는지, 원문 필드는 건드리지 않는지.
+
+    지시문 No.015 14~15번. "영문자가 하나라도 있으면 실패" 같은 검사는
+    쓸모가 없다(AOI·ALD·KOTRA 같은 표준 약어는 그대로 써야 한다).
+    """
+
+    def test_current_data_has_no_cjk_or_kana_in_user_fields(self):
+        """사용자 표시 필드에 한자·가나가 남으면 번역 경로가 깨진 것이다."""
+        fatal, _warn = UILANG.check_data()
+        self.assertEqual(fatal, [], f"사용자 필드에 한자/가나 잔여: {fatal[:3]}")
+
+    def test_source_files_have_no_forbidden_english_ui(self):
+        """China Site / D-DAY / NEW 배지가 되살아나면 안 된다."""
+        self.assertEqual(UILANG.check_sources(), [])
+
+    def test_allowed_abbreviations_are_not_flagged(self):
+        """표준 약어와 기관 약어는 경고 대상이 아니다."""
+        for word in ("AOI", "ALD", "CVD", "PVD", "CMP", "TGV", "RTP", "MOCVD",
+                     "KOTRA", "JETRO", "ITRI", "DGIST", "KAIST", "KANC",
+                     "NNFC", "KRISS", "EBNEW", "MOFCOM", "TFT-LCD",
+                     "AMOLED", "LED"):
+            with self.subTest(word=word):
+                self.assertIn(word, UILANG.ALLOWED_WORDS)
+
+    def test_original_fields_are_not_checked(self):
+        """원문 보존 필드에 외국어가 있는 것은 정상이다."""
+        for field in ("originalTitle", "originalOrg", "originalSummary",
+                      "originalUrl", "originalDescription"):
+            with self.subTest(field=field):
+                self.assertNotIn(field, UILANG.USER_FIELDS)
+
+    def test_user_fields_cover_what_the_screen_shows(self):
+        for field in ("title", "org", "description", "process", "industry",
+                      "region", "contractMethod"):
+            with self.subTest(field=field):
+                self.assertIn(field, UILANG.USER_FIELDS)
+
+
+class ProcessLabelTest(unittest.TestCase):
+    """M. 공정·장비 표시명 — 약어 단독이나 영문 병기가 없는지(No.015 2·7번)."""
+
+    def test_process_labels_are_korean_first(self):
+        hangul = re.compile(r"[가-힣]")
+        for label, _terms in EF.PROCESS_RULES:
+            with self.subTest(label=label):
+                self.assertRegex(label, hangul,
+                                 f"공정 표시명에 한국어가 없다: {label}")
+                self.assertNotIn(" / ", label,
+                                 f"영문 병기가 남아 있다: {label}")
+
+    def test_known_abbreviations_carry_korean(self):
+        labels = {label for label, _ in EF.PROCESS_RULES}
+        for expected in ("원자층증착(ALD)", "화학기상증착(CVD)",
+                         "물리기상증착(PVD)", "화학기계연마(CMP)",
+                         "유리관통비아(TGV) 가공"):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, labels)
+
+
+class RegionLabelTest(unittest.TestCase):
+    """N. 지역 표기 — 국가명이 로마자로 남지 않는지(No.015 8번)."""
+
+    def test_country_prefix_is_translated(self):
+        for zh, expected in (("中国四川省", "중국 쓰촨성"),
+                             ("中国广东省", "중국 광둥성"),
+                             ("江苏省苏州市", "장쑤성 쑤저우")):
+            with self.subTest(zh=zh):
+                self.assertEqual(ZT.translate_region(zh), expected)
+
+    def test_homophone_provinces_use_korean_only(self):
+        """陕西/山西는 한국어로 둘 다 "산시성"이라 구분이 필요한데,
+        한자나 로마자를 병기하지 않고 한국어 한자음으로 구분한다."""
+        self.assertEqual(ZT.translate_region("陕西省"), "산시성(섬서)")
+        self.assertEqual(ZT.translate_region("山西省"), "산시성(산서)")
+
+    def test_no_romanisation_left(self):
+        pinyin = re.compile(r"[A-Z][a-z]+[A-Z][a-z]+")
+        for zh in ("中国四川省", "上海/市辖区/嘉定区", "广东省深圳市"):
+            with self.subTest(zh=zh):
+                self.assertNotRegex(ZT.translate_region(zh), pinyin)
 
 
 if __name__ == "__main__":

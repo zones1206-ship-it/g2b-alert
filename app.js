@@ -15,17 +15,61 @@ const KEYWORD_ICONS = {
 
 const STORAGE_KEY = "g2b-alert-selected-keywords";
 
-// source 값을 기준으로 원문 버튼 문구를 결정한다. 새 수집원이 추가되면
-// 여기에 한 줄만 추가하면 되고, 없는 소스는 "{source} 원문 보기"로 자동 처리된다.
+// 수집원의 한국어 정식 명칭. 화면에는 약어를 단독으로 두지 않고 한국어
+// 이름과 함께 보여준다(약어만 보면 어디 공고인지 알 수 없다).
+// 여기 값은 각 기관의 공식 한국어 명칭이며 추측 번역이 아니다.
+const SOURCE_NAMES_KO = {
+  KANC: "한국나노기술원",
+  NNFC: "나노종합기술원",
+  KRISS: "한국표준과학연구원",
+  KAIST: "한국과학기술원",
+  DGIST: "대구경북과학기술원",
+  KOTRA: "대한무역투자진흥공사",
+  JETRO: "일본무역진흥기구",
+  ITRI: "대만 산업기술연구원",
+  EBNEW: "중국 비롄왕",
+  MOFCOM: "중국 국제입찰망",
+};
+
+// 카드 배지에 쓰는 짧은 표기. 자리가 좁아 한국어 이름을 다 넣기 어려우므로
+// 국내 기관은 한국어 이름을, 해외 기관은 "한국어 이름(약어)"을 쓴다.
+const SOURCE_BADGE_LABELS = {
+  KANC: "한국나노기술원",
+  NNFC: "나노종합기술원",
+  KRISS: "표준과학연구원",
+  KAIST: "한국과학기술원",
+  DGIST: "대구경북과기원",
+  KOTRA: "대한무역투자진흥공사",
+  JETRO: "일본무역진흥기구",
+  ITRI: "대만 산업기술연구원",
+  EBNEW: "중국 비롄왕",
+  MOFCOM: "중국 국제입찰망",
+};
+
+function sourceFullName(item) {
+  const code = item.sourceCode;
+  const ko = SOURCE_NAMES_KO[code];
+  return ko ? `${ko}(${code})` : (item.source || code || "출처 미상");
+}
+
+function sourceBadgeLabel(item) {
+  return SOURCE_BADGE_LABELS[item.sourceCode] || item.source || item.sourceCode || "출처 미상";
+}
+
+// 원문 버튼 문구. 한국어 기관명을 앞세우고 공식 약어는 괄호로만 남긴다.
+// 새 수집원이 추가되면 여기에 한 줄만 추가하면 되고, 없는 소스는
+// "원문 공고 보기"로 자동 처리된다.
 const SOURCE_LINK_LABELS = {
-  KANC: "한국나노기술원 원문 보기",
-  NNFC: "나노종합기술원 원문 보기",
-  KOTRA: "KOTRA 원문 보기",
-  EBNEW: "비롄왕(EBNEW) 원문 보기",
-  JETRO: "JETRO(일본 정부조달) 원문 보기",
-  DGIST: "DGIST 원문 보기",
-  ITRI: "ITRI (대만) 원문 보기",
-  KAIST: "나라장터 공고 원문 보기",
+  KANC: "한국나노기술원 원문 공고 보기",
+  NNFC: "나노종합기술원 원문 공고 보기",
+  KRISS: "한국표준과학연구원 원문 공고 보기",
+  KOTRA: "대한무역투자진흥공사(KOTRA) 원문 공고 보기",
+  EBNEW: "중국 비롄왕(EBNEW) 원문 공고 보기",
+  MOFCOM: "중국 국제입찰망(MOFCOM) 원문 공고 보기",
+  JETRO: "일본무역진흥기구(JETRO) 원문 공고 보기",
+  DGIST: "대구경북과학기술원(DGIST) 원문 공고 보기",
+  ITRI: "대만 산업기술연구원(ITRI) 원문 공고 보기",
+  KAIST: "나라장터 원문 공고 보기",
 };
 
 const NOTICE_TYPE_LABELS = {
@@ -203,7 +247,8 @@ function ddayBadge(dateStr) {
   if (!dateStr) return `<span class="dday-badge dday-gray">마감일 확인 필요</span>`;
   const d = daysUntil(dateStr);
   if (d < 0) return `<span class="dday-badge dday-gray">마감</span>`;
-  const label = d === 0 ? "D-DAY" : `D-${d}`;
+  // 숫자형(D-3)은 그대로 두되, 영어 "D-DAY"만 한국어로 바꾼다.
+  const label = d === 0 ? "오늘 마감" : `D-${d}`;
   let cls = "dday-blue";
   if (d <= 3) cls = "dday-red";
   else if (d <= 7) cls = "dday-orange";
@@ -225,9 +270,9 @@ function topTags(item) {
   const countryLabel = flag ? `${flag} ${item.country}` : (item.country || "국가 미상");
   const tags = [`<span class="country-badge">${escapeHtml(countryLabel)}</span>`];
   if (item.sourceType === "China Site") {
-    tags.push(`<span class="china-site-badge">🌐 China Site</span>`);
+    tags.push(`<span class="china-site-badge">🌐 중국 사이트</span>`);
   }
-  tags.push(`<span class="source-badge">${escapeHtml(item.sourceCode || item.source || "출처 미상")}</span>`);
+  tags.push(`<span class="source-badge" title="${escapeHtml(sourceFullName(item))}">${escapeHtml(sourceBadgeLabel(item))}</span>`);
   const noticeType = NOTICE_TYPE_LABELS[item.noticeType];
   if (noticeType) {
     tags.push(`<span class="notice-type-badge ${noticeType.cls}">${noticeType.label}</span>`);
@@ -236,7 +281,7 @@ function topTags(item) {
   // 제목만으로 내용을 알 수 없으므로, 원문 확인이 필요하다는 것을 알린다.
   // 원문 제목은 상세의 "원문(중국어)" 블록, 원문 링크는 하단 버튼에 그대로 있다.
   if (item.translationIncomplete) {
-    tags.push(`<span class="translation-badge" title="자동 번역이 불완전합니다. 상세의 원문(중국어)과 원문 링크를 확인하세요.">번역 미완료</span>`);
+    tags.push(`<span class="translation-badge" title="자동 번역이 불완전한 부분이 있습니다. 아래 원문 공고 링크에서 확인하세요.">번역 미완료</span>`);
   }
   // 장비인지 확정하지 못한 공고 — 홈 "지금 확인할 공고"와 Telegram에서는
   // 빠지고, 목록에서는 이 배지를 달아 사용자가 직접 판단할 수 있게 한다.
@@ -244,13 +289,13 @@ function topTags(item) {
     tags.push(`<span class="review-badge" title="${escapeHtml(item.equipmentReason || "장비 여부 확인이 필요합니다.")}">장비 여부 검토 필요</span>`);
   }
   if (isNewItem(item)) {
-    tags.push(`<span class="new-badge">NEW</span>`);
+    tags.push(`<span class="new-badge">신규</span>`);
   }
   return `<span class="notice-tags">${tags.join("")}</span>`;
 }
 
 function detailLinkLabel(item) {
-  return SOURCE_LINK_LABELS[item.sourceCode] || `${item.source || "원문"} 원문 보기`;
+  return SOURCE_LINK_LABELS[item.sourceCode] || "원문 공고 보기";
 }
 
 function detailRow(label, value) {
@@ -262,10 +307,24 @@ function detailRowWithFallback(label, value, fallback) {
   return `<div class="notice-detail-row"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value || fallback)}</dd></div>`;
 }
 
+// 첨부파일명에 한국어가 하나도 없으면(중국어·일본어·영어 파일명) 그대로
+// 보여줘도 사용자가 무엇인지 알 수 없다. 뜻을 지어내지 않고 "첨부파일 N"으로
+// 표시하되 확장자는 남겨 형식은 알 수 있게 한다. 원래 파일명은 링크의
+// title 속성과 데이터에 그대로 남는다.
+const HANGUL_RE = /[가-힣]/;
+
+function attachmentLabel(name, index) {
+  const raw = (name || "").trim();
+  if (!raw) return `첨부파일 ${index + 1}`;
+  if (HANGUL_RE.test(raw)) return raw;
+  const ext = (raw.match(/\.([A-Za-z0-9]{1,5})$/) || [])[1];
+  return ext ? `첨부파일 ${index + 1}.${ext.toLowerCase()}` : `첨부파일 ${index + 1}`;
+}
+
 function renderAttachments(item) {
   if (!item.attachments || item.attachments.length === 0) return "";
-  const links = item.attachments.map((a) =>
-    `<li><a href="${a.url}" target="_blank" rel="noopener">${escapeHtml(a.name)}</a></li>`
+  const links = item.attachments.map((a, i) =>
+    `<li><a href="${a.url}" target="_blank" rel="noopener" title="${escapeHtml(a.name || "")}">${escapeHtml(attachmentLabel(a.name, i))}</a></li>`
   ).join("");
   return `
     <div class="detail-section">
@@ -274,29 +333,15 @@ function renderAttachments(item) {
     </div>`;
 }
 
-// 상세의 "원문" 영역 제목. 기본 정보는 한국어, 원문 영역은 원어로 통일한다.
-const ORIGINAL_TEXT_LABELS = {
-  EBNEW: "원문(중국어)",
-  MOFCOM: "원문(중국어)",
-  ITRI: "원문(번체 중국어)",
-  JETRO: "원문(영어)",
-};
-
-function originalTextBlock(item) {
-  const rows = [];
-  if (item.originalTitle && item.originalTitle !== item.title) {
-    rows.push(`<p class="original-text-block"><b>제목</b><br>${escapeHtml(item.originalTitle)}</p>`);
-  }
-  if (item.originalOrg && item.originalOrg !== item.org) {
-    rows.push(`<p class="original-text-block"><b>발주처</b><br>${escapeHtml(item.originalOrg)}</p>`);
-  }
-  if (rows.length === 0) return "";
-  const lang = ORIGINAL_TEXT_LABELS[item.sourceCode] || "원문";
-  return `
-    <div class="detail-section">
-      <h4>${escapeHtml(lang)}</h4>
-      ${rows.join("")}
-    </div>`;
+// 상세 화면은 한국어로만 채운다. 예전에는 여기에 "원문(중국어)" 블록을 두고
+// 중국어·영어 제목과 발주처를 그대로 펼쳐 보여줬는데, 한국어 사용자에게는
+// 읽을 수 없는 글자가 화면 절반을 차지하는 셈이었다.
+//
+// 원문 데이터는 지우지 않는다 — announcements.json의 originalTitle /
+// originalOrg / originalSummary에 그대로 남아 있고, 원문이 필요한 사용자는
+// 상세 하단의 "원문 공고 보기" 버튼으로 원 사이트에서 확인한다.
+function originalTextBlock() {
+  return "";
 }
 
 function renderCard(item, kw) {
@@ -643,7 +688,7 @@ function renderSpotlightCard(item) {
   return `
     <button type="button" class="spotlight-card" data-notice-id="${escapeHtml(item.id || "")}">
       <span class="spotlight-badges">
-        ${isNewItem(item) ? '<span class="new-badge">NEW</span>' : ""}
+        ${isNewItem(item) ? '<span class="new-badge">신규</span>' : ""}
         ${ddayBadge(item.dueDate)}
       </span>
       <span class="spotlight-title">${escapeHtml(item.title)}</span>
@@ -900,7 +945,10 @@ function renderSourceSummary() {
   if (!el) return;
   const codes = Object.keys(state.data.sourceHealth || {});
   if (codes.length === 0) return; // 데이터 로드 실패 시 기본 문구 유지
-  const preview = codes.slice(0, 2).join(" · ");
+  // 약어 대신 한국어 기관명을 보여준다(약어만 보면 어디인지 알 수 없다).
+  const preview = codes.slice(0, 2)
+    .map((c) => SOURCE_BADGE_LABELS[c] || c)
+    .join(" · ");
   const rest = codes.length - 2;
   el.innerHTML = `데이터 출처 ${codes.length}곳 · ${escapeHtml(preview)}`
     + (rest > 0 ? ` <span class="source-more">+${rest}</span>` : "");

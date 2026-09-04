@@ -134,17 +134,19 @@ PROCESS_TERMS = {
     "one unit": "1대",
 }
 
-# --- 기관명: 영문 약칭 + 한국어 병기 ---
+# --- 기관명: 한국어 이름 + 공식 약어 병기 ---
+# 화면에서 약어가 앞에 오면 어느 기관인지 바로 읽히지 않는다.
+# 한국어 이름을 앞세우고 공식 약어만 괄호로 남긴다(지시문 No.015 4번).
 ORG_TERMS = {
-    "National Institute of Advanced Industrial Science and Technology": "AIST(일본 산업기술종합연구소)",
-    "Japan Atomic Energy Agency": "JAEA(일본 원자력연구개발기구)",
-    "National Institute for Materials Science": "NIMS(일본 물질·재료연구기구)",
-    "National Institutes for Quantum Science and Technology": "QST(일본 양자과학기술연구개발기구)",
-    "Japan Aerospace Exploration Agency": "JAXA(일본 우주항공연구개발기구)",
-    "New Energy and Industrial Technology Development Organization": "NEDO(일본 신에너지산업기술종합개발기구)",
-    "National Institute of Information and Communications Technology": "NICT(일본 정보통신연구기구)",
-    "Industrial Technology Research Institute": "ITRI(대만 산업기술연구원)",
-    "RIKEN": "RIKEN(일본 이화학연구소)",
+    "National Institute of Advanced Industrial Science and Technology": "일본 산업기술종합연구소(AIST)",
+    "Japan Atomic Energy Agency": "일본 원자력연구개발기구(JAEA)",
+    "National Institute for Materials Science": "일본 물질·재료연구기구(NIMS)",
+    "National Institutes for Quantum Science and Technology": "일본 양자과학기술연구개발기구(QST)",
+    "Japan Aerospace Exploration Agency": "일본 우주항공연구개발기구(JAXA)",
+    "New Energy and Industrial Technology Development Organization": "일본 신에너지산업기술종합개발기구(NEDO)",
+    "National Institute of Information and Communications Technology": "일본 정보통신연구기구(NICT)",
+    "Industrial Technology Research Institute": "대만 산업기술연구원(ITRI)",
+    "RIKEN": "일본 이화학연구소(RIKEN)",
     "University of Tokyo": "도쿄대학",
     "Kyoto University": "교토대학",
     "Osaka University": "오사카대학",
