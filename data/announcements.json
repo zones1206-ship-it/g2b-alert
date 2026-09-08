@@ -1,13 +1,13 @@
 {
-  "updatedAt": "2026-09-07T23:59:38+00:00",
+  "updatedAt": "2026-09-08T23:54:52+00:00",
   "sourceHealth": {
     "KANC": {
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 10,
-      "lastRunAt": "2026-09-07T23:59:38+00:00",
-      "lastSuccessAt": "2026-09-07T23:59:38+00:00",
+      "lastRunAt": "2026-09-08T23:54:52+00:00",
+      "lastSuccessAt": "2026-09-08T23:54:52+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -16,9 +16,9 @@
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
-      "collectedThisRun": 8,
-      "lastRunAt": "2026-09-07T23:59:38+00:00",
-      "lastSuccessAt": "2026-09-07T23:59:38+00:00",
+      "collectedThisRun": 9,
+      "lastRunAt": "2026-09-08T23:54:52+00:00",
+      "lastSuccessAt": "2026-09-08T23:54:52+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -28,9 +28,9 @@
       "lastStatus": "오류",
       "lastError": "이 GitHub Actions 러너 IP에서 KOTRA(www.kotra.or.kr:443)에 TCP 연결이 되지 않습니다 — 러너 IP에 따른 선택적 차단으로 보입니다(다른 러너에서는 정상 수집되는 실행이 있다).",
       "collectedThisRun": 0,
-      "lastRunAt": "2026-09-07T23:59:38+00:00",
+      "lastRunAt": "2026-09-08T23:54:52+00:00",
       "lastSuccessAt": "2026-09-06T23:27:07+00:00",
-      "consecutiveFailures": 1,
+      "consecutiveFailures": 2,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
     },
@@ -38,9 +38,9 @@
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
-      "collectedThisRun": 22,
-      "lastRunAt": "2026-09-07T23:59:38+00:00",
-      "lastSuccessAt": "2026-09-07T23:59:38+00:00",
+      "collectedThisRun": 21,
+      "lastRunAt": "2026-09-08T23:54:52+00:00",
+      "lastSuccessAt": "2026-09-08T23:54:52+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -49,9 +49,9 @@
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
-      "collectedThisRun": 17,
-      "lastRunAt": "2026-09-07T23:59:38+00:00",
-      "lastSuccessAt": "2026-09-07T23:59:38+00:00",
+      "collectedThisRun": 21,
+      "lastRunAt": "2026-09-08T23:54:52+00:00",
+      "lastSuccessAt": "2026-09-08T23:54:52+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -60,9 +60,9 @@
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
-      "collectedThisRun": 4,
-      "lastRunAt": "2026-09-07T23:59:38+00:00",
-      "lastSuccessAt": "2026-09-07T23:59:38+00:00",
+      "collectedThisRun": 5,
+      "lastRunAt": "2026-09-08T23:54:52+00:00",
+      "lastSuccessAt": "2026-09-08T23:54:52+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -72,8 +72,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 22,
-      "lastRunAt": "2026-09-07T23:59:38+00:00",
-      "lastSuccessAt": "2026-09-07T23:59:38+00:00",
+      "lastRunAt": "2026-09-08T23:54:52+00:00",
+      "lastSuccessAt": "2026-09-08T23:54:52+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -82,9 +82,9 @@
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
-      "collectedThisRun": 1,
-      "lastRunAt": "2026-09-07T23:59:38+00:00",
-      "lastSuccessAt": "2026-09-07T23:59:38+00:00",
+      "collectedThisRun": 4,
+      "lastRunAt": "2026-09-08T23:54:52+00:00",
+      "lastSuccessAt": "2026-09-08T23:54:52+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -93,9 +93,9 @@
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
-      "collectedThisRun": 1,
-      "lastRunAt": "2026-09-07T23:59:38+00:00",
-      "lastSuccessAt": "2026-09-07T23:59:38+00:00",
+      "collectedThisRun": 0,
+      "lastRunAt": "2026-09-08T23:54:52+00:00",
+      "lastSuccessAt": "2026-09-08T23:54:52+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -105,271 +105,14 @@
       "lastStatus": "오류",
       "lastError": "KAIST 요청이 4회 실패했습니다: <urlopen error timed out>",
       "collectedThisRun": 0,
-      "lastRunAt": "2026-09-07T23:59:38+00:00",
+      "lastRunAt": "2026-09-08T23:54:52+00:00",
       "lastSuccessAt": "2026-09-06T23:27:07+00:00",
-      "consecutiveFailures": 1,
+      "consecutiveFailures": 2,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
     }
   },
   "items": [
-    {
-      "id": "cid5662",
-      "title": "[사전규격공개]AIT-XP 웨이퍼 결함 검출기 Solid State Laser 구매",
-      "org": "한국나노기술원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": "2026-09-07",
-      "postedDate": "2026-09-02",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": null,
-      "contractMethod": "전자입찰(총액), 소액수의-2인이상 견적제출(낙찰하한율 88%)",
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 사전규격 · 공고번호: 제2026-36호 · 계약방법: 전자입찰(총액), 소액수의-2인이상 견적제출(낙찰하한율 88%)",
-      "attachments": [
-        {
-          "name": "사전규격공개(0902)_AIT-XP 웨이퍼결함검출기 Solid State Laser 구매.pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5662&filename=5662_202609021123319040.pdf"
-        },
-        {
-          "name": "물품상세규격서.pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5662&filename=5662_202609021123319041.pdf"
-        },
-        {
-          "name": "참가자격제한사유서.pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5662&filename=5662_202609021123319042.pdf"
-        },
-        {
-          "name": "(양식) 사전규격공개 의견서.hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5662&filename=5662_202609021123319193.hwp"
-        }
-      ],
-      "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5662&hcid=38",
-      "source": "한국나노기술원",
-      "sourceCode": "KANC",
-      "noticeType": "사전규격",
-      "equipmentStatus": "제외",
-      "equipmentReason": "부품 구매 / 장비 아님 (신호: 검출기)",
-      "industry": "반도체",
-      "firstSeenAt": "2026-09-02T23:43:33+00:00"
-    },
-    {
-      "id": "cid5654",
-      "title": "[공고 제2026-34호] 입자충격잡음검출시험기 1식 구매 입찰 공고(내자)",
-      "org": "한국나노기술원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": "2026-09-07",
-      "postedDate": "2026-08-28",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": null,
-      "contractMethod": null,
-      "deliveryCondition": "현장 설치도 사. 납품장소 : 한국나노기술원 내 지정장소 (현장설치 조건 및 폐기물 회수처리 포함) 아.",
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 정식입찰 · 공고번호: 제2026-34호",
-      "attachments": [
-        {
-          "name": "3 입찰공고서_입자충격잡음검출시험기.pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5654&filename=5654_202608280942420870.pdf"
-        },
-        {
-          "name": "4 상세규격서(입자충격잡음검출시험기).hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5654&filename=5654_202608280942420871.hwp"
-        },
-        {
-          "name": "5 용도설명서(입자충격잡음검출시험기).hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5654&filename=5654_202608280942421032.hwp"
-        },
-        {
-          "name": "6 제안요청서(입자충격잡음검출시험기).hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5654&filename=5654_202608280942421033.hwp"
-        },
-        {
-          "name": "7 입찰관련 서식.hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5654&filename=5654_202608280942421034.hwp"
-        }
-      ],
-      "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5654&hcid=38",
-      "source": "한국나노기술원",
-      "sourceCode": "KANC",
-      "noticeType": "정식입찰",
-      "equipmentStatus": "장비",
-      "equipmentReason": "산업(KANC 반도체 나노팹 + 시험기) + 장비(시험기)",
-      "industry": "반도체",
-      "equipmentName": "시험기",
-      "quantity": "1식",
-      "firstSeenAt": "2026-08-28T05:54:00+00:00"
-    },
-    {
-      "id": "cid5636",
-      "title": "[공고 제2026-31호] (변경공고) 화합물반도체 전략 파운드리 구축을 위한 법률자문 용역 입찰",
-      "org": "한국나노기술원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": "2026-09-07",
-      "postedDate": "2026-08-20",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 정식입찰 · 공고번호: 제2026-31호",
-      "attachments": [
-        {
-          "name": "2 입찰공고문(변경).pdf",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5636&filename=5636_202608280909550410.pdf"
-        },
-        {
-          "name": "3 화합물반도체 전략 파운드리 구축을 위한 법률자문_제안요청서_최종 수정(협조).hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5636&filename=5636_202608280909550571.hwp"
-        },
-        {
-          "name": "4 화합물반도체 전략 파운드리 구축을 위한 법률자문_과업지시서_수정.hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5636&filename=5636_202608280909550572.hwp"
-        },
-        {
-          "name": "5 긴급입찰사유서_한국나노기술원 전략 파운드리 구축을 위한 법률자문 용역.hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5636&filename=5636_202608280909550723.hwp"
-        },
-        {
-          "name": "6 입찰관련서식.hwp",
-          "url": "https://kanc.re.kr/cwsboard/board.do?bid=285&mode=download&cid=5636&filename=5636_202608280909550884.hwp"
-        }
-      ],
-      "url": "https://kanc.re.kr/gnb04/snb02_01.do?mode=view&page=1&cid=5636&hcid=38",
-      "source": "한국나노기술원",
-      "sourceCode": "KANC",
-      "noticeType": "정식입찰",
-      "equipmentStatus": "제외",
-      "equipmentReason": "장비 구매가 아님이 분명함 (신호: 용역)",
-      "industry": "반도체",
-      "firstSeenAt": "2026-08-20T22:21:07+00:00"
-    },
-    {
-      "id": "nttidB000000006124Jl2qZ4",
-      "title": "(재)(외자)입찰공고(제2026–059호) 200mm 수직형 산질화막 성장로",
-      "org": "나노종합기술원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": "2026-09-07",
-      "postedDate": "2026-08-31",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": "JPY 150,000,000",
-      "contractMethod": "일반경쟁",
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 정식입찰 · 공고번호: 제2026–059호 · 계약방법: 일반경쟁",
-      "attachments": [
-        {
-          "name": "1. (재)입찰공고문_성장로.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007347Qj7/0/FileDown.do"
-        },
-        {
-          "name": "1. (재)입찰공고문_성장로.pdf",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007347Qj7/1/FileDown.do"
-        },
-        {
-          "name": "2. 제안요청서_성장로.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007347Qj7/2/FileDown.do"
-        },
-        {
-          "name": "3. 구매사양서_성장로.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007347Qj7/3/FileDown.do"
-        },
-        {
-          "name": "4. 구매사양비교표(Requirement Spec.)_Oxynitride Furnace.xls",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007347Qj7/4/FileDown.do"
-        },
-        {
-          "name": "5. 외자입찰유의서 및 입찰서류서식.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007347Qj7/5/FileDown.do"
-        },
-        {
-          "name": "6. Summary of BIDDING.pdf",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007347Qj7/6/FileDown.do"
-        }
-      ],
-      "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006124Jl2qZ4",
-      "source": "나노종합기술원",
-      "sourceCode": "NNFC",
-      "noticeType": "정식입찰",
-      "equipmentStatus": "장비",
-      "equipmentReason": "산업(성장로) + 장비(성장로)",
-      "industry": "반도체",
-      "process": "열처리",
-      "equipmentName": "성장로",
-      "firstSeenAt": "2026-09-01T00:53:52+00:00"
-    },
-    {
-      "id": "nttidB000000006120Ri9iP9",
-      "title": "입찰공고(제2026–058호) 팹 비상전력 공급용 버스(부스) 덕트 제작 설치",
-      "org": "나노종합기술원",
-      "country": "국내",
-      "countryCode": "KR",
-      "status": "진행중",
-      "dueDate": "2026-09-07",
-      "postedDate": "2026-08-28",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "budget": "269,500,000원",
-      "contractMethod": "제한경쟁입찰 ( 실적제한 )",
-      "deliveryCondition": "나노종합기술원 / 현장 ( 지정장소 ) 설치도",
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "공고유형: 정식입찰 · 공고번호: 제2026–058호 · 계약방법: 제한경쟁입찰 ( 실적제한 )",
-      "attachments": [
-        {
-          "name": "1. 입찰공고서_버스덕트.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007341Av5/0/FileDown.do"
-        },
-        {
-          "name": "1. 입찰공고서_버스덕트.pdf",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007341Av5/1/FileDown.do"
-        },
-        {
-          "name": "2. 일반사양서_버스덕트.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007341Av5/2/FileDown.do"
-        },
-        {
-          "name": "3. 구매사양서(설치시방서)_버스덕트.pdf",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007341Av5/3/FileDown.do"
-        },
-        {
-          "name": "4. 부스덕트 설치 도면.pdf",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007341Av5/4/FileDown.do"
-        },
-        {
-          "name": "5. 유사계약수행실적 및 실적증명서 양식.hwp",
-          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007341Av5/5/FileDown.do"
-        }
-      ],
-      "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006120Ri9iP9",
-      "source": "나노종합기술원",
-      "sourceCode": "NNFC",
-      "noticeType": "정식입찰",
-      "equipmentStatus": "제외",
-      "equipmentReason": "팹 시설·유틸리티 / 반도체 장비 아님 (신호: 버스(부스) 덕트)",
-      "industry": "반도체",
-      "firstSeenAt": "2026-08-28T05:54:00+00:00"
-    },
     {
       "id": "ebnew709771492",
       "title": "이쓰웨이(ESWIN) 패널레벨 패키징 시스템 집적회로 프로젝트 심사결과 공시 공고 (1)",
@@ -413,46 +156,6 @@
       "industry": "반도체",
       "process": "패키징",
       "firstSeenAt": "2026-09-03T10:27:54+00:00"
-    },
-    {
-      "id": "itriA512004207-10",
-      "title": "전력 반도체 용 테스트 장비 교정 (상세 별도 규격 형번)",
-      "translatedTitle": "전력 반도체 용 테스트 장비 교정 (상세 별도 규격 형번)",
-      "originalTitle": "功率半導體用測試設備校正 (內詳規格型號)",
-      "translationIncomplete": false,
-      "org": "대만 산업기술연구원(ITRI)",
-      "originalOrg": "工業技術研究院",
-      "country": "대만",
-      "countryCode": "TW",
-      "region": null,
-      "status": null,
-      "dueDate": "2026-09-07",
-      "postedDate": null,
-      "keywords": [
-        "반도체 장비"
-      ],
-      "classificationStatus": null,
-      "budget": null,
-      "contractMethod": "견적 요청",
-      "deliveryCondition": "이행기한 2026-09-30",
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "수량 1 · 공고번호 A512004207 (항목 10)",
-      "attachments": [],
-      "url": "https://quotaweb.itri.org.tw/quotabrowse.aspx",
-      "originalUrl": "https://quotaweb.itri.org.tw/quotabrowse.aspx",
-      "source": "ITRI (대만)",
-      "sourceCode": "ITRI",
-      "sourceSiteUrl": "https://quotaweb.itri.org.tw/quotabrowse.aspx",
-      "sourceCountry": "TW",
-      "sourceType": "Taiwan Site",
-      "detectedLanguage": "zh-TW",
-      "noticeType": "정식입찰",
-      "projectNo": "A512004207",
-      "equipmentStatus": "장비",
-      "equipmentReason": "산업(반도체) + 장비(장비)",
-      "industry": "반도체",
-      "firstSeenAt": "2026-09-04T02:25:32+00:00"
     },
     {
       "id": "cid5661",
@@ -912,6 +615,45 @@
       "firstSeenAt": "2026-09-02T23:43:33+00:00"
     },
     {
+      "id": "kriss63862",
+      "title": "새글 연속적으로 파장가변한 레이저",
+      "org": "한국표준과학연구원",
+      "country": "국내",
+      "countryCode": "KR",
+      "status": "진행중",
+      "dueDate": "2026-09-14",
+      "postedDate": "2026-09-08",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고유형: 정식입찰 · 공고번호: 제26-01-035-02호",
+      "attachments": [
+        {
+          "name": "5.입찰공고문(안).hwp",
+          "url": "https://www.kriss.re.kr/boardDownload.es?bid=0005&list_no=63862&seq=1"
+        },
+        {
+          "name": "6.구매규격서.hwp",
+          "url": "https://www.kriss.re.kr/boardDownload.es?bid=0005&list_no=63862&seq=2"
+        }
+      ],
+      "url": "https://www.kriss.re.kr/board.es?mid=a10506000000&bid=0005&act=view&list_no=63862",
+      "source": "한국표준과학연구원",
+      "sourceCode": "KRISS",
+      "noticeType": "정식입찰",
+      "projectNo": "제26-01-035-02호",
+      "g2bBidNo": "R26BK01681234-000",
+      "equipmentStatus": "제외",
+      "equipmentReason": "반도체/디스플레이/TGV 산업 신호 없음",
+      "industry": "반도체",
+      "firstSeenAt": "2026-09-08T23:54:52+00:00"
+    },
+    {
       "id": "jetro398981",
       "title": "첨단 로직 반도체 분석을 위한 X-ray 센서 1식",
       "translatedTitle": "첨단 로직 반도체 분석을 위한 X-ray 센서 1식",
@@ -952,6 +694,113 @@
       "industry": "반도체",
       "quantity": "1식",
       "firstSeenAt": "2026-09-03T10:45:54+09:00"
+    },
+    {
+      "id": "dgist558",
+      "title": "[DGIST 제2026-129호] 멀티프로젝트-웨이퍼 반도체 칩 패키지 및 칩 전기적 특성 평가 용역",
+      "org": "대구경북과학기술원(DGIST)",
+      "country": "국내",
+      "countryCode": "KR",
+      "region": "대구",
+      "status": "진행중",
+      "dueDate": "2026-09-14",
+      "postedDate": "2026-09-08",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "classificationStatus": null,
+      "budget": null,
+      "contractMethod": "용역",
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고번호 : DGIST 제 2026-129 호 > 견적 제출 공고 1. 입찰에 부치는 사항 가 . 공 고 명 : 멀티프로젝트 - 웨이퍼 반도체 칩 패키지 및 칩 전기적 특성 평가 용역 나 . 용역내용 : 과업지시서 참조 다 . 예산금액 : ￦ 39,336,000( 부가세 포함 ) 라 . 입찰방법 : 전자입찰 , 총액입찰 , 소액수의 ( 견적입찰 ), 제한적 최저가 낙찰제 마 . 계약기간 : 계약일로부터 4 주 이내 바 . 용역장소 : 우리 원 지정장소 사 . 청렴계약 대상입니다 . 2. 입찰 ( 견적 ) 참가자격 및 방법 가 . 국가를 당사자로 하는 계약에 관한 법률 시행령 제 12 조 및 동법 시행규칙 제 14 조에서 정한 자격을 갖추고 동법 시행령 제 76 조의 규정에 의한 입찰 참가 자격 제한을 받지 않은 업체이어야 합니다 . 나 . 「 중소기업제품 구매촉진 및 판로지원에 관한 법률 」 제 2 조에 규정된 중 · 소기업 또는 소상공인인 업체로서 , 「 중 · 소기업 · 소상공인 및 장애인기업 확인요령 」 에 따라 발급된 소기업 · 소상공인확인서를 소지한 업체이어야 합니다 . - 중소기업제품 구매촉진 및 판로지원에 관한 법률 제 33 조 제 1 항에 의거 중소기업자로 간주되는 특별 법인은 입찰참여 가능함 ※ 입찰서 제출 마감일 전일까지 발급된 것으로 유효기간 내에 있어야 함 다 . 공동수급을 불허합니다 . 라 . 하도급계약을 불허합니다 . 3. 접수기간 가 . 입찰 서류 접수기간 : 2026. 09. 09.( 수 ) 11:00 ~ 2026. 09. 14.( 월 ) 11:00 나 . 전자 입찰 참여기간 : 2026. 09. 09.( 수 ) 12:00 ~ 2026. 09. 14.( 월 ) 12:00 다 . 개찰일시 : 2026. 09. 14.( 월 ) 13:00 이후 ( 규격 심사 완료 후 개찰 ) 라 . 개찰장소 : 우리 원 계약담당관 PC 4. 입찰 서류 제출 가 . 제출방법 : 우편 또는 전자메일 제출 ※ 서류 제출 및 문의 : DGIST 총무구매팀 이영이 ☎ 053-785-1245, 전자메일 kiki0719@dgist.ac.kr ( 우 ) 42988 대구광역시 달성군 현풍읍 테크노중앙대로 333, DGIST 대학본부 (E1) 701 호 ※ 직접 방문에 의한 서류 제출은 받지 않습니다 . 나 . 제출기한 ○ 우 편 : 제출 마감일 전일 18:00 까지 ( 우리 원 도착 기준 ) ○ 전자메일 : 제출 마감 ",
+      "attachments": [],
+      "url": "https://www.dgist.ac.kr/prog/bidPbanc/kor/sub06_01_04/view.do?pbancNo=558",
+      "source": "DGIST (한국)",
+      "sourceCode": "DGIST",
+      "sourceSiteUrl": "https://www.dgist.ac.kr/prog/bidPbanc/kor/sub06_01_04/list.do",
+      "noticeType": "정식입찰",
+      "equipmentStatus": "제외",
+      "equipmentReason": "장비 구매가 아님이 분명함 (신호: 용역)",
+      "industry": "반도체",
+      "firstSeenAt": "2026-09-08T23:54:52+00:00"
+    },
+    {
+      "id": "dgist559",
+      "title": "[DGIST 제2026-130호] 반도체공정장비 유틸리티 설치 용역",
+      "org": "대구경북과학기술원(DGIST)",
+      "country": "국내",
+      "countryCode": "KR",
+      "region": "대구",
+      "status": "진행중",
+      "dueDate": "2026-09-14",
+      "postedDate": "2026-09-08",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "classificationStatus": null,
+      "budget": null,
+      "contractMethod": "용역",
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고번호 : DGIST 제 2026-130 호 > 견적 제출 공고 1. 입찰에 부치는 사항 가 . 공 고 명 : 반도체공정장비 유틸리티 설치 용역 나 . 용역내용 : 과업지시서 참조 다 . 예산금액 : ￦ 51,480,688-( 부가세 포함 ) 라 . 입찰방법 : 전자입찰 , 총액입찰 , 소액수의 ( 견적입찰 ), 제한적 최저가 낙찰제 마 . 계약기간 : 계약일로부터 4 주 이내 바 . 용역장소 : 우리 원 지정장소 사 . 청렴계약 대상입니다 . 2. 입찰 ( 견적 ) 참가자격 및 방법 가 . 국가를 당사자로 하는 계약에 관한 법률 시행령 제 12 조 및 동법 시행규칙 제 14 조에서 정한 자격을 갖추고 동법 시행령 제 76 조의 규정에 의한 입찰 참가 자격 제한을 받지 않은 업체이어야 합니다 . 나 . 「 중소기업제품 구매촉진 및 판로지원에 관한 법률 」 제 2 조에 규정된 중 · 소기업 또는 소상공인인 업체로서 , 「 중 · 소기업 · 소상공인 및 장애인기업 확인요령 」 에 따라 발급된 소기업 · 소상공인확인서를 소지한 업체이어야 합니다 . - 중소기업제품 구매촉진 및 판로지원에 관한 법률 제 33 조 제 1 항에 의거 중소기업자로 간주되는 특별 법인은 입찰참여 가능함 ※ 입찰서 제출 마감일 전일까지 발급된 것으로 유효기간 내에 있어야 함 다 . 「 건설산 업기본법 」 제 9 조에 따라 기계설비 · 가스공사업 (( 나라장터 업종코드 : 6202) 으로 등록하고 , 주력분야가 가스시설공사 ( 제 1 종 )( 나라장터 주력분야 코드 : 021) 인 업체이어야 합니다 . 라 . 공동수급을 불허합니다 . 3. 접수기간 가 . 입찰 서류 접수기간 : 2026. 09. 09.( 수 ) 11:00 ~ 2026. 09. 14.( 월 ) 11:00 나 . 전자 입찰 참여기간 : 2026. 09. 09.( 수 ) 12:00 ~ 2026. 09. 14.( 월 ) 12:00 다 . 개찰일시 : 2026. 09. 14.( 월 ) 13:00 이후 ( 규격 심사 완료 후 개찰 ) 라 . 개찰장소 : 우리 원 계약담당관 PC 4. 입찰 서류 제출 가 . 제출방법 : 우편 또는 전자메일 제출 ※ 서류 제출 및 문의 : DGIST 총무구매팀 이영이 ☎ 053-785-1245, 전자메일 kiki0719@dgist.ac.kr ( 우 ) 42988 대구광역시 달성군 현풍읍 테크노중앙대로 333, DGIST 대학본부 (E1) 701 호 ※ 직접 ",
+      "attachments": [],
+      "url": "https://www.dgist.ac.kr/prog/bidPbanc/kor/sub06_01_04/view.do?pbancNo=559",
+      "source": "DGIST (한국)",
+      "sourceCode": "DGIST",
+      "sourceSiteUrl": "https://www.dgist.ac.kr/prog/bidPbanc/kor/sub06_01_04/list.do",
+      "noticeType": "정식입찰",
+      "equipmentStatus": "제외",
+      "equipmentReason": "장비 구매가 아님이 분명함 (신호: 용역)",
+      "industry": "반도체",
+      "firstSeenAt": "2026-09-08T23:54:52+00:00"
+    },
+    {
+      "id": "ebnew709831123",
+      "title": "OLED 모듈 점등 검사기 국제입찰 정정·변경 공고 (2)",
+      "translatedTitle": "OLED 모듈 점등 검사기 국제입찰 정정·변경 공고 (2)",
+      "originalTitle": "OLED模组点灯检查机国际招标澄清或变更公告(2)",
+      "translatedSummary": "JianCha Ji",
+      "originalSummary": "检查机",
+      "org": "우한 Tianma(톈마) 유한공사",
+      "originalOrg": "武汉天马微电子有限公司",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "후베이성",
+      "status": "진행중",
+      "dueDate": "2026-09-15",
+      "postedDate": "2026-09-08",
+      "keywords": [
+        "디스플레이 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "JianCha Ji",
+      "attachments": [],
+      "url": "https://www.ebnew.com/businessShow/709831123.html",
+      "originalUrl": "https://www.ebnew.com/businessShow/709831123.html",
+      "source": "중국 비롄왕(EBNEW)",
+      "sourceCode": "EBNEW",
+      "sourceSiteUrl": "https://www.ebnew.com/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "정식입찰",
+      "projectNo": "0730-264010020019/01",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(oled) + 장비(검사기)",
+      "industry": "디스플레이",
+      "process": "검사",
+      "equipmentName": "검사기",
+      "firstSeenAt": "2026-09-08T23:54:52+00:00"
     },
     {
       "id": "ebnew709634109",
@@ -1089,6 +938,49 @@
       "process": "패키징",
       "equipmentName": "시험라인",
       "firstSeenAt": "2026-08-29T03:31:05+00:00"
+    },
+    {
+      "id": "mofcomff8080819e42905601a07fcb93157b9b",
+      "title": "OLED 모듈 DianDeng JianCha Ji - 국제입찰 정정·변경 공고 (2)",
+      "translatedTitle": "OLED 모듈 DianDeng JianCha Ji - 국제입찰 정정·변경 공고 (2)",
+      "originalTitle": "OLED模组点灯检查机 - 国际招标澄清或变更公告(2)",
+      "translatedSummary": "0730-264010020019/01,OLED 모듈 DianDeng JianCha Ji",
+      "originalSummary": "0730-264010020019/01,OLED模组点灯检查机",
+      "org": "우한 Tianma(톈마) 유한공사",
+      "originalOrg": "武汉天马微电子有限公司",
+      "translationIncomplete": true,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "중국 후베이성",
+      "status": "진행중",
+      "dueDate": "2026-09-15",
+      "postedDate": "2026-09-08",
+      "keywords": [
+        "디스플레이 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "0730-264010020019/01,OLED 모듈 DianDeng JianCha Ji",
+      "attachments": [],
+      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202609/ff8080819e42905601a07fcb93157b9b.html",
+      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202609/ff8080819e42905601a07fcb93157b9b.html",
+      "source": "중국국제초표망(MOFCOM)",
+      "sourceCode": "MOFCOM",
+      "sourceSiteUrl": "https://chinabidding.mofcom.gov.cn/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "정식입찰",
+      "projectNo": "0730-264010020019/01",
+      "equipmentStatus": "검토 필요",
+      "equipmentReason": "장비인지 부품인지 확정 불가 (신호: 모듈)",
+      "industry": "디스플레이",
+      "firstSeenAt": "2026-09-08T23:54:52+00:00"
     },
     {
       "id": "kriss63859",
@@ -1479,6 +1371,89 @@
       "firstSeenAt": "2026-09-03T09:33:22+09:00"
     },
     {
+      "id": "dgist560",
+      "title": "[DGIST 제2026-131호] 다중 플라즈마 집속이온빔 시스템 1set 구매",
+      "org": "대구경북과학기술원(DGIST)",
+      "country": "국내",
+      "countryCode": "KR",
+      "region": "대구",
+      "status": "진행중",
+      "dueDate": "2026-09-16",
+      "postedDate": "2026-09-08",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "classificationStatus": null,
+      "budget": null,
+      "contractMethod": "외자",
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고번호 : DGIST 제 2026-131 호 > 외자물품 구매입찰 공고 1. 입찰에 부치는 사항 가 . 공고명 ( 입찰건명 ) : 다중 플라즈마 집속이온빔 시스템 1set 구매 나 . 물품규격 및 수량 : 붙임 “ 규격서 ” 참조 다 . 예산금액 : USD 1,800,000(FCA) 라 . 입찰방법 : 전자입찰 , 총액입찰 , 일반경쟁 , 규격가격동시입찰 , 예정가격 이하 최저가 낙찰제 마 . 선적기한 : 계약체결일로부터 12 개월 이내 바 . 대금지급방법 : L/C 100% 사 . 사양설명 : 생략 ( 게시된 “ 규격서 ” 열람으로 갈음 ) 아 . 청렴계약 대상입니다 . 2. 입찰참가자격 가 . 국가를 당사자로 하는 계약에 관한 법률 시행령 제 12 조 및 동법 시행규칙 제 14 조에서 정한 자격을 갖추고 동법 시행령 제 76 조의 규정에 의한 입찰 참가 자격 제한을 받지 않은 업체로서 조달청 전자입찰 참가자격 등록 및 이용자 등록을 마친 업체이어야 합니다 . 나 . 전자입찰방식에 의하므로 전자입찰이용자 등록을 필한 업체만이 참여가 가능합니다 . 다 . 「 지문인식 신원확인 입찰 」 이 적용되므로 개인인증서를 보유한 대표자 또는 입찰대리인은 입찰 특별유의서에 따라 미리 지문정보를 등록하여야 전자입찰서 제출이 가능합니다 . 라 . 공동수급은 불허합니다 . 3. 접수기간 가 . 입찰 서류 접수기간 : 2026. 09. 09.( 수 ) 11:00 ~ 2026. 09. 16.( 수 ) 11:00 나 . 전자 입찰 참여기간 : 2026. 09. 09.( 수 ) 12:00 ~ 2026. 09. 16.( 수 ) 12:00 다 . 개찰일시 : 2026. 09. 16.( 수 ) 13:00 이후 ( 규격 심사 완료 후 개찰 ) 라 . 개찰장소 : 우리 원 계약담당관 PC 4. 입찰 서류 제출 가 . 제출방법 : 우편 또는 전자메일 제출 ( 세부사항은 담당자 정보 참조 ) ※ 직접 방문에 의한 서류 제출은 받지 않습니다 . 나 . 제출기한 ○ 우 편 : 제출 마감일 전일 18:00 까지 ( 우리 원 도착 기준 ) ○ 전자메일 : 제출 마감 일시까지 ( 우리 원 메일 서버 도착 시간 기준 ) 다 . 제출서류 ① 사업자등록증 사본 1 부 ② 공급자의 대리점 계약서 사본 1 부 ( 대리점에 한함 ) 1 부 ③ SUPPLIER'S CERTIFICATE 1 부 ④ BIDDING SPEC( 본원 양식 ) 1 부 - 응찰업체가 제출하는 입",
+      "attachments": [],
+      "url": "https://www.dgist.ac.kr/prog/bidPbanc/kor/sub06_01_04/view.do?pbancNo=560",
+      "source": "DGIST (한국)",
+      "sourceCode": "DGIST",
+      "sourceSiteUrl": "https://www.dgist.ac.kr/prog/bidPbanc/kor/sub06_01_04/list.do",
+      "noticeType": "정식입찰",
+      "equipmentStatus": "제외",
+      "equipmentReason": "장비(시스템)이지만 반도체/디스플레이/TGV 공정·산업 근거 없음 — 일반 연구·계측 장비",
+      "industry": "반도체",
+      "quantity": "1식",
+      "firstSeenAt": "2026-09-08T23:54:52+00:00"
+    },
+    {
+      "id": "nttidB000000006145Gb4vE7",
+      "title": "입찰공고(제2026–061호) 300mm 웨이퍼 매엽식 자동 세정 장비",
+      "org": "나노종합기술원",
+      "country": "국내",
+      "countryCode": "KR",
+      "status": "진행중",
+      "dueDate": "2026-09-17",
+      "postedDate": "2026-09-08",
+      "keywords": [
+        "반도체 장비"
+      ],
+      "budget": "1,930,000,000원",
+      "contractMethod": "제한경쟁입찰 ( 실적제한 )",
+      "deliveryCondition": "나노종합기술원 / 현장 ( 지정장소 ) 설치도",
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "공고유형: 정식입찰 · 공고번호: 제2026–061호 · 계약방법: 제한경쟁입찰 ( 실적제한 )",
+      "attachments": [
+        {
+          "name": "1. 입찰공고서_세정장비.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007378Mt3/0/FileDown.do"
+        },
+        {
+          "name": "1. 입찰공고서_세정장비.pdf",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007378Mt3/1/FileDown.do"
+        },
+        {
+          "name": "2. 제안요청서_세정장비.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007378Mt3/2/FileDown.do"
+        },
+        {
+          "name": "3. 구매사양서_세정장비.hwp",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007378Mt3/3/FileDown.do"
+        },
+        {
+          "name": "4. 구매사양비교표_세정장비.xlsx",
+          "url": "https://www.nnfc.re.kr/cmm/fms/FILE_000000007378Mt3/4/FileDown.do"
+        }
+      ],
+      "url": "https://www.nnfc.re.kr/bbs/BBSMSTR_000000000003/view.do?nttId=B000000006145Gb4vE7",
+      "source": "나노종합기술원",
+      "sourceCode": "NNFC",
+      "noticeType": "정식입찰",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(웨이퍼) + 장비(장비)",
+      "industry": "반도체",
+      "process": "세정",
+      "equipmentName": "세정 장비",
+      "firstSeenAt": "2026-09-08T23:54:52+00:00"
+    },
+    {
       "id": "mofcomff8080819e42905601a066dab0656d91",
       "title": "제6세대 플렉시블 액티브 매트릭스 유기발광 디스플레이 소자 （AMOLED） 모듈 생산라인 프로젝트 - 국제입찰 정정·변경 공고 (2)",
       "translatedTitle": "제6세대 플렉시블 액티브 매트릭스 유기발광 디스플레이 소자 （AMOLED） 모듈 생산라인 프로젝트 - 국제입찰 정정·변경 공고 (2)",
@@ -1736,6 +1711,50 @@
       "process": "검사",
       "equipmentName": "자동광학검사",
       "firstSeenAt": "2026-09-02T23:43:33+00:00"
+    },
+    {
+      "id": "mofcomff8080819e42905601a060d4f2c76c09",
+      "title": "BOE(징둥팡) 제8.6세대 AMOLED 생산라인 프로젝트 - 국제 입찰공고 (1)",
+      "translatedTitle": "BOE(징둥팡) 제8.6세대 AMOLED 생산라인 프로젝트 - 국제 입찰공고 (1)",
+      "originalTitle": "京东方第8.6代AMOLED生产线项目 - 国际招标公告(1)",
+      "translatedSummary": "4197-244BOECDDT01/393, BOE(징둥팡) 제8.6세대 AMOLED 생산라인 프로젝트",
+      "originalSummary": "4197-244BOECDDT01/393,京东方第8.6代AMOLED生产线项目",
+      "org": "청두 BOE(징둥팡) 디스플레이 기술 유한공사",
+      "originalOrg": "成都京东方显示技术有限公司",
+      "translationIncomplete": false,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "중국 쓰촨성",
+      "status": "진행중",
+      "dueDate": "2026-09-23",
+      "postedDate": "2026-09-02",
+      "keywords": [
+        "디스플레이 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "4197-244BOECDDT01/393, BOE(징둥팡) 제8.6세대 AMOLED 생산라인 프로젝트",
+      "attachments": [],
+      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202609/ff8080819e42905601a060d4f2c76c09.html",
+      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202609/ff8080819e42905601a060d4f2c76c09.html",
+      "source": "중국국제초표망(MOFCOM)",
+      "sourceCode": "MOFCOM",
+      "sourceSiteUrl": "https://chinabidding.mofcom.gov.cn/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "정식입찰",
+      "projectNo": "4197-244BOECDDT01/393",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(amoled) + 장비(생산라인)",
+      "industry": "디스플레이",
+      "equipmentName": "생산라인",
+      "firstSeenAt": "2026-09-08T23:54:52+00:00"
     },
     {
       "id": "mofcomff8080819e42905601a060d4f2c56bf1",
@@ -2306,6 +2325,94 @@
       "process": "검사",
       "equipmentName": "생산라인",
       "firstSeenAt": "2026-09-07T23:59:38+00:00"
+    },
+    {
+      "id": "mofcomff8080819e42905601a07b9341ae7cd1",
+      "title": "제6세대 LTPS/AMOLED 디스플레이 패널 생산라인 프로젝트 - 국제 입찰공고 (1)",
+      "translatedTitle": "제6세대 LTPS/AMOLED 디스플레이 패널 생산라인 프로젝트 - 국제 입찰공고 (1)",
+      "originalTitle": "第6代LTPS/AMOLED显示面板生产线项目 - 国际招标公告(1)",
+      "translatedSummary": "4197-2240CSOTT007/42, 제6세대 LTPS/AMOLED 디스플레이 패널 생산라인 프로젝트",
+      "originalSummary": "4197-2240CSOTT007/42,第6代LTPS/AMOLED显示面板生产线项目",
+      "org": "우한 화싱광전 기술 유한공사",
+      "originalOrg": "武汉华星光电技术有限公司",
+      "translationIncomplete": false,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "중국 후베이성",
+      "status": "진행중",
+      "dueDate": "2026-09-29",
+      "postedDate": "2026-09-07",
+      "keywords": [
+        "디스플레이 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "4197-2240CSOTT007/42, 제6세대 LTPS/AMOLED 디스플레이 패널 생산라인 프로젝트",
+      "attachments": [],
+      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202609/ff8080819e42905601a07b9341ae7cd1.html",
+      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202609/ff8080819e42905601a07b9341ae7cd1.html",
+      "source": "중국국제초표망(MOFCOM)",
+      "sourceCode": "MOFCOM",
+      "sourceSiteUrl": "https://chinabidding.mofcom.gov.cn/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "정식입찰",
+      "projectNo": "4197-2240CSOTT007/42",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(디스플레이) + 장비(생산라인)",
+      "industry": "디스플레이",
+      "equipmentName": "생산라인",
+      "firstSeenAt": "2026-09-08T23:54:52+00:00"
+    },
+    {
+      "id": "mofcomff8080819e42905601a07b92580a7c02",
+      "title": "TCL CSOT(화싱광전) 제8.6세대 인쇄 OLED 생산라인 1단계 프로젝트 - 국제 입찰공고 (1)",
+      "translatedTitle": "TCL CSOT(화싱광전) 제8.6세대 인쇄 OLED 생산라인 1단계 프로젝트 - 국제 입찰공고 (1)",
+      "originalTitle": "TCL华星第8.6代印刷OLED生产线一期项目 - 国际招标公告(1)",
+      "translatedSummary": "4197-2640CSOTGZT8/131, TCL CSOT(화싱광전) 제8.6세대 인쇄 OLED 생산라인 1단계 프로젝트",
+      "originalSummary": "4197-2640CSOTGZT8/131,TCL华星第8.6代印刷OLED生产线一期项目",
+      "org": "광저우 화싱광전 인쇄 디스플레이 기술 유한공사",
+      "originalOrg": "广州华星光电印刷显示技术有限公司",
+      "translationIncomplete": false,
+      "country": "중국",
+      "countryCode": "CN",
+      "region": "중국 광둥성",
+      "status": "진행중",
+      "dueDate": "2026-09-29",
+      "postedDate": "2026-09-07",
+      "keywords": [
+        "디스플레이 장비"
+      ],
+      "classificationStatus": "확정",
+      "budget": null,
+      "currency": null,
+      "contractMethod": null,
+      "deliveryCondition": null,
+      "paymentCondition": null,
+      "eligibility": null,
+      "description": "4197-2640CSOTGZT8/131, TCL CSOT(화싱광전) 제8.6세대 인쇄 OLED 생산라인 1단계 프로젝트",
+      "attachments": [],
+      "url": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202609/ff8080819e42905601a07b92580a7c02.html",
+      "originalUrl": "https://chinabidding.mofcom.gov.cn/bidDetail/bidding/bulletin/202609/ff8080819e42905601a07b92580a7c02.html",
+      "source": "중국국제초표망(MOFCOM)",
+      "sourceCode": "MOFCOM",
+      "sourceSiteUrl": "https://chinabidding.mofcom.gov.cn/",
+      "sourceCountry": "CN",
+      "sourceType": "China Site",
+      "detectedLanguage": "zh-CN",
+      "noticeType": "정식입찰",
+      "projectNo": "4197-2640CSOTGZT8/131",
+      "equipmentStatus": "장비",
+      "equipmentReason": "산업(oled) + 장비(생산라인)",
+      "industry": "디스플레이",
+      "equipmentName": "생산라인",
+      "firstSeenAt": "2026-09-08T23:54:52+00:00"
     },
     {
       "id": "mofcomff8080819e42905601a06b8a09724dd5",
@@ -3123,98 +3230,6 @@
       "equipmentName": "자동광학검사",
       "quantity": "1대",
       "firstSeenAt": "2026-09-07T23:59:38+00:00"
-    },
-    {
-      "id": "ebnew709633705",
-      "title": "난퉁 캉위안 집적회로 패키징 기판 프로젝트 (1단계) - 자동광학검사(AOI) 장비 (블라인드 비아) 1대 재입찰 정정·변경 공고 (1)",
-      "translatedTitle": "난퉁 캉위안 집적회로 패키징 기판 프로젝트 (1단계) - 자동광학검사(AOI) 장비 (블라인드 비아) 1대 재입찰 정정·변경 공고 (1)",
-      "originalTitle": "南通康源集成电路封装载板项目（一期）-自动光学检测机（盲孔）1台重新招标澄清或变更公告(1)",
-      "translatedSummary": "자동광학검사(AOI) 장비",
-      "originalSummary": "自动光学检测机",
-      "org": "난퉁 캉위안 회로 과학기술 유한공사",
-      "originalOrg": "南通康源电路科技有限公司",
-      "translationIncomplete": false,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "장쑤성",
-      "status": "진행중",
-      "dueDate": null,
-      "postedDate": "2026-08-24",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "자동광학검사(AOI) 장비",
-      "attachments": [],
-      "url": "https://www.ebnew.com/businessShow/709633705.html",
-      "originalUrl": "https://www.ebnew.com/businessShow/709633705.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "정식입찰",
-      "projectNo": "0692-2640XM075270/04",
-      "equipmentStatus": "장비",
-      "equipmentReason": "산업(집적회로) + 장비(장비)",
-      "industry": "반도체",
-      "process": "패키징",
-      "equipmentName": "자동광학검사",
-      "quantity": "1대",
-      "firstSeenAt": "2026-08-24T22:16:29+00:00"
-    },
-    {
-      "id": "ebnew709633706",
-      "title": "난퉁 캉위안 집적회로 패키징 기판 프로젝트 (1단계) - 자동광학검사(AOI) 장비 2대 재입찰 정정·변경 공고 (1)",
-      "translatedTitle": "난퉁 캉위안 집적회로 패키징 기판 프로젝트 (1단계) - 자동광학검사(AOI) 장비 2대 재입찰 정정·변경 공고 (1)",
-      "originalTitle": "南通康源集成电路封装载板项目（一期）-自动光学检测机2台重新招标澄清或变更公告(1)",
-      "translatedSummary": "자동광학검사(AOI) 장비",
-      "originalSummary": "自动光学检测机",
-      "org": "난퉁 캉위안 회로 과학기술 유한공사",
-      "originalOrg": "南通康源电路科技有限公司",
-      "translationIncomplete": false,
-      "country": "중국",
-      "countryCode": "CN",
-      "region": "장쑤성",
-      "status": "진행중",
-      "dueDate": null,
-      "postedDate": "2026-08-24",
-      "keywords": [
-        "반도체 장비"
-      ],
-      "classificationStatus": "확정",
-      "budget": null,
-      "currency": null,
-      "contractMethod": null,
-      "deliveryCondition": null,
-      "paymentCondition": null,
-      "eligibility": null,
-      "description": "자동광학검사(AOI) 장비",
-      "attachments": [],
-      "url": "https://www.ebnew.com/businessShow/709633706.html",
-      "originalUrl": "https://www.ebnew.com/businessShow/709633706.html",
-      "source": "중국 비롄왕(EBNEW)",
-      "sourceCode": "EBNEW",
-      "sourceSiteUrl": "https://www.ebnew.com/",
-      "sourceCountry": "CN",
-      "sourceType": "China Site",
-      "detectedLanguage": "zh-CN",
-      "noticeType": "정식입찰",
-      "projectNo": "0692-2640XM075270/01",
-      "equipmentStatus": "장비",
-      "equipmentReason": "산업(집적회로) + 장비(장비)",
-      "industry": "반도체",
-      "process": "패키징",
-      "equipmentName": "자동광학검사",
-      "quantity": "2대",
-      "firstSeenAt": "2026-08-24T22:16:29+00:00"
     },
     {
       "id": "ebnew709780564",
