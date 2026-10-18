@@ -1,13 +1,13 @@
 {
-  "updatedAt": "2026-10-17T23:42:53+00:00",
+  "updatedAt": "2026-10-18T23:58:29+00:00",
   "sourceHealth": {
     "KANC": {
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 4,
-      "lastRunAt": "2026-10-17T23:42:53+00:00",
-      "lastSuccessAt": "2026-10-17T23:42:53+00:00",
+      "lastRunAt": "2026-10-18T23:58:29+00:00",
+      "lastSuccessAt": "2026-10-18T23:58:29+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -16,9 +16,9 @@
       "ok": true,
       "lastStatus": "정상",
       "lastError": null,
-      "collectedThisRun": 3,
-      "lastRunAt": "2026-10-17T23:42:53+00:00",
-      "lastSuccessAt": "2026-10-17T23:42:53+00:00",
+      "collectedThisRun": 2,
+      "lastRunAt": "2026-10-18T23:58:29+00:00",
+      "lastSuccessAt": "2026-10-18T23:58:29+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -28,8 +28,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 1,
-      "lastRunAt": "2026-10-17T23:42:53+00:00",
-      "lastSuccessAt": "2026-10-17T23:42:53+00:00",
+      "lastRunAt": "2026-10-18T23:58:29+00:00",
+      "lastSuccessAt": "2026-10-18T23:58:29+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -39,8 +39,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 19,
-      "lastRunAt": "2026-10-17T23:42:53+00:00",
-      "lastSuccessAt": "2026-10-17T23:42:53+00:00",
+      "lastRunAt": "2026-10-18T23:58:29+00:00",
+      "lastSuccessAt": "2026-10-18T23:58:29+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -50,8 +50,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 21,
-      "lastRunAt": "2026-10-17T23:42:53+00:00",
-      "lastSuccessAt": "2026-10-17T23:42:53+00:00",
+      "lastRunAt": "2026-10-18T23:58:29+00:00",
+      "lastSuccessAt": "2026-10-18T23:58:29+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -61,8 +61,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 1,
-      "lastRunAt": "2026-10-17T23:42:53+00:00",
-      "lastSuccessAt": "2026-10-17T23:42:53+00:00",
+      "lastRunAt": "2026-10-18T23:58:29+00:00",
+      "lastSuccessAt": "2026-10-18T23:58:29+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -72,10 +72,10 @@
       "lastStatus": "결과 없음(기존 유지)",
       "lastError": null,
       "collectedThisRun": 0,
-      "lastRunAt": "2026-10-17T23:42:53+00:00",
+      "lastRunAt": "2026-10-18T23:58:29+00:00",
       "lastSuccessAt": "2026-10-16T00:04:56+00:00",
-      "consecutiveFailures": 2,
-      "failureAlertSent": false,
+      "consecutiveFailures": 3,
+      "failureAlertSent": true,
       "lastRunMode": "scheduled"
     },
     "DGIST": {
@@ -83,8 +83,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 10,
-      "lastRunAt": "2026-10-17T23:42:53+00:00",
-      "lastSuccessAt": "2026-10-17T23:42:53+00:00",
+      "lastRunAt": "2026-10-18T23:58:29+00:00",
+      "lastSuccessAt": "2026-10-18T23:58:29+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -94,8 +94,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 0,
-      "lastRunAt": "2026-10-17T23:42:53+00:00",
-      "lastSuccessAt": "2026-10-17T23:42:53+00:00",
+      "lastRunAt": "2026-10-18T23:58:29+00:00",
+      "lastSuccessAt": "2026-10-18T23:58:29+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
@@ -105,8 +105,8 @@
       "lastStatus": "정상",
       "lastError": null,
       "collectedThisRun": 3,
-      "lastRunAt": "2026-10-17T23:42:53+00:00",
-      "lastSuccessAt": "2026-10-17T23:42:53+00:00",
+      "lastRunAt": "2026-10-18T23:58:29+00:00",
+      "lastSuccessAt": "2026-10-18T23:58:29+00:00",
       "consecutiveFailures": 0,
       "failureAlertSent": false,
       "lastRunMode": "scheduled"
