@@ -53,7 +53,10 @@ SOURCE_SITE_URL = "https://www.jetro.go.jp/en/database/procurement/"
 SOURCE_COUNTRY_CODE = "JP"
 
 BASE_URL = "https://www.jetro.go.jp"
-LIST_API_URL = BASE_URL + "/view_interface.php?blockId=27911119"
+# 2026-10 중순부터 예전 검색 엔드포인트(view_interface.php)가 503만 돌려준다.
+# 사이트 자체는 정상이고, 지금은 목록 전체를 담은 정적 JSON 한 개를 받아
+# 브라우저가 직접 거른다. 그 파일을 같은 방식으로 읽는다.
+LIST_JSON_URL = BASE_URL + "/XiProcurementSearch/xi_proc_central_en.json"
 DETAIL_URL_TMPL = BASE_URL + "/en/database/procurement/national/articles/{xid}/{aid}.html"
 LIST_PAGE_URL = BASE_URL + "/en/database/procurement/national/list.html"
 
@@ -66,7 +69,6 @@ LIST_HEADERS = {
     "User-Agent": BROWSER_UA,
     "Referer": LIST_PAGE_URL,
     "Accept": "application/json, text/javascript, */*; q=0.01",
-    "X-Requested-With": "XMLHttpRequest",
     "Accept-Language": "en-US,en;q=0.9",
 }
 DETAIL_HEADERS = {
@@ -206,8 +208,12 @@ MONTHS = {m: i for i, m in enumerate(
 
 
 def parse_list_date(text):
-    """'Sep 02, 2026' → '2026-09-02'"""
-    m = re.match(r"\s*([A-Za-z]{3})[a-z]*\s+(\d{1,2}),\s*(\d{4})", text or "")
+    """'Sep 02, 2026' → '2026-09-02'. 목록 JSON이 쓰는 '2026-09-02'도 받는다."""
+    text = (text or "").strip()
+    m0 = re.match(r"^(\d{4})-(\d{2})-(\d{2})$", text)
+    if m0:
+        return text
+    m = re.match(r"\s*([A-Za-z]{3})[a-z]*\s+(\d{1,2}),\s*(\d{4})", text)
     if not m:
         return None
     month = MONTHS.get(m.group(1).lower())
@@ -309,22 +315,52 @@ def parse_detail(html):
     return fields
 
 
-def search_list(keyword, page):
-    params = {
-        "type": "", "from": "", "to": "", "entity": "", "area": "",
-        "keyword": keyword,
-        "classification1": "", "classification2": "", "classification3": "",
-        "deadline": "01",  # 마감일이 지나지 않은 공고만
-        "deadline_from": "", "deadline_to": "",
-    }
-    url = LIST_API_URL + "&" + urllib.parse.urlencode(params)
-    if page > 0:
-        url += f"&_page={page + 1}"
-    raw = fetch(url, LIST_HEADERS)
+def _row_date(value):
+    """목록 JSON의 'YYYYMMDD' → 'YYYY-MM-DD'. 비었거나 형식이 다르면 None."""
+    value = (value or "").strip()
+    if not re.fullmatch(r"\d{8}", value):
+        return None
     try:
-        return json.loads(raw)
+        return datetime.strptime(value, "%Y%m%d").date().isoformat()
+    except ValueError:
+        return None
+
+
+def fetch_list_rows():
+    """목록 전체를 받아 예전 검색 응답과 같은 모양의 dict 목록으로 바꾼다.
+
+    JSON은 자리를 아끼려고 열 이름과 값을 따로 담고, 기관·공고종류는 코드로
+    둔 뒤 masters에서 이름을 찾게 돼 있다. 뒤쪽 코드가 예전과 똑같이
+    row.get("title") 처럼 쓸 수 있도록 여기서 다 풀어 준다.
+    """
+    raw = fetch(LIST_JSON_URL, LIST_HEADERS)
+    try:
+        data = json.loads(raw)
     except json.JSONDecodeError:
         raise RuntimeError("JETRO 목록 응답이 JSON이 아닙니다(차단 또는 형식 변경 가능성)")
+
+    if not isinstance(data, dict):
+        raise RuntimeError("JETRO 목록 JSON의 최상위가 객체가 아닙니다(형식 변경 가능성)")
+    cols = data.get("cols")
+    rows = data.get("rows")
+    if not isinstance(cols, list) or not isinstance(rows, list):
+        raise RuntimeError("JETRO 목록 JSON에 cols/rows가 없습니다(형식 변경 가능성)")
+
+    masters = data.get("masters") or {}
+    agencies = masters.get("agencies") or {}
+    kinds = masters.get("paKinds") or {}
+
+    out = []
+    for values in rows:
+        if not isinstance(values, list) or len(values) != len(cols):
+            continue
+        row = dict(zip(cols, values))
+        row["agency"] = agencies.get(row.get("agency"), "") or ""
+        row["paKind"] = kinds.get(row.get("type"), "") or ""
+        row["date"] = _row_date(row.get("date"))
+        row["listDeadline"] = _row_date(row.get("deadline"))
+        out.append(row)
+    return out
 
 
 # JETRO 공고 종류(paKind)는 사이트에서 정해진 값이라 그대로 대응시킬 수 있다.
@@ -416,7 +452,11 @@ def build_item(row, detail_fields, detail_url):
 
     summary = detail_fields.get("summay of notice") or detail_fields.get("summary of notice") or ""
     posted = parse_list_date(row.get("date")) or parse_list_date(detail_fields.get("publishing date", ""))
-    due = parse_deadline(summary)
+    # 마감일은 목록 JSON의 값을 먼저 쓴다. JETRO가 구조화해 둔 필드라
+    # 본문 오타에 흔들리지 않는다 — 실제로 "December. 11, 2027"처럼 연도를
+    # 잘못 적은 공고가 있고(목록은 2026-12-11), 본문만 읽으면 14개월 뒤로
+    # 잡힌다. 목록에 값이 없을 때만 본문에서 읽는다.
+    due = row.get("listDeadline") or parse_deadline(summary)
 
     categories = match_categories(original_title) or match_categories(summary)
     notice_type = "정식입찰"
@@ -483,32 +523,38 @@ def collect():
     candidates = []
     raw_count = 0
 
-    for keyword in SEARCH_KEYWORDS:
-        for page in range(MAX_PAGES_PER_KEYWORD):
-            try:
-                data = search_list(keyword, page)
-            except RuntimeError as exc:
-                print(f"[JETRO] '{keyword}' 검색 실패, 다음 키워드로 넘어감: {exc}")
-                break
-            items = FETCH_STATE.mark(
-                data.get("items") or [],
-                structure_ok=isinstance(data, dict) and "items" in data)
-            raw_count += len(items)
-            if not items:
-                break
-            for row in items:
-                xid = row.get("xid")
-                if xid is None or xid in seen_xid:
-                    continue
-                seen_xid.add(xid)
-                candidates.append(row)
-            pagination = data.get("pagination") or {}
-            total = pagination.get("total") or 0
-            per_page = pagination.get("perPage") or 30
-            if (page + 1) * per_page >= total:
-                break
-            time.sleep(REQUEST_DELAY_SECONDS)
-        time.sleep(REQUEST_DELAY_SECONDS)
+    try:
+        rows = fetch_list_rows()
+    except RuntimeError as exc:
+        # 목록을 통째로 못 읽었다. 0건을 반환하면 기존 수집분이 유지된다
+        # (run_collector가 FETCH_STATE를 보고 판단한다).
+        print(f"[JETRO] 목록을 읽지 못했습니다: {exc}")
+        rows = []
+
+    rows = FETCH_STATE.mark(rows, structure_ok=bool(rows and "title" in rows[0]))
+    raw_count = len(rows)
+
+    today = datetime.now().date()
+    cutoff_posted = (datetime.now() - timedelta(days=LOOKBACK_DAYS)).date()
+    expired = too_old = 0
+    for row in rows:
+        xid = row.get("xid")
+        if xid is None or xid in seen_xid:
+            continue
+        # 예전에는 서버가 걸러 주던 조건이다(deadline=01, 조회 기간). 이제는
+        # 전체 목록이 한 번에 오므로 여기서 같은 기준으로 거른다.
+        deadline = row.get("listDeadline")
+        if deadline and deadline < today.isoformat():
+            expired += 1
+            continue
+        posted = row.get("date")
+        if posted and posted < cutoff_posted.isoformat():
+            too_old += 1
+            continue
+        seen_xid.add(xid)
+        candidates.append(row)
+
+    print(f"[JETRO] 마감 지남 제외: {expired}건 / {LOOKBACK_DAYS}일보다 오래됨 제외: {too_old}건")
 
     print(f"[JETRO] 조회 대상(raw): {raw_count}건, 중복 제거 후 {len(candidates)}건")
 

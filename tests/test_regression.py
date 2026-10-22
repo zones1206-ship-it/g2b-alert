@@ -992,6 +992,158 @@ DETAIL_HTML = (
 )
 
 
+class JetroListJsonTest(unittest.TestCase):
+    """AE. JETRO 목록을 정적 JSON에서 읽는다 — 2026-10.
+
+    2026-10 중순부터 예전 검색 엔드포인트(view_interface.php)가 503만
+    돌려준다. 사이트와 목록 페이지는 멀쩡한데 그 API만 막혔고, 그 결과
+    6일 동안 새 공고가 하나도 들어오지 않았다.
+
+    지금 사이트는 목록 전체를 담은 정적 JSON 한 개를 받아 브라우저가
+    직접 거른다. 같은 파일을 읽되, 예전에 서버가 해 주던 일(마감 지난
+    공고 제외, 조회 기간 제한)을 여기서 한다.
+    """
+
+    # 실제 응답에서 그대로 가져온 모양 — 열 이름과 값이 따로 있고,
+    # 기관·공고종류는 코드로만 들어 있다.
+    SAMPLE = {
+        "version": 1792566850, "govKind": "central", "lang": "en",
+        "cols": ["xid", "aid", "title", "date", "agency", "location",
+                 "cats", "deadline", "type"],
+        "masters": {
+            "agencies": {"0001": "House of Representatives", "0005": "Cabinet"},
+            "prefectures": {"13": "Tokyo", "26": "Kyoto"},
+            "paKinds": {"01": "Notice of Procurement (Goods & Services)",
+                        "07": "Future Procurement Plan"},
+        },
+        "rows": [
+            ["405697", "2026102100010001", "Compact Sputtering System 1 Set",
+             "20261021", "0001", "26", "0026", "20261207", "01"],
+            ["405698", "2026102100020000", "Generation of synthetic image data",
+             "20261021", "0005", "13", "0026", "", "07"],
+        ],
+    }
+
+    def setUp(self):
+        self._fetch = jetro.fetch
+
+    def tearDown(self):
+        jetro.fetch = self._fetch
+
+    def _serve(self, payload):
+        jetro.fetch = lambda url, headers, retries=3: json.dumps(payload)
+
+    def test_rows_are_expanded_into_dicts(self):
+        self._serve(self.SAMPLE)
+        rows = jetro.fetch_list_rows()
+        self.assertEqual(len(rows), 2)
+        first = rows[0]
+        self.assertEqual(first["xid"], "405697")
+        self.assertEqual(first["aid"], "2026102100010001")
+        self.assertEqual(first["title"], "Compact Sputtering System 1 Set")
+
+    def test_codes_are_resolved_to_names(self):
+        """기관과 공고종류는 코드로 오므로 masters에서 풀어야 한다."""
+        self._serve(self.SAMPLE)
+        rows = jetro.fetch_list_rows()
+        self.assertEqual(rows[0]["agency"], "House of Representatives")
+        self.assertEqual(rows[0]["paKind"], "Notice of Procurement (Goods & Services)")
+        self.assertEqual(rows[1]["agency"], "Cabinet")
+        self.assertEqual(rows[1]["paKind"], "Future Procurement Plan")
+
+    def test_dates_become_iso(self):
+        self._serve(self.SAMPLE)
+        rows = jetro.fetch_list_rows()
+        self.assertEqual(rows[0]["date"], "2026-10-21")
+        self.assertEqual(rows[0]["listDeadline"], "2026-12-07")
+
+    def test_missing_deadline_is_none(self):
+        """마감일이 비어 있는 공고가 실제로 4분의 1쯤 된다."""
+        self._serve(self.SAMPLE)
+        rows = jetro.fetch_list_rows()
+        self.assertIsNone(rows[1]["listDeadline"])
+
+    def test_unknown_code_does_not_leak_raw_code(self):
+        """masters에 없는 코드를 화면에 그대로 내보내지 않는다."""
+        payload = json.loads(json.dumps(self.SAMPLE))
+        payload["rows"][0][4] = "9999"
+        payload["rows"][0][8] = "99"
+        self._serve(payload)
+        rows = jetro.fetch_list_rows()
+        self.assertEqual(rows[0]["agency"], "")
+        self.assertEqual(rows[0]["paKind"], "")
+
+    def test_row_length_mismatch_is_skipped(self):
+        """열 수가 맞지 않는 행은 조용히 건너뛴다 — 엉뚱한 값이 섞이면 안 된다."""
+        payload = json.loads(json.dumps(self.SAMPLE))
+        payload["rows"].append(["405699", "short"])
+        self._serve(payload)
+        self.assertEqual(len(jetro.fetch_list_rows()), 2)
+
+    def test_format_change_raises(self):
+        """형식이 바뀌면 0건을 조용히 반환하지 않고 알린다."""
+        for broken in ({"items": []}, {"cols": [], "rows": "nope"}, []):
+            with self.subTest(broken=str(broken)[:24]):
+                self._serve(broken)
+                with self.assertRaises(RuntimeError):
+                    jetro.fetch_list_rows()
+
+    def test_non_json_raises(self):
+        jetro.fetch = lambda url, headers, retries=3: "<html>503</html>"
+        with self.assertRaises(RuntimeError):
+            jetro.fetch_list_rows()
+
+    def test_reads_the_static_json_not_the_dead_api(self):
+        """막힌 엔드포인트로 돌아가지 않는다."""
+        self.assertIn("xi_proc_central_en.json", jetro.LIST_JSON_URL)
+        self.assertFalse(hasattr(jetro, "LIST_API_URL"))
+
+    def test_row_date_helper(self):
+        self.assertEqual(jetro._row_date("20261021"), "2026-10-21")
+        for bad in ("", None, "2026-10-21", "nonsense", "20261345"):
+            with self.subTest(bad=bad):
+                self.assertIsNone(jetro._row_date(bad))
+
+
+class JetroDeadlinePreferenceTest(unittest.TestCase):
+    """AF. 마감일은 목록 값을 먼저 쓴다 — 2026-10.
+
+    실측: "Cleaning operation outsourcing 1 set"(2026-10-19 게시)의 본문에
+    ⑺ Time-limit for tender : 5 : 00 P.M. December. 11, 2027 이라고 적혀
+    있다. 연도가 한 해 밀린 원문 오타다. 목록 JSON은 2026-12-11로 맞다.
+
+    본문만 읽으면 마감이 14개월 뒤로 잡혀, 이미 끝난 공고가 계속 "진행 중"
+    으로 남는다. 목록은 JETRO가 구조화해 둔 필드라 본문 오타에 흔들리지
+    않으므로 그쪽을 먼저 쓴다.
+    """
+
+    BODY = ("⑴ Contracting entity : RIKEN "
+            "⑺ Time-limit for tender : 5 : 00 P.M. December. 11, 2027")
+
+    def _row(self, deadline):
+        return {"xid": "1", "aid": "a1", "title": "Cleaning operation outsourcing 1 set",
+                "date": "2026-10-19", "listDeadline": deadline, "agency": "RIKEN",
+                "paKind": "Notice of Procurement (Goods & Services)"}
+
+    def test_list_deadline_wins_over_typo_in_body(self):
+        item = jetro.build_item(self._row("2026-12-11"),
+                                {"summay of notice": self.BODY}, "https://x.invalid")
+        self.assertEqual(item["dueDate"], "2026-12-11")
+
+    def test_body_is_used_when_list_has_none(self):
+        """목록에 마감일이 없으면 본문에서 읽는다 — 기존 파서는 그대로 쓴다."""
+        item = jetro.build_item(self._row(None),
+                                {"summay of notice": self.BODY}, "https://x.invalid")
+        self.assertEqual(item["dueDate"], "2027-12-11")
+
+    def test_no_deadline_anywhere_stays_empty(self):
+        """어디에도 없으면 날짜를 지어내지 않는다."""
+        item = jetro.build_item(self._row(None),
+                                {"summay of notice": "⑴ Contracting entity : RIKEN"},
+                                "https://x.invalid")
+        self.assertIsNone(item["dueDate"])
+
+
 class JetroDetailFailureTest(unittest.TestCase):
     """K. JETRO 상세 일시 실패 — 목록에 있는 공고를 잃지 않는지.
 
@@ -1001,34 +1153,33 @@ class JetroDetailFailureTest(unittest.TestCase):
     """
 
     def setUp(self):
-        self._search = jetro.search_list
+        self._search = jetro.fetch_list_rows
         self._fetch = jetro.fetch
         self._sleep = time.sleep
         self._prev = jetro.PREVIOUS_ITEMS
         time.sleep = lambda _s: None
 
     def tearDown(self):
-        jetro.search_list = self._search
+        jetro.fetch_list_rows = self._search
         jetro.fetch = self._fetch
         jetro.PREVIOUS_ITEMS = self._prev
         time.sleep = self._sleep
 
     def _list_rows(self, xids):
+        # fetch_list_rows()가 돌려주는 모양 그대로 — 코드와 masters는 이미
+        # 풀려 있고, 날짜는 ISO다.
         return [{"xid": x, "aid": f"a{x}", "title": "semiconductor wafer etching system",
-                 "date": "Sep 02, 2026",
+                 "date": "2026-09-02", "listDeadline": "2999-10-19",
+                 "agency": "RIKEN",
                  "paKind": "Notice of Procurement (Goods & Services)"} for x in xids]
 
     def _install(self, xids, failing_xids=(), list_fails=False):
         rows = self._list_rows(xids)
-        served = {"n": 0}
 
-        def fake_search(keyword, page):
+        def fake_list():
             if list_fails:
                 raise RuntimeError("목록 실패(모의)")
-            if page > 0 or served["n"] > 0:
-                return {"items": [], "pagination": {"total": len(rows), "perPage": 30}}
-            served["n"] += 1
-            return {"items": rows, "pagination": {"total": len(rows), "perPage": 30}}
+            return rows
 
         def fake_fetch(url, headers, retries=3):
             for x in failing_xids:
@@ -1036,7 +1187,7 @@ class JetroDetailFailureTest(unittest.TestCase):
                     raise RuntimeError("HTTP Error 503: Service Unavailable")
             return DETAIL_HTML
 
-        jetro.search_list = fake_search
+        jetro.fetch_list_rows = fake_list
         jetro.fetch = fake_fetch
 
     def _previous(self, xid, first_seen="2026-09-01T00:00:00+09:00"):
