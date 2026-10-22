@@ -1782,25 +1782,28 @@ class KancDeadlineParsingTest(unittest.TestCase):
 
 
 class NoticeCardMessageTest(unittest.TestCase):
-    """AG. 신규 공고 알림을 상세 화면과 같은 차례로 적는다 — 2026-10.
+    """AG. 신규 공고 알림을 상세 화면과 똑같이 적는다 — 2026-10.
 
-    한 줄 요약으로는 그 공고를 볼지 말지 판단하기 어려웠다. 화면에서 보던
-    기본 정보·일정·공고 정보·핵심 요약을 같은 순서로 담고, 링크는 원문
-    사이트가 아니라 그 공고를 펼친 레이더로 보낸다.
+    한 줄 요약으로는 그 공고를 볼지 말지 판단하기 어려웠다. 그렇다고
+    화면과 다른 항목을 보내면 같은 공고인지 헷갈린다. app.js의 renderCard가
+    그리는 구획·순서·라벨을 그대로 따라간다.
     """
 
+    APP_JS = os.path.join(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__))), "app.js")
+
     ITEM = {
-        "id": "mofcom-abc123",
-        "title": "청두 BOE 광전 제4.5세대 TFT-LCD 생산라인 기술 개조 프로젝트",
-        "org": "청두 BOE 광전 과학기술 유한공사",
-        "country": "중국", "region": "중국 쓰촨성",
-        "industry": "디스플레이", "equipmentName": "생산라인",
-        "source": "중국국제초표망(MOFCOM)", "keywords": ["디스플레이 장비"],
-        "noticeType": "정식입찰", "status": "진행중",
-        "postedDate": "2026-09-22", "dueDate": "2026-10-13",
-        "projectNo": "4197-264BOECDCZ02/04",
-        "description": "4197-264BOECDCZ02/04, 청두 BOE 광전 생산라인 기술 개조",
-        "url": "https://chinabidding.mofcom.gov.cn/bidDetail/x.html",
+        "id": "ebnew710319126",
+        "title": "광저우 GuangXin 패키징 기판 유한공사 프로젝트 - Foup 세정기 공고",
+        "org": "광저우 GuangXin 패키징 기판 유한공사",
+        "country": "중국", "region": "광둥성",
+        "industry": "반도체", "process": "세정", "equipmentName": "세정기",
+        "source": "중국 비롄왕(EBNEW)", "keywords": ["반도체 장비"],
+        "noticeType": "낙찰·수주결과", "status": "진행중",
+        "postedDate": "2026-10-16", "dueDate": "2999-10-19",
+        "projectNo": "0730-264010SZ0103/35",
+        "description": "세정기",
+        "url": "https://www.ebnew.com/businessShow/710319126.html",
         "equipmentStatus": "장비",
     }
 
@@ -1813,93 +1816,118 @@ class NoticeCardMessageTest(unittest.TestCase):
                 item[key] = value
         return NT.format_message(item)
 
-    # --- 링크 ------------------------------------------------------------
+    def _app_js(self):
+        with io.open(self.APP_JS, encoding="utf-8") as f:
+            return f.read()
 
-    def test_link_goes_to_the_radar_not_the_source_site(self):
-        msg = self._msg()
-        self.assertIn("zones1206-ship-it.github.io/g2b-alert/#n=mofcom-abc123", msg)
-        self.assertNotIn("chinabidding.mofcom.gov.cn", msg)
+    # --- 화면과 같은 항목인가 --------------------------------------------
 
-    def test_link_is_the_last_line(self):
-        self.assertTrue(self._msg().rstrip().endswith(
-            NT.notice_link(self.ITEM)), "링크가 마지막 줄에 그대로 있어야 클릭된다")
+    def test_labels_match_the_detail_screen(self):
+        """app.js가 쓰는 라벨을 그대로 쓴다 — 화면을 고치면 여기서 걸린다."""
+        source = self._app_js()
+        screen = re.findall(r'detailRow(?:WithFallback)?\("([^"]+)"', source)
+        msg = self._msg(deliveryCondition="2027-03-30", eventPeriod="연중",
+                        quantity="1식", contractMethod="공개경쟁",
+                        paymentCondition="현금", eligibility="제한없음")
+        for label in screen:
+            with self.subTest(label=label):
+                self.assertIn(f"· {label}: ", msg)
 
-    def test_id_is_percent_encoded(self):
-        link = NT.notice_link({"id": "a b/c#d"})
-        self.assertIn("#n=a%20b%2Fc%23d", link)
-
-    def test_missing_id_falls_back_to_front_page(self):
-        self.assertEqual(NT.notice_link({}), NT.SITE_URL)
-
-    # --- 구성 ------------------------------------------------------------
+    def test_section_titles_match_the_screen(self):
+        source = self._app_js()
+        for title in ("기본 정보", "일정 정보", "공고 정보", "핵심 요약"):
+            with self.subTest(title=title):
+                self.assertIn(f"<h4>{title}</h4>", source)
+                self.assertIn(f"▬ {title}", self._msg())
 
     def test_sections_appear_in_screen_order(self):
         msg = self._msg()
         order = [msg.index(s) for s in
-                 ("▬ 기본 정보", "▬ 일정", "▬ 공고 정보", "▬ 핵심 요약")]
+                 ("▬ 기본 정보", "▬ 일정 정보", "▬ 공고 정보", "▬ 핵심 요약")]
         self.assertEqual(order, sorted(order))
 
-    def test_key_fields_are_present(self):
+    def test_basic_info_rows_are_in_screen_order(self):
         msg = self._msg()
-        for expected in ("· 산업: 디스플레이", "· 장비: 생산라인",
-                         "· 출처: 중국국제초표망(MOFCOM)", "· 유형: 정식입찰",
-                         "· 등록일: 2026-09-22", "· 마감일: 2026-10-13",
-                         "· 상태: 진행중", "· 공고번호: 4197-264BOECDCZ02/04"):
-            with self.subTest(expected=expected):
-                self.assertIn(expected, msg)
+        order = [msg.index(f"· {l}: ") for l in
+                 ("산업", "공정", "장비명", "국가", "지역", "출처",
+                  "발주기관", "분야", "정보 유형")]
+        self.assertEqual(order, sorted(order))
 
-    def test_country_is_not_repeated_in_region(self):
-        """region이 '중국 쓰촨성'이라 그대로 붙이면 '중국 (중국 쓰촨성)'이 된다."""
-        self.assertIn("· 국가: 중국 (쓰촨성)", self._msg())
+    def test_country_and_region_are_separate_rows(self):
+        """예전에는 '중국 (광둥성)'으로 합쳐 적어 화면과 달랐다."""
+        msg = self._msg()
+        self.assertIn("· 국가: 중국", msg)
+        self.assertIn("· 지역: 광둥성", msg)
+        self.assertNotIn("중국 (광둥성)", msg)
 
-    def test_country_alone_when_no_region(self):
-        self.assertIn("· 국가: 일본", self._msg(country="일본", region=None))
+    def test_process_is_included(self):
+        """화면에는 있는데 알림에서 빠져 있던 항목."""
+        self.assertIn("· 공정: 세정", self._msg())
 
-    def test_empty_fields_are_dropped_not_blank(self):
-        msg = self._msg(industry=None, equipmentName=None, status=None)
-        self.assertNotIn("· 산업:", msg)
-        self.assertNotIn("· 장비:", msg)
-        self.assertNotIn("· 상태:", msg)
-        self.assertNotIn(": \n", msg)
+    def test_org_appears_in_basic_info_too(self):
+        self.assertIn("· 발주기관: 광저우 GuangXin 패키징 기판 유한공사", self._msg())
 
-    def test_section_disappears_when_all_rows_empty(self):
-        msg = self._msg(postedDate=None, dueDate=None, status=None)
-        self.assertNotIn("▬ 일정", msg)
+    # --- 값이 없을 때 ----------------------------------------------------
 
-    def test_budget_shown_as_unknown_when_missing(self):
-        self.assertIn("· 예산: 정보 없음", self._msg())
+    def test_empty_rows_are_dropped(self):
+        msg = self._msg(process=None, region=None)
+        self.assertNotIn("· 공정:", msg)
+        self.assertNotIn("· 지역:", msg)
+
+    def test_screen_fallbacks_are_matched(self):
+        """화면이 기본값을 보여 주는 항목은 알림도 같은 문구를 쓴다."""
+        msg = self._msg(budget=None, postedDate=None, dueDate=None)
+        self.assertIn("· 예산: 예산 정보 없음", msg)
+        self.assertIn("· 등록일: 확인 필요", msg)
+        self.assertIn("· 마감일: 마감일 확인 필요", msg)
+
+    def test_summary_fallback_matches_screen(self):
+        self.assertIn("상세 설명이 제공되지 않았습니다.", self._msg(description=None))
 
     def test_long_summary_is_trimmed(self):
-        msg = self._msg(description="가" * 600)
+        msg = self._msg(description="가" * 900)
         self.assertIn("…", msg)
-        self.assertLess(len(msg), 1200)
 
     def test_fits_telegram_limit(self):
-        """Telegram 한 통은 4096자까지다."""
-        msg = self._msg(title="가" * 300, description="나" * 600,
-                        org="다" * 200)
+        msg = self._msg(title="가" * 300, description="나" * 900, org="다" * 200)
         self.assertLess(len(msg), 4096)
 
-    # --- D-day -----------------------------------------------------------
+    # --- 마감일과 상태 ---------------------------------------------------
 
-    def test_d_day_counts_down(self):
+    def test_dday_matches_screen_badge(self):
         today = date.today()
-        self.assertEqual(NT._d_day((today + timedelta(days=7)).isoformat()), "D-7")
-        self.assertEqual(NT._d_day(today.isoformat()), "D-DAY")
-        self.assertEqual(NT._d_day((today - timedelta(days=1)).isoformat()), "마감 지남")
+        self.assertEqual(NT._dday_label((today + timedelta(days=4)).isoformat()), "D-4")
+        self.assertEqual(NT._dday_label(today.isoformat()), "오늘 마감")
+        self.assertEqual(NT._dday_label((today - timedelta(days=1)).isoformat()), "마감")
+        self.assertEqual(NT._dday_label(None), "마감일 확인 필요")
 
-    def test_d_day_ignores_bad_dates(self):
-        for bad in (None, "", "2026-13-45", "곧"):
-            with self.subTest(bad=bad):
-                self.assertIsNone(NT._d_day(bad))
+    def test_status_turns_closed_after_deadline(self):
+        """화면과 같게, 마감일이 지났으면 '진행중'을 그대로 믿지 않는다."""
+        past = (date.today() - timedelta(days=1)).isoformat()
+        self.assertIn("· 상태: 마감", self._msg(dueDate=past, status="진행중"))
+        future = (date.today() + timedelta(days=5)).isoformat()
+        self.assertIn("· 상태: 진행중", self._msg(dueDate=future, status="진행중"))
 
-    def test_no_deadline_line_without_due_date(self):
-        self.assertNotIn("🗓", self._msg(dueDate=None))
+    def test_deadline_line_is_always_present(self):
+        self.assertIn("📅 마감일 확인 필요", self._msg(dueDate=None))
 
-    # --- 기존 정책 보호 ---------------------------------------------------
+    # --- 링크 ------------------------------------------------------------
+
+    def test_link_goes_to_the_radar_not_the_source_site(self):
+        msg = self._msg()
+        self.assertIn("zones1206-ship-it.github.io/g2b-alert/#n=ebnew710319126", msg)
+        self.assertNotIn("www.ebnew.com", msg)
+
+    def test_link_is_the_last_line(self):
+        self.assertTrue(self._msg().rstrip().endswith(NT.notice_link(self.ITEM)))
+
+    def test_id_is_percent_encoded(self):
+        self.assertIn("#n=a%20b%2Fc%23d", NT.notice_link({"id": "a b/c#d"}))
+
+    def test_missing_id_falls_back_to_front_page(self):
+        self.assertEqual(NT.notice_link({}), NT.SITE_URL)
 
     def test_site_link_message_shares_one_url(self):
-        """사이트 주소가 두 군데 적혀 어긋나지 않게 한 곳에서만 정의한다."""
         self.assertIs(SITELINK.SITE_URL, NT.SITE_URL)
         self.assertTrue(SITELINK.MESSAGE.endswith(NT.SITE_URL))
 

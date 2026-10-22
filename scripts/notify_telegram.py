@@ -97,31 +97,55 @@ def notice_link(item):
     return SITE_URL + "#n=" + urllib.parse.quote(str(notice_id), safe="")
 
 
-def _d_day(due):
-    """'D-7' / 'D-DAY' / '마감 지남'. 날짜 형식이 이상하면 None."""
+def _days_until(due):
+    """오늘부터 마감까지 남은 날. 날짜 형식이 이상하면 None(app.js daysUntil)."""
     if not due:
         return None
     try:
-        left = (datetime.strptime(due, "%Y-%m-%d").date() - date.today()).days
+        return (datetime.strptime(due, "%Y-%m-%d").date() - date.today()).days
     except ValueError:
         return None
+
+
+def _dday_label(due):
+    """화면의 D-day 배지와 같은 문구(app.js ddayBadge)."""
+    left = _days_until(due)
+    if left is None:
+        return "마감일 확인 필요"
     if left < 0:
-        return "마감 지남"
-    return "D-DAY" if left == 0 else f"D-{left}"
+        return "마감"
+    return "오늘 마감" if left == 0 else f"D-{left}"
 
 
-def _section(title, rows):
-    """값이 있는 줄만 남긴다. 다 비면 구획 자체를 넣지 않는다."""
-    body = [f"· {label}: {value}" for label, value in rows if value]
-    return [title] + body if body else []
+def _display_status(item):
+    """마감일이 지났으면 '마감'으로 본다(app.js displayStatus).
+
+    원문에서 가져온 status는 수집 시점 값이라 마감일이 지나도 '진행중'으로
+    남아 있다.
+    """
+    left = _days_until(item.get("dueDate"))
+    if left is not None and left < 0:
+        return "마감"
+    return item.get("status")
+
+
+def _rows(pairs):
+    """값이 있는 줄만 남긴다(app.js detailRow)."""
+    return [f"· {label}: {value}" for label, value in pairs if value]
+
+
+def _section(title, pairs):
+    """한 구획. 담을 줄이 없으면 제목도 넣지 않는다."""
+    body = _rows(pairs)
+    return ["", title] + body if body else []
 
 
 def format_message(item):
-    """공고 하나를 상세 화면과 같은 차례로 적는다.
+    """공고 하나를 상세 화면과 같은 항목·순서·라벨로 적는다.
 
-    한 줄 요약으로는 그 공고를 볼지 말지 판단하기 어려워, 화면에서 보던
-    기본 정보·일정·공고 정보·핵심 요약을 같은 순서로 담는다. 값이 없는
-    항목은 빈 줄로 남기지 않고 아예 뺀다.
+    화면에서 보던 것과 다른 내용이 알림으로 오면 같은 공고인지 헷갈린다.
+    그래서 app.js의 renderCard가 그리는 구획을 그대로 따라간다 —
+    기본 정보 / 일정 정보 / 공고 정보 / 핵심 요약.
     """
     lines = ["📢 신규 공고", ""]
     lines.append(item.get("title") or "(제목 없음)")
@@ -130,48 +154,44 @@ def format_message(item):
     if item.get("org"):
         lines.append("🏛 " + item["org"])
     due = item.get("dueDate")
-    if due:
-        tail = _d_day(due)
-        lines.append(f"🗓 마감 {due}" + (f" ({tail})" if tail else ""))
-
-    country = item.get("country") or ""
-    region = item.get("region") or ""
-    if region and country and region.startswith(country):
-        # "중국 쓰촨성"처럼 지역에 국가가 이미 들어 있으면 겹쳐 적지 않는다.
-        region = region[len(country):].strip()
-    where = f"{country} ({region})" if country and region else (country or region)
+    lines.append(f"📅 마감일 {due or '확인 필요'}  ·  {_dday_label(due)}")
 
     blocks = [
         _section("▬ 기본 정보", [
             ("산업", item.get("industry")),
-            ("장비", item.get("equipmentName")),
-            ("국가", where),
+            ("공정", item.get("process")),
+            ("장비명", item.get("equipmentName")),
+            ("국가", item.get("country")),
+            ("지역", item.get("region")),
             ("출처", item.get("source")),
+            ("발주기관", item.get("org")),
             ("분야", ", ".join(item.get("keywords") or [])),
-            ("유형", item.get("noticeType")),
+            ("정보 유형", item.get("noticeType")),
         ]),
-        _section("▬ 일정", [
-            ("등록일", item.get("postedDate")),
-            ("마감일", due),
-            ("상태", item.get("status")),
+        _section("▬ 일정 정보", [
+            ("등록일", item.get("postedDate") or "확인 필요"),
+            ("마감일", due or "마감일 확인 필요"),
+            ("이행기한 / 납기", item.get("deliveryCondition")),
+            ("행사 기간", item.get("eventPeriod")),
+            ("상태", _display_status(item)),
         ]),
         _section("▬ 공고 정보", [
             ("공고번호", item.get("projectNo") or item.get("g2bBidNo")),
-            ("예산", item.get("budget") or "정보 없음"),
+            ("수량", item.get("quantity")),
+            ("예산", item.get("budget") or "예산 정보 없음"),
             ("계약방식", item.get("contractMethod")),
+            ("지급조건", item.get("paymentCondition")),
+            ("자격조건", item.get("eligibility")),
         ]),
     ]
 
-    summary = (item.get("description") or item.get("translatedSummary") or "").strip()
-    if summary:
-        if len(summary) > 300:
-            summary = summary[:300].rstrip() + "…"
-        blocks.append(["▬ 핵심 요약", summary])
+    summary = (item.get("description") or "").strip() or "상세 설명이 제공되지 않았습니다."
+    if len(summary) > 400:
+        summary = summary[:400].rstrip() + "…"
+    blocks.append(["", "▬ 핵심 요약", summary])
 
     for block in blocks:
-        if block:
-            lines.append("")
-            lines.extend(block)
+        lines.extend(block)
 
     lines.append("")
     lines.append("🔗 레이더에서 보기")
