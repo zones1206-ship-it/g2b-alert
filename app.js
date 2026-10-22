@@ -698,6 +698,17 @@ function renderSpotlightCard(item) {
 
 // 홈/일정 화면의 카드에서 공고 탭의 해당 상세로 이동한다.
 // 현재 필터 때문에 목록에 없으면 필터를 풀고 다시 그린 뒤 찾아간다.
+function noticeIdFromHash() {
+  // "#n=<id>" 한 가지만 본다. 없거나 모양이 다르면 빈 문자열이다.
+  const m = (location.hash || "").match(/^#n=([^&]+)$/);
+  if (!m) return "";
+  try {
+    return decodeURIComponent(m[1]);
+  } catch (e) {
+    return "";
+  }
+}
+
 function openNoticeDetail(noticeId) {
   if (!noticeId) return;
   showTab("tenders");
@@ -997,6 +1008,13 @@ async function loadData() {
   document.getElementById("updatedAt2").innerHTML = `🔄 ${updatedText}`;
   renderSourceSummary();
   renderSourceHealth();
+  // Telegram 알림의 공고별 링크(#n=<id>)로 들어왔으면 그 공고를 펼쳐 준다.
+  // openNoticeDetail이 필터까지 풀고 찾아가므로 여기서는 넘겨주기만 한다.
+  const wanted = noticeIdFromHash();
+  if (wanted && (state.data.items || []).some((i) => i.id === wanted)) {
+    openNoticeDetail(wanted);
+    return;
+  }
   // 데이터가 늦게 도착해도 현재 보고 있는 탭을 다시 그려 숫자/차트를 채운다.
   const active = document.querySelector(".bottom-nav-item.active");
   showTab(active ? active.dataset.tab : "home");
@@ -1048,7 +1066,9 @@ function init() {
     if (card) openNoticeDetail(card.dataset.noticeId);
   });
 
-  showTab("home");
+  // 공고별 링크(#n=<id>)로 들어온 경우에는 첫 화면을 띄우지 않는다.
+  // 데이터가 도착하면 loadData가 그 공고를 펼쳐 준다.
+  if (!noticeIdFromHash()) showTab("home");
 }
 
 document.addEventListener("DOMContentLoaded", init);

@@ -26,13 +26,13 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from notify_telegram import send_telegram  # 발송 로직은 기존 것을 그대로 재사용
+# 발송 로직과 사이트 주소는 기존 것을 그대로 재사용한다(주소가 두 군데에
+# 적혀 서로 어긋나는 일이 없게).
+from notify_telegram import send_telegram, SITE_URL
 
 for _stream in (sys.stdout, sys.stderr):
     if hasattr(_stream, "reconfigure"):
         _stream.reconfigure(encoding="utf-8", errors="replace")
-
-SITE_URL = "https://zones1206-ship-it.github.io/g2b-alert/"
 
 # 설명이나 공고 요약은 넣지 않는다 — 링크로 바로 들어가라는 메시지다.
 MESSAGE = "\n".join([

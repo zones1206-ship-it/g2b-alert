@@ -25,10 +25,12 @@ data/announcements.json이 갱신될 때, 이전 스냅샷과 비교해 새로 �
 
 import json
 import os
+from datetime import date, datetime
 import re
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 
 for _stream in (sys.stdout, sys.stderr):
@@ -84,20 +86,96 @@ def send_telegram(token, chat_id, text):
     return True
 
 
+SITE_URL = "https://zones1206-ship-it.github.io/g2b-alert/"
+
+
+def notice_link(item):
+    """그 공고를 펼친 채로 레이더를 여는 주소. id가 없으면 첫 화면으로."""
+    notice_id = item.get("id")
+    if not notice_id:
+        return SITE_URL
+    return SITE_URL + "#n=" + urllib.parse.quote(str(notice_id), safe="")
+
+
+def _d_day(due):
+    """'D-7' / 'D-DAY' / '마감 지남'. 날짜 형식이 이상하면 None."""
+    if not due:
+        return None
+    try:
+        left = (datetime.strptime(due, "%Y-%m-%d").date() - date.today()).days
+    except ValueError:
+        return None
+    if left < 0:
+        return "마감 지남"
+    return "D-DAY" if left == 0 else f"D-{left}"
+
+
+def _section(title, rows):
+    """값이 있는 줄만 남긴다. 다 비면 구획 자체를 넣지 않는다."""
+    body = [f"· {label}: {value}" for label, value in rows if value]
+    return [title] + body if body else []
+
+
 def format_message(item):
-    lines = [f"\U0001F4E2 신규 공고: {item.get('title') or '(제목 없음)'}"]
-    if item.get("source"):
-        lines.append(f"출처: {item['source']}")
+    """공고 하나를 상세 화면과 같은 차례로 적는다.
+
+    한 줄 요약으로는 그 공고를 볼지 말지 판단하기 어려워, 화면에서 보던
+    기본 정보·일정·공고 정보·핵심 요약을 같은 순서로 담는다. 값이 없는
+    항목은 빈 줄로 남기지 않고 아예 뺀다.
+    """
+    lines = ["📢 신규 공고", ""]
+    lines.append(item.get("title") or "(제목 없음)")
+    lines.append("")
+
     if item.get("org"):
-        lines.append(f"발주기관: {item['org']}")
-    if item.get("dueDate"):
-        lines.append(f"마감일: {item['dueDate']}")
-    keywords = item.get("keywords") or []
-    if keywords:
-        lines.append(f"분야: {', '.join(keywords)}")
-    url = item.get("url")
-    if url:
-        lines.append(url)
+        lines.append("🏛 " + item["org"])
+    due = item.get("dueDate")
+    if due:
+        tail = _d_day(due)
+        lines.append(f"🗓 마감 {due}" + (f" ({tail})" if tail else ""))
+
+    country = item.get("country") or ""
+    region = item.get("region") or ""
+    if region and country and region.startswith(country):
+        # "중국 쓰촨성"처럼 지역에 국가가 이미 들어 있으면 겹쳐 적지 않는다.
+        region = region[len(country):].strip()
+    where = f"{country} ({region})" if country and region else (country or region)
+
+    blocks = [
+        _section("▬ 기본 정보", [
+            ("산업", item.get("industry")),
+            ("장비", item.get("equipmentName")),
+            ("국가", where),
+            ("출처", item.get("source")),
+            ("분야", ", ".join(item.get("keywords") or [])),
+            ("유형", item.get("noticeType")),
+        ]),
+        _section("▬ 일정", [
+            ("등록일", item.get("postedDate")),
+            ("마감일", due),
+            ("상태", item.get("status")),
+        ]),
+        _section("▬ 공고 정보", [
+            ("공고번호", item.get("projectNo") or item.get("g2bBidNo")),
+            ("예산", item.get("budget") or "정보 없음"),
+            ("계약방식", item.get("contractMethod")),
+        ]),
+    ]
+
+    summary = (item.get("description") or item.get("translatedSummary") or "").strip()
+    if summary:
+        if len(summary) > 300:
+            summary = summary[:300].rstrip() + "…"
+        blocks.append(["▬ 핵심 요약", summary])
+
+    for block in blocks:
+        if block:
+            lines.append("")
+            lines.extend(block)
+
+    lines.append("")
+    lines.append("🔗 레이더에서 보기")
+    lines.append(notice_link(item))
     return "\n".join(lines)
 
 

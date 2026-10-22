@@ -16,7 +16,7 @@ import http.client
 import io
 import json
 import inspect
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import os
 import re
 import shutil
@@ -1779,6 +1779,162 @@ class KancDeadlineParsingTest(unittest.TestCase):
 
     def test_no_deadline_returns_none(self):
         self.assertIsNone(kanc.extract_due_date("마감 표기 없음", "2026-08-01"))
+
+
+class NoticeCardMessageTest(unittest.TestCase):
+    """AG. 신규 공고 알림을 상세 화면과 같은 차례로 적는다 — 2026-10.
+
+    한 줄 요약으로는 그 공고를 볼지 말지 판단하기 어려웠다. 화면에서 보던
+    기본 정보·일정·공고 정보·핵심 요약을 같은 순서로 담고, 링크는 원문
+    사이트가 아니라 그 공고를 펼친 레이더로 보낸다.
+    """
+
+    ITEM = {
+        "id": "mofcom-abc123",
+        "title": "청두 BOE 광전 제4.5세대 TFT-LCD 생산라인 기술 개조 프로젝트",
+        "org": "청두 BOE 광전 과학기술 유한공사",
+        "country": "중국", "region": "중국 쓰촨성",
+        "industry": "디스플레이", "equipmentName": "생산라인",
+        "source": "중국국제초표망(MOFCOM)", "keywords": ["디스플레이 장비"],
+        "noticeType": "정식입찰", "status": "진행중",
+        "postedDate": "2026-09-22", "dueDate": "2026-10-13",
+        "projectNo": "4197-264BOECDCZ02/04",
+        "description": "4197-264BOECDCZ02/04, 청두 BOE 광전 생산라인 기술 개조",
+        "url": "https://chinabidding.mofcom.gov.cn/bidDetail/x.html",
+        "equipmentStatus": "장비",
+    }
+
+    def _msg(self, **overrides):
+        item = dict(self.ITEM)
+        for key, value in overrides.items():
+            if value is None:
+                item.pop(key, None)
+            else:
+                item[key] = value
+        return NT.format_message(item)
+
+    # --- 링크 ------------------------------------------------------------
+
+    def test_link_goes_to_the_radar_not_the_source_site(self):
+        msg = self._msg()
+        self.assertIn("zones1206-ship-it.github.io/g2b-alert/#n=mofcom-abc123", msg)
+        self.assertNotIn("chinabidding.mofcom.gov.cn", msg)
+
+    def test_link_is_the_last_line(self):
+        self.assertTrue(self._msg().rstrip().endswith(
+            NT.notice_link(self.ITEM)), "링크가 마지막 줄에 그대로 있어야 클릭된다")
+
+    def test_id_is_percent_encoded(self):
+        link = NT.notice_link({"id": "a b/c#d"})
+        self.assertIn("#n=a%20b%2Fc%23d", link)
+
+    def test_missing_id_falls_back_to_front_page(self):
+        self.assertEqual(NT.notice_link({}), NT.SITE_URL)
+
+    # --- 구성 ------------------------------------------------------------
+
+    def test_sections_appear_in_screen_order(self):
+        msg = self._msg()
+        order = [msg.index(s) for s in
+                 ("▬ 기본 정보", "▬ 일정", "▬ 공고 정보", "▬ 핵심 요약")]
+        self.assertEqual(order, sorted(order))
+
+    def test_key_fields_are_present(self):
+        msg = self._msg()
+        for expected in ("· 산업: 디스플레이", "· 장비: 생산라인",
+                         "· 출처: 중국국제초표망(MOFCOM)", "· 유형: 정식입찰",
+                         "· 등록일: 2026-09-22", "· 마감일: 2026-10-13",
+                         "· 상태: 진행중", "· 공고번호: 4197-264BOECDCZ02/04"):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, msg)
+
+    def test_country_is_not_repeated_in_region(self):
+        """region이 '중국 쓰촨성'이라 그대로 붙이면 '중국 (중국 쓰촨성)'이 된다."""
+        self.assertIn("· 국가: 중국 (쓰촨성)", self._msg())
+
+    def test_country_alone_when_no_region(self):
+        self.assertIn("· 국가: 일본", self._msg(country="일본", region=None))
+
+    def test_empty_fields_are_dropped_not_blank(self):
+        msg = self._msg(industry=None, equipmentName=None, status=None)
+        self.assertNotIn("· 산업:", msg)
+        self.assertNotIn("· 장비:", msg)
+        self.assertNotIn("· 상태:", msg)
+        self.assertNotIn(": \n", msg)
+
+    def test_section_disappears_when_all_rows_empty(self):
+        msg = self._msg(postedDate=None, dueDate=None, status=None)
+        self.assertNotIn("▬ 일정", msg)
+
+    def test_budget_shown_as_unknown_when_missing(self):
+        self.assertIn("· 예산: 정보 없음", self._msg())
+
+    def test_long_summary_is_trimmed(self):
+        msg = self._msg(description="가" * 600)
+        self.assertIn("…", msg)
+        self.assertLess(len(msg), 1200)
+
+    def test_fits_telegram_limit(self):
+        """Telegram 한 통은 4096자까지다."""
+        msg = self._msg(title="가" * 300, description="나" * 600,
+                        org="다" * 200)
+        self.assertLess(len(msg), 4096)
+
+    # --- D-day -----------------------------------------------------------
+
+    def test_d_day_counts_down(self):
+        today = date.today()
+        self.assertEqual(NT._d_day((today + timedelta(days=7)).isoformat()), "D-7")
+        self.assertEqual(NT._d_day(today.isoformat()), "D-DAY")
+        self.assertEqual(NT._d_day((today - timedelta(days=1)).isoformat()), "마감 지남")
+
+    def test_d_day_ignores_bad_dates(self):
+        for bad in (None, "", "2026-13-45", "곧"):
+            with self.subTest(bad=bad):
+                self.assertIsNone(NT._d_day(bad))
+
+    def test_no_deadline_line_without_due_date(self):
+        self.assertNotIn("🗓", self._msg(dueDate=None))
+
+    # --- 기존 정책 보호 ---------------------------------------------------
+
+    def test_site_link_message_shares_one_url(self):
+        """사이트 주소가 두 군데 적혀 어긋나지 않게 한 곳에서만 정의한다."""
+        self.assertIs(SITELINK.SITE_URL, NT.SITE_URL)
+        self.assertTrue(SITELINK.MESSAGE.endswith(NT.SITE_URL))
+
+
+class DeepLinkTest(unittest.TestCase):
+    """AH. 공고별 링크(#n=<id>)로 들어오면 그 공고를 펼친다 — 2026-10.
+
+    알림의 링크가 레이더 첫 화면만 열면 그 공고를 다시 찾아야 한다.
+    브라우저에서 실제로 확인했다(공고 탭으로 이동 후 해당 카드가 열림).
+    여기서는 연결이 끊기지 않았는지만 지킨다.
+    """
+
+    APP_JS = os.path.join(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__))), "app.js")
+
+    def setUp(self):
+        with io.open(self.APP_JS, encoding="utf-8") as f:
+            self.source = f.read()
+
+    def test_hash_reader_exists(self):
+        self.assertIn("function noticeIdFromHash()", self.source)
+
+    def test_load_data_opens_the_requested_notice(self):
+        self.assertRegex(
+            self.source,
+            r"const wanted = noticeIdFromHash\(\);[\s\S]{0,200}?openNoticeDetail\(wanted\)")
+
+    def test_home_tab_does_not_override_deep_link(self):
+        """init 끝의 showTab('home')이 해시를 덮어쓰면 링크가 먹통이 된다."""
+        self.assertIn('if (!noticeIdFromHash()) showTab("home");', self.source)
+
+    def test_hash_format_matches_what_telegram_sends(self):
+        link = NT.notice_link({"id": "jetro402008"})
+        self.assertTrue(link.endswith("#n=jetro402008"))
+        self.assertIn('match(/^#n=([^&]+)$/)', self.source)
 
 
 class SiteLinkNotificationTest(unittest.TestCase):
