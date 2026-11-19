@@ -1,0 +1,30 @@
+name: Resend notice alerts
+
+# 수동 실행 전용. 지정한 공고의 Telegram 알림만 다시 보낸다.
+# 수집을 돌리지 않고 데이터도 바꾸지 않는다(커밋 권한이 없다).
+on:
+  workflow_dispatch:
+    inputs:
+      ids:
+        description: "다시 보낼 공고 id (쉼표로 구분)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  resend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Resend
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          # 입력값은 셸 문자열에 끼워 넣지 않고 환경변수로만 넘긴다.
+          NOTICE_IDS: ${{ inputs.ids }}
+        run: python scripts/resend_notices.py
