@@ -270,7 +270,7 @@ function topTags(item) {
   const countryLabel = flag ? `${flag} ${item.country}` : (item.country || "국가 미상");
   const tags = [`<span class="country-badge">${escapeHtml(countryLabel)}</span>`];
   if (item.sourceType === "China Site") {
-    tags.push(`<span class="china-site-badge">🌐 중국 사이트</span>`);
+    tags.push(`<span class="china-site-badge">중국 사이트</span>`);
   }
   tags.push(`<span class="source-badge" title="${escapeHtml(sourceFullName(item))}">${escapeHtml(sourceBadgeLabel(item))}</span>`);
   const noticeType = NOTICE_TYPE_LABELS[item.noticeType];
@@ -281,12 +281,12 @@ function topTags(item) {
   // 제목만으로 내용을 알 수 없으므로, 원문 확인이 필요하다는 것을 알린다.
   // 원문 제목은 상세의 "원문(중국어)" 블록, 원문 링크는 하단 버튼에 그대로 있다.
   if (item.translationIncomplete) {
-    tags.push(`<span class="translation-badge" title="자동 번역이 불완전한 부분이 있습니다. 아래 원문 공고 링크에서 확인하세요.">번역 미완료</span>`);
+    tags.push(`<span class="translation-badge" title="자동 번역이 다 되지 않았습니다. 아래 원문 공고에서 확인하세요.">번역 덜 됨</span>`);
   }
   // 장비인지 확정하지 못한 공고 — 홈 "지금 확인할 공고"와 Telegram에서는
   // 빠지고, 목록에서는 이 배지를 달아 사용자가 직접 판단할 수 있게 한다.
   if (item.equipmentStatus === "검토 필요") {
-    tags.push(`<span class="review-badge" title="${escapeHtml(item.equipmentReason || "장비 여부 확인이 필요합니다.")}">장비 여부 검토 필요</span>`);
+    tags.push(`<span class="review-badge" title="${escapeHtml(item.equipmentReason || "장비 여부 확인이 필요합니다.")}">장비인지 확인 필요</span>`);
   }
   if (isNewItem(item)) {
     tags.push(`<span class="new-badge">신규</span>`);
@@ -362,8 +362,8 @@ function renderCard(item, kw) {
           ${topTags(item)}
           <p class="notice-title">${escapeHtml(item.title)}</p>
           <span class="notice-meta">
-            <span>🏛 ${escapeHtml(item.org)}</span>
-            <span>📅 마감일 ${item.dueDate || "확인 필요"}</span>
+            <span class="meta-org">${escapeHtml(item.org)}</span>
+            <span class="meta-due">마감 ${item.dueDate || "확인 필요"}</span>
           </span>
         </span>
         ${ddayBadge(item.dueDate)}
@@ -461,14 +461,14 @@ function updateNewAnnounceBar(count) {
   if (count === 0) {
     bar.disabled = true;
     bar.classList.remove("active");
-    bar.textContent = "새로운 공고 없음";
+    bar.textContent = "최근 48시간 안에 새로 잡힌 공고가 없습니다";
     return;
   }
   bar.disabled = false;
   bar.classList.toggle("active", state.showOnlyNew);
   bar.textContent = state.showOnlyNew
-    ? `🆕 신규 공고 ${count}건 표시 중 · 전체 보기`
-    : `🆕 신규 공고 ${count}건 보기`;
+    ? `새 공고 ${count}건만 보는 중 · 전체로 돌아가기`
+    : `새 공고 ${count}건만 보기`;
 }
 
 function renderResults() {
@@ -530,10 +530,10 @@ function escapeHtml(str) {
 }
 
 function formatUpdatedAt(iso) {
-  if (!iso) return "업데이트 정보 없음";
+  if (!iso) return "수집 기록 없음";
   const d = new Date(iso);
   const pad = (n) => String(n).padStart(2, "0");
-  return `마지막 업데이트 ${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return `마지막 수집 ${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 // ============================================================
@@ -606,9 +606,9 @@ function renderBarChart(buckets, opts = {}) {
     const y = height - bottomPad - barHeight;
     const showEveryLabel = buckets.length <= 10;
     return `
-      <rect x="${x.toFixed(1)}" y="${y}" width="${barWidth.toFixed(1)}" height="${Math.max(barHeight, 2)}" rx="3" fill="var(--accent)"></rect>
-      ${b.count > 0 ? `<text x="${(x + barWidth / 2).toFixed(1)}" y="${y - 4}" font-size="9" font-weight="700" fill="var(--navy)" text-anchor="middle">${b.count}</text>` : ""}
-      ${showEveryLabel ? `<text x="${(x + barWidth / 2).toFixed(1)}" y="${height - 5}" font-size="8.5" fill="var(--text-muted)" text-anchor="middle">${escapeHtml(b.label)}</text>` : ""}
+      <rect x="${x.toFixed(1)}" y="${y}" width="${barWidth.toFixed(1)}" height="${Math.max(barHeight, 2)}" rx="3" fill="var(--si)"></rect>
+      ${b.count > 0 ? `<text x="${(x + barWidth / 2).toFixed(1)}" y="${y - 4}" font-size="9" font-weight="500" fill="var(--ink)" text-anchor="middle">${b.count}</text>` : ""}
+      ${showEveryLabel ? `<text x="${(x + barWidth / 2).toFixed(1)}" y="${height - 5}" font-size="8.5" fill="var(--muted)" text-anchor="middle">${escapeHtml(b.label)}</text>` : ""}
     `;
   }).join("");
   return `<svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}" role="img" aria-label="기간별 신규 공고 추이 차트">${bars}</svg>`;
@@ -624,7 +624,7 @@ function renderDonutChart(segments, opts = {}) {
   const circumference = 2 * Math.PI * r;
   const total = segments.reduce((sum, s) => sum + s.value, 0);
   if (total === 0) {
-    return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"></circle></svg>`;
+    return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--line)" stroke-width="${stroke}"></circle></svg>`;
   }
   let offset = 0;
   const circles = segments.filter((s) => s.value > 0).map((seg) => {
@@ -634,7 +634,7 @@ function renderDonutChart(segments, opts = {}) {
     return circle;
   }).join("");
   return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="분야별 비중 도넛 차트">
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"></circle>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--line)" stroke-width="${stroke}"></circle>
     ${circles}
   </svg>`;
 }
@@ -657,8 +657,8 @@ function renderRegionBar(domestic, overseas) {
       <div class="region-bar-fill" style="width:${total > 0 ? domPct : 50}%"></div>
     </div>
     <div class="region-bar-legend">
-      <span><span class="legend-dot" style="background:var(--navy)"></span>국내 <b>${domestic}건</b> (${domPct}%)</span>
-      <span><span class="legend-dot" style="background:var(--accent-soft)"></span>해외 <b>${overseas}건</b> (${overPct}%)</span>
+      <span><span class="legend-dot" style="background:var(--ink)"></span>국내 <b>${domestic}건</b> (${domPct}%)</span>
+      <span><span class="legend-dot" style="background:var(--si-bright)"></span>해외 <b>${overseas}건</b> (${overPct}%)</span>
     </div>`;
 }
 
@@ -738,6 +738,100 @@ function openNoticeDetail(noticeId) {
   setTimeout(reveal, 0);
 }
 
+// 웨이퍼 맵 — 열린 공고 한 건을 칩 하나로 그린다.
+//
+// 팹에서 웨이퍼 한 장의 상태를 한눈에 보는 방식 그대로다. 마감이 가까운
+// 공고일수록 가운데에 놓고 색을 달리해, 숫자를 읽지 않아도 "급한 것이
+// 얼마나 되는지"가 보인다. 칩을 누르면 아래 칸에 그 공고가 뜬다.
+function waferUrgency(item) {
+  const d = item.dueDate ? daysUntil(item.dueDate) : Infinity;
+  if (d <= 3) return { cls: "u-hot", rank: 0, d };
+  if (d <= 7) return { cls: "u-soon", rank: 1, d };
+  return { cls: "u-open", rank: 2, d };
+}
+
+function waferCells(n, size) {
+  // n×n 격자 중 원 안에 온전히 들어오는 칸만 쓴다. 아래쪽에는 노치 자리를 비운다.
+  const cell = size / n;
+  const c = size / 2;
+  const r = size / 2 - 3;
+  const cells = [];
+  for (let row = 0; row < n; row += 1) {
+    for (let col = 0; col < n; col += 1) {
+      const x = col * cell;
+      const y = row * cell;
+      const corners = [[x, y], [x + cell, y], [x, y + cell], [x + cell, y + cell]];
+      if (!corners.every(([px, py]) => Math.hypot(px - c, py - c) <= r)) continue;
+      const mx = x + cell / 2;
+      const my = y + cell / 2;
+      if (my > c + r - cell * 1.1 && Math.abs(mx - c) < cell * 0.9) continue; // 노치
+      cells.push({ x, y, dist: Math.hypot(mx - c, my - c), angle: Math.atan2(my - c, mx - c) });
+    }
+  }
+  // 가운데에서 바깥으로, 같은 거리면 시계 방향으로 채운다.
+  cells.sort((a, b) => (Math.round(a.dist) - Math.round(b.dist)) || (a.angle - b.angle));
+  return { cells, cell };
+}
+
+function renderWaferMap(validItems) {
+  const size = 200;
+  const items = validItems
+    .map((item) => ({ item, u: waferUrgency(item) }))
+    .sort((a, b) => a.u.rank - b.u.rank || a.u.d - b.u.d);
+
+  // 공고가 다 들어가고도 빈 칩이 조금 남는 가장 성긴 격자를 고른다.
+  let grid = waferCells(9, size);
+  for (let n = 9; n <= 31 && grid.cells.length < Math.max(items.length * 1.12, 45); n += 1) {
+    grid = waferCells(n, size);
+  }
+  const gap = Math.max(0.8, grid.cell * 0.09);
+  const side = grid.cell - gap;
+
+  const dies = grid.cells.map((cellPos, i) => {
+    const x = (cellPos.x + gap / 2).toFixed(2);
+    const y = (cellPos.y + gap / 2).toFixed(2);
+    const entry = items[i];
+    if (!entry) {
+      return `<rect class="die" x="${x}" y="${y}" width="${side.toFixed(2)}" height="${side.toFixed(2)}" rx="1"></rect>`;
+    }
+    const { item, u } = entry;
+    const dot = isNewItem(item)
+      ? `<circle class="die-new" style="--i:${i}" cx="${(cellPos.x + grid.cell / 2).toFixed(2)}" cy="${(cellPos.y + grid.cell / 2).toFixed(2)}" r="${(side * 0.2).toFixed(2)}"></circle>`
+      : "";
+    return `<rect class="die die-on ${u.cls}" style="--i:${i}" data-die-id="${escapeHtml(item.id || "")}" x="${x}" y="${y}" width="${side.toFixed(2)}" height="${side.toFixed(2)}" rx="1"><title>${escapeHtml(item.title || "")}</title></rect>${dot}`;
+  }).join("");
+
+  const c = size / 2;
+  const r = size / 2 - 1;
+  // 원 아래쪽에 작은 노치를 판 웨이퍼 외곽선
+  const notch = 5;
+  const edge = `M ${c - notch} ${c + r - 0.4} A ${r} ${r} 0 1 1 ${c + notch} ${c + r - 0.4} L ${c} ${c + r - notch} Z`;
+  return `<svg class="wafer" viewBox="0 0 ${size} ${size}" role="img" aria-label="열려 있는 공고 ${items.length}건을 칩으로 그린 웨이퍼 맵">
+    <path class="wafer-edge" d="${edge}"></path>
+    ${dies}
+  </svg>`;
+}
+
+// 칩을 고르면 그 공고를 아래 칸에 보여 준다. 칩이 작아 바로 이동시키면
+// 잘못 누르기 쉬우므로, 먼저 무엇인지 보여 주고 "공고 열기"로 들어가게 한다.
+function probeDie(noticeId) {
+  const probe = document.getElementById("waferProbe");
+  const item = (state.data.items || []).find((i) => i.id === noticeId);
+  if (!probe || !item) return;
+  document.querySelectorAll(".die-probed").forEach((el) => el.classList.remove("die-probed"));
+  const die = document.querySelector(`.die-on[data-die-id="${CSS.escape(noticeId)}"]`);
+  if (die) die.classList.add("die-probed");
+  const due = item.dueDate ? `마감 ${item.dueDate}` : "마감일 확인 필요";
+  const d = item.dueDate ? daysUntil(item.dueDate) : null;
+  const left = d === null ? "" : (d === 0 ? " · 오늘 마감" : ` · D-${d}`);
+  probe.innerHTML = `
+    <div class="probe-body">
+      <p class="probe-title">${escapeHtml(item.title || "")}</p>
+      <p class="probe-meta">${escapeHtml(item.country || "국가 미상")} · ${escapeHtml(due)}${left}</p>
+    </div>
+    <button type="button" class="probe-open" data-open-notice="${escapeHtml(item.id)}">공고 열기</button>`;
+}
+
 function renderHome() {
   const stats = computeHomeStats();
 
@@ -746,22 +840,39 @@ function renderHome() {
   });
 
   document.getElementById("kpiHeroCard").innerHTML = `
-    <p class="kpi-hero-label">현재 유효 공고</p>
-    <p class="kpi-hero-value">${stats.valid.length}<span>건</span></p>
-    <p class="kpi-hero-sub">국내 ${stats.domestic} · 해외 ${stats.overseas}</p>
-    <p class="kpi-hero-delta">이번 주 +${stats.newThisWeek}건</p>
+    <div class="hero-top">
+      <div>
+        <p class="hero-label">지금 열려 있는 공고</p>
+        <p class="hero-count">${stats.valid.length}<span>건</span></p>
+      </div>
+      <p class="hero-split">
+        국내<b>${stats.domestic}</b><br>
+        해외<b>${stats.overseas}</b><br>
+        이번 주 새 공고<b class="up">+${stats.newThisWeek}</b>
+      </p>
+    </div>
+    <div class="wafer-wrap">${renderWaferMap(stats.valid)}</div>
+    <ul class="wafer-legend">
+      <li><i class="lg-hot"></i>3일 안에 마감</li>
+      <li><i class="lg-soon"></i>7일 안에 마감</li>
+      <li><i class="lg-open"></i>여유 있음</li>
+      <li><i class="lg-new"></i>새 공고</li>
+    </ul>
+    <div class="probe" id="waferProbe">
+      <p class="probe-empty">칩 하나가 공고 한 건입니다. 칩을 누르면 어떤 공고인지 보입니다.</p>
+    </div>
   `;
 
   document.getElementById("kpiMiniRow").innerHTML = `
     <button type="button" class="kpi-mini-card" id="kpiNewCard">
-      <span class="kpi-mini-label">신규 공고</span>
-      <span class="kpi-mini-value">${stats.newCount}건</span>
-      <span class="kpi-mini-sub">오늘 +${stats.newToday}</span>
+      <span class="kpi-mini-label">새 공고</span>
+      <span class="kpi-mini-value">${stats.newCount}<small>건</small></span>
+      <span class="kpi-mini-sub">최근 48시간 · 오늘 +${stats.newToday}</span>
     </button>
     <button type="button" class="kpi-mini-card kpi-mini-warn" id="kpiDueSoonCard">
-      <span class="kpi-mini-label">마감 임박</span>
-      <span class="kpi-mini-value">${stats.dueSoon.length}건</span>
-      <span class="kpi-mini-sub">D-7 이내</span>
+      <span class="kpi-mini-label">곧 마감</span>
+      <span class="kpi-mini-value">${stats.dueSoon.length}<small>건</small></span>
+      <span class="kpi-mini-sub">7일 안에 마감</span>
     </button>
   `;
   document.getElementById("kpiNewCard").addEventListener("click", () => {
@@ -780,7 +891,7 @@ function renderHome() {
   document.getElementById("categoryStatsRow").innerHTML = KEYWORDS.map((kw) => `
     <button type="button" class="stat-mini-card" data-goto-category="${escapeHtml(kw)}">
       <span class="stat-mini-label">${escapeHtml(kw)}</span>
-      <span class="stat-mini-value">${stats.byCategory[kw] || 0}건</span>
+      <span class="stat-mini-value">${stats.byCategory[kw] || 0}<small>건</small></span>
     </button>
   `).join("");
   document.querySelectorAll("[data-goto-category]").forEach((btn) => {
@@ -796,10 +907,10 @@ function renderHome() {
   const spotlight = computeSpotlightItems(stats.valid, 5);
   document.getElementById("spotlightList").innerHTML = spotlight.length
     ? spotlight.map(renderSpotlightCard).join("")
-    : `<p class="empty-state">표시할 공고가 없습니다.</p>`;
+    : `<p class="empty-state">지금 열려 있는 공고가 없습니다.</p>`;
 
   const updatedText = formatUpdatedAt(state.data.updatedAt);
-  document.getElementById("updatedAtHome").innerHTML = `🔄 ${updatedText}`;
+  document.getElementById("updatedAtHome").innerHTML = updatedText;
 }
 
 function computeCalendarDueMap() {
@@ -866,9 +977,9 @@ function renderCalendar() {
   }
   const dayItems = dueMap[state.calendarSelectedDate] || [];
   listEl.innerHTML = `
-    <h3 class="dash-card-title">${escapeHtml(state.calendarSelectedDate)} 마감 (${dayItems.length}건)</h3>
+    <h3 class="dash-card-title">${escapeHtml(state.calendarSelectedDate)}에 마감되는 공고 ${dayItems.length}건</h3>
     <div class="spotlight-list">
-      ${dayItems.map(renderSpotlightCard).join("") || '<p class="empty-state">마감 공고가 없습니다.</p>'}
+      ${dayItems.map(renderSpotlightCard).join("") || '<p class="empty-state">이날 마감되는 공고가 없습니다.</p>'}
     </div>`;
 }
 
@@ -878,7 +989,7 @@ function renderStats() {
   document.getElementById("statsTrend7").innerHTML = renderBarChart(computeNewTrend(7));
   document.getElementById("statsTrend30").innerHTML = renderBarChart(computeNewTrend(30), { height: 90 });
 
-  const catColors = { "반도체 장비": "var(--navy)", "디스플레이 장비": "var(--accent)", "TGV 장비": "var(--accent-soft)" };
+  const catColors = { "반도체 장비": "var(--ink)", "디스플레이 장비": "var(--si-bright)", "TGV 장비": "var(--amber)" };
   const byCategory = KEYWORDS.map((kw) => ({
     label: kw,
     value: all.filter((item) => (item.keywords || []).includes(kw)).length,
@@ -901,7 +1012,7 @@ function renderStats() {
 
   const sourceCounts = {};
   all.forEach((item) => {
-    const s = item.sourceCode || "미상";
+    const s = SOURCE_BADGE_LABELS[item.sourceCode] || item.sourceCode || "미상";
     sourceCounts[s] = (sourceCounts[s] || 0) + 1;
   });
   document.getElementById("statsBySource").innerHTML = renderBarList(sourceCounts);
@@ -961,7 +1072,7 @@ function renderSourceSummary() {
     .map((c) => SOURCE_BADGE_LABELS[c] || c)
     .join(" · ");
   const rest = codes.length - 2;
-  el.innerHTML = `데이터 출처 ${codes.length}곳 · ${escapeHtml(preview)}`
+  el.innerHTML = `공고를 가져오는 곳 ${codes.length}곳 · ${escapeHtml(preview)}`
     + (rest > 0 ? ` <span class="source-more">+${rest}</span>` : "");
 }
 
@@ -981,12 +1092,12 @@ function renderSourceHealth() {
     return;
   }
   const rows = failing.map(([code, h]) => {
-    const last = h.lastSuccessAt ? formatUpdatedAt(h.lastSuccessAt).replace("마지막 업데이트 ", "") : "기록 없음";
-    return `<span class="health-row"><b>${escapeHtml(code)}</b> 마지막 정상 수집: ${escapeHtml(last)}</span>`;
+    const last = h.lastSuccessAt ? formatUpdatedAt(h.lastSuccessAt).replace("마지막 수집 ", "") : "기록 없음";
+    return `<span class="health-row"><b>${escapeHtml(SOURCE_NAMES_KO[code] || code)}</b> · 마지막으로 받은 때 ${escapeHtml(last)}</span>`;
   }).join("");
   el.hidden = false;
-  el.innerHTML = `<span class="health-head">⚠ 수집 장애 ${failing.length}곳</span>${rows}`
-    + `<span class="health-note">※ 해당 출처는 기존 수집 데이터를 표시 중입니다.</span>`;
+  el.innerHTML = `<span class="health-head">공고를 받지 못하고 있는 곳 ${failing.length}곳</span>${rows}`
+    + `<span class="health-note">이곳의 공고는 마지막으로 받은 내용 그대로 보입니다.</span>`;
 }
 
 async function loadData() {
@@ -1004,8 +1115,8 @@ async function loadData() {
     state.data = { updatedAt: null, items: [] };
   }
   const updatedText = formatUpdatedAt(state.data.updatedAt);
-  document.getElementById("updatedAt").innerHTML = `🔄 ${updatedText}`;
-  document.getElementById("updatedAt2").innerHTML = `🔄 ${updatedText}`;
+  document.getElementById("updatedAt").innerHTML = updatedText;
+  document.getElementById("updatedAt2").innerHTML = updatedText;
   renderSourceSummary();
   renderSourceHealth();
   // Telegram 알림의 공고별 링크(#n=<id>)로 들어왔으면 그 공고를 펼쳐 준다.
@@ -1033,7 +1144,7 @@ function init() {
   });
 
   document.getElementById("telegramBtn").addEventListener("click", () => {
-    alert("텔레그램 알림은 이미 자동으로 연결되어 있습니다 — 설정에서 알림 받을 분야를 선택하면 신규 공고가 발견될 때마다 전송됩니다.");
+    alert("텔레그램 알림은 이미 연결되어 있습니다. 매일 아침 수집이 끝나면 새로 잡힌 장비 공고를 보냅니다. 분야 선택은 이 화면의 공고 목록에만 적용됩니다.");
   });
 
   document.querySelectorAll(".bottom-nav-item").forEach((btn) => {
@@ -1063,7 +1174,16 @@ function init() {
 
   document.addEventListener("click", (e) => {
     const card = e.target.closest(".spotlight-card[data-notice-id]");
-    if (card) openNoticeDetail(card.dataset.noticeId);
+    if (card) { openNoticeDetail(card.dataset.noticeId); return; }
+    const die = e.target.closest(".die-on[data-die-id]");
+    if (die) { probeDie(die.dataset.dieId); return; }
+    const open = e.target.closest("[data-open-notice]");
+    if (open) openNoticeDetail(open.dataset.openNotice);
+  });
+  // 마우스가 있는 화면에서는 칩 위에 올리기만 해도 무엇인지 보여 준다.
+  document.addEventListener("mouseover", (e) => {
+    const die = e.target.closest && e.target.closest(".die-on[data-die-id]");
+    if (die) probeDie(die.dataset.dieId);
   });
 
   // 공고별 링크(#n=<id>)로 들어온 경우에는 첫 화면을 띄우지 않는다.

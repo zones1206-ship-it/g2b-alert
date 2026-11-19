@@ -4,8 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>장비 프로젝트 레이더</title>
-<meta name="description" content="반도체·디스플레이·TGV 장비 입찰 및 프로젝트 정보를 모아 보여주는 개인용 알림 대시보드">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%230f1d45'/%3E%3Cpath d='M4 18h16M6 18V9M18 18V9' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M12 4c-4 0-7 2-7 5h14c0-3-3-5-7-5Z' fill='%23ffffff'/%3E%3C/svg%3E">
+<meta name="description" content="반도체·디스플레이·TGV 장비 입찰 공고를 매일 아침 모아 보여 주는 개인용 레이더">
+<meta name="theme-color" content="#0b2a33">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230b2a33'/%3E%3Ccircle cx='12' cy='12' r='7.5' fill='none' stroke='%2334c3b5' stroke-width='1.6'/%3E%3Crect x='8' y='8' width='3.2' height='3.2' fill='%23f2a900'/%3E%3Crect x='12.8' y='8' width='3.2' height='3.2' fill='%2334c3b5'/%3E%3Crect x='8' y='12.8' width='3.2' height='3.2' fill='%2334c3b5'/%3E%3Crect x='12.8' y='12.8' width='3.2' height='3.2' fill='%2334c3b5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,52 +19,57 @@
     <div class="header-top-row">
       <div class="brand">
         <span class="brand-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M12 2v2M5 7l-1.5 4.5a1 1 0 0 0 1 1.3h5a1 1 0 0 0 1-1.3L9 7M19 7l-1.5 4.5a1 1 0 0 0 1 1.3h5a1 1 0 0 0 1-1.3L23 7" transform="translate(-5,0)"/>
-            <path d="M12 4c-4 0-7 2-7 5h14c0-3-3-5-7-5Z"/>
-            <path d="M4 20h16M6 20V9M18 20V9"/>
+          <svg viewBox="0 0 32 32" width="30" height="30" fill="none">
+            <path d="M16 2.5a13.5 13.5 0 1 0 2.2 26.8L16 27l-2.2 2.3A13.5 13.5 0 0 0 16 2.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <rect x="10" y="10" width="5" height="5" fill="var(--amber)"/>
+            <rect x="17" y="10" width="5" height="5" fill="currentColor" opacity=".55"/>
+            <rect x="10" y="17" width="5" height="5" fill="currentColor" opacity=".55"/>
+            <rect x="17" y="17" width="5" height="5" fill="currentColor"/>
           </svg>
         </span>
         <div class="brand-text">
           <h1>장비 프로젝트 레이더</h1>
-          <p class="brand-sub">반도체 · 디스플레이 · TGV 장비 입찰 및 프로젝트 정보</p>
+          <p class="brand-sub">반도체 · 디스플레이 · TGV 장비 입찰을 매일 아침 모아 드립니다</p>
         </div>
       </div>
       <!-- Cloudflare Worker 접속 게이트를 배포하면 이 링크가 실제 로그아웃으로 동작한다.
            (security/cloudflare-worker/README.md 참고. 게이트 미배포 시엔 그냥 무해한 링크) -->
-      <a href="/__auth/logout" class="icon-btn logout-link" title="로그아웃">로그아웃</a>
+      <a href="/__auth/logout" class="logout-link" title="로그아웃">로그아웃</a>
     </div>
-    <details class="source-chips-collapse">
-      <!-- 출처 수는 app.js가 data/announcements.json의 sourceHealth(=실제로
-           도는 수집원 목록)를 세어 채운다. 수집원을 추가·제거해도 여기 숫자를
-           손댈 필요가 없다. 데이터 로드 전에는 아래 기본 문구가 보인다. -->
-      <summary class="source-summary" id="sourceSummary">데이터 출처 · 한국나노기술원 · 나노종합기술원</summary>
-      <div class="source-chips" aria-label="공고 수집 출처">
-        <span class="source-chip">한국나노기술원(KANC) <b>국내</b></span>
-        <span class="source-chip">나노종합기술원(NNFC) <b>국내</b></span>
-        <span class="source-chip">한국표준과학연구원(KRISS) <b>국내</b></span>
-        <span class="source-chip">한국과학기술원(KAIST) <b>국내</b></span>
-        <span class="source-chip">대구경북과학기술원(DGIST) <b>국내</b></span>
-        <span class="source-chip">대한무역투자진흥공사(KOTRA) <b>해외 프로젝트</b></span>
-        <span class="source-chip">중국 비롄왕(EBNEW) <b>중국</b></span>
-        <span class="source-chip">중국 국제입찰망(MOFCOM) <b>중국</b></span>
-        <span class="source-chip">일본무역진흥기구(JETRO) <b>일본</b></span>
-        <span class="source-chip">대만 산업기술연구원(ITRI) <b>대만</b></span>
-      </div>
-    </details>
+
+    <div class="header-meta">
+      <details class="source-chips-collapse">
+        <!-- 출처 수는 app.js가 data/announcements.json의 sourceHealth(=실제로
+             도는 수집원 목록)를 세어 채운다. 수집원을 추가·제거해도 여기 숫자를
+             손댈 필요가 없다. 데이터 로드 전에는 아래 기본 문구가 보인다. -->
+        <summary class="source-summary" id="sourceSummary">공고를 가져오는 곳 · 한국나노기술원 · 나노종합기술원</summary>
+        <div class="source-chips" aria-label="공고를 가져오는 곳">
+          <span class="source-chip">한국나노기술원(KANC) <b>국내</b></span>
+          <span class="source-chip">나노종합기술원(NNFC) <b>국내</b></span>
+          <span class="source-chip">한국표준과학연구원(KRISS) <b>국내</b></span>
+          <span class="source-chip">한국과학기술원(KAIST) <b>국내</b></span>
+          <span class="source-chip">대구경북과학기술원(DGIST) <b>국내</b></span>
+          <span class="source-chip">대한무역투자진흥공사(KOTRA) <b>해외 프로젝트</b></span>
+          <span class="source-chip">중국 비롄왕(EBNEW) <b>중국</b></span>
+          <span class="source-chip">중국 국제입찰망(MOFCOM) <b>중국</b></span>
+          <span class="source-chip">일본무역진흥기구(JETRO) <b>일본</b></span>
+          <span class="source-chip">대만 산업기술연구원(ITRI) <b>대만</b></span>
+        </div>
+      </details>
+      <details class="source-pending">
+        <summary>아직 가져오지 못하는 곳 3곳</summary>
+        <ul>
+          <li>중국 입찰투찰 공공서비스 플랫폼(cebpubservice.cn) — 웹 방화벽이 막고 있음</li>
+          <li>CXMT SRM 공급사·소싱 플랫폼 — 로그인해야 볼 수 있음</li>
+          <li>중국 구매·입찰망(chinabidding.com.cn) — 로그인해야 볼 수 있음</li>
+        </ul>
+      </details>
+    </div>
     <!-- 수집원이 고장나면 그 출처 데이터는 이전 수집분이 그대로 남는다.
          낡은 데이터를 최신으로 오인하지 않도록 여기에 경고를 표시한다
          (app.js의 renderSourceHealth가 data/announcements.json의
          sourceHealth를 읽어 채운다. 정상일 때는 아무것도 표시하지 않음). -->
     <p class="source-health" id="sourceHealthNotice" hidden></p>
-    <details class="source-pending">
-      <summary>추가 검토 중인 사이트 3곳 · 현재 자동수집에는 포함되지 않음</summary>
-      <ul>
-        <li>중국 입찰투찰 공공서비스 플랫폼(cebpubservice.cn) — 웹 방화벽 차단</li>
-        <li>CXMT SRM 공급사·소싱 플랫폼 — 로그인 필수</li>
-        <li>중국 구매·입찰망(chinabidding.com.cn) — 로그인 필수</li>
-      </ul>
-    </details>
   </header>
 
   <nav class="filter-bar" id="filterBar" hidden>
@@ -71,36 +80,42 @@
 
   <!-- Screen: 홈 -->
   <main class="screen" id="screen-home">
-    <div class="region-filter" id="regionFilterRow" role="group" aria-label="지역 필터">
-      <button type="button" class="chip region-chip chip-active" data-region="all">전체</button>
-      <button type="button" class="chip region-chip" data-region="domestic">국내</button>
-      <button type="button" class="chip region-chip" data-region="overseas">해외</button>
+    <div class="home-grid">
+      <div class="home-main">
+        <div class="region-filter" id="regionFilterRow" role="group" aria-label="지역 고르기">
+          <button type="button" class="chip region-chip chip-active" data-region="all">전체</button>
+          <button type="button" class="chip region-chip" data-region="domestic">국내</button>
+          <button type="button" class="chip region-chip" data-region="overseas">해외</button>
+        </div>
+
+        <section class="hero" id="kpiHeroCard" aria-label="지금 열려 있는 공고"></section>
+
+        <div class="kpi-mini-row" id="kpiMiniRow"></div>
+      </div>
+
+      <div class="home-side">
+        <section class="dash-card dash-card-lead">
+          <h3 class="dash-card-title">먼저 볼 공고</h3>
+          <div class="spotlight-list" id="spotlightList"></div>
+          <button type="button" class="ghost-btn" id="viewAllTendersBtn">공고 전체 보기</button>
+        </section>
+
+        <section class="dash-card">
+          <h3 class="dash-card-title">최근 7일 동안 새로 잡힌 공고</h3>
+          <div class="chart-wrap" id="homeTrendChart"></div>
+        </section>
+
+        <section class="dash-card">
+          <h3 class="dash-card-title">분야별 공고 수</h3>
+          <div class="stat-mini-grid" id="categoryStatsRow"></div>
+        </section>
+
+        <section class="dash-card">
+          <h3 class="dash-card-title">국내 · 해외</h3>
+          <div id="regionStatsBar"></div>
+        </section>
+      </div>
     </div>
-
-    <div class="kpi-hero-card" id="kpiHeroCard"></div>
-
-    <div class="kpi-mini-row" id="kpiMiniRow"></div>
-
-    <section class="dash-card">
-      <h3 class="dash-card-title">최근 7일 신규 공고</h3>
-      <div class="chart-wrap" id="homeTrendChart"></div>
-    </section>
-
-    <section class="dash-card">
-      <h3 class="dash-card-title">분야별 현황</h3>
-      <div class="stat-mini-grid" id="categoryStatsRow"></div>
-    </section>
-
-    <section class="dash-card">
-      <h3 class="dash-card-title">국내 · 해외 비중</h3>
-      <div id="regionStatsBar"></div>
-    </section>
-
-    <section class="dash-card">
-      <h3 class="dash-card-title">지금 확인할 공고</h3>
-      <div class="spotlight-list" id="spotlightList"></div>
-      <button type="button" class="ghost-btn" id="viewAllTendersBtn">전체 공고 보기 →</button>
-    </section>
 
     <p class="updated" id="updatedAtHome"></p>
   </main>
@@ -108,12 +123,12 @@
   <!-- Screen: 공고 (기존 결과 화면 그대로 재사용) -->
   <main class="screen" id="screen-tenders" hidden>
     <div class="results-head">
-      <h2 class="section-title">프로젝트 리스트</h2>
+      <h2 class="section-title">공고 목록</h2>
       <span class="total-count" id="totalCount"></span>
     </div>
     <button type="button" class="new-announce-bar" id="newAnnounceBar" hidden></button>
     <div id="resultGroups" class="result-groups"></div>
-    <p class="empty-state" id="emptyState" hidden>선택한 조건에 해당하는 프로젝트가 없습니다.</p>
+    <p class="empty-state" id="emptyState" hidden>조건에 맞는 공고가 없습니다. 위에서 고른 분야나 유형을 줄여 보세요.</p>
     <p class="updated" id="updatedAt2"></p>
   </main>
 
@@ -121,73 +136,84 @@
   <main class="screen" id="screen-stats" hidden>
     <h2 class="section-title">통계</h2>
 
-    <section class="dash-card">
-      <h3 class="dash-card-title">최근 7일 신규 공고</h3>
-      <div class="chart-wrap" id="statsTrend7"></div>
-    </section>
-    <section class="dash-card">
-      <h3 class="dash-card-title">최근 30일 신규 공고</h3>
-      <div class="chart-wrap" id="statsTrend30"></div>
-    </section>
-    <section class="dash-card">
-      <h3 class="dash-card-title">분야별 비중</h3>
-      <div class="donut-row" id="statsCategoryDonut"></div>
-    </section>
-    <section class="dash-card">
-      <h3 class="dash-card-title">국내 · 해외 비중</h3>
-      <div id="statsRegionBar"></div>
-    </section>
-    <section class="dash-card">
-      <h3 class="dash-card-title">정보 유형별 건수</h3>
-      <div class="bar-list" id="statsNoticeType"></div>
-    </section>
-    <section class="dash-card">
-      <h3 class="dash-card-title">출처 사이트별 건수</h3>
-      <div class="bar-list" id="statsBySource"></div>
-    </section>
+    <div class="stats-grid">
+      <section class="dash-card">
+        <h3 class="dash-card-title">최근 7일 동안 새로 잡힌 공고</h3>
+        <div class="chart-wrap" id="statsTrend7"></div>
+      </section>
+      <section class="dash-card">
+        <h3 class="dash-card-title">최근 30일 동안 새로 잡힌 공고</h3>
+        <div class="chart-wrap" id="statsTrend30"></div>
+      </section>
+      <section class="dash-card">
+        <h3 class="dash-card-title">분야별 비중</h3>
+        <div class="donut-row" id="statsCategoryDonut"></div>
+      </section>
+      <section class="dash-card">
+        <h3 class="dash-card-title">국내 · 해외</h3>
+        <div id="statsRegionBar"></div>
+      </section>
+      <section class="dash-card">
+        <h3 class="dash-card-title">공고 종류별 건수</h3>
+        <div class="bar-list" id="statsNoticeType"></div>
+      </section>
+      <section class="dash-card">
+        <h3 class="dash-card-title">가져온 곳별 건수</h3>
+        <div class="bar-list" id="statsBySource"></div>
+      </section>
+    </div>
   </main>
 
   <!-- Screen: 일정 -->
   <main class="screen" id="screen-calendar" hidden>
-    <h2 class="section-title">일정</h2>
-    <div class="calendar-card">
-      <div class="calendar-head">
-        <button type="button" class="icon-btn" id="calPrevBtn" aria-label="이전 달">‹</button>
-        <span id="calMonthLabel" class="calendar-month-label"></span>
-        <button type="button" class="icon-btn" id="calNextBtn" aria-label="다음 달">›</button>
+    <h2 class="section-title">마감 일정</h2>
+    <div class="calendar-layout">
+      <div class="calendar-card">
+        <div class="calendar-head">
+          <button type="button" class="icon-btn" id="calPrevBtn" aria-label="이전 달">‹</button>
+          <span id="calMonthLabel" class="calendar-month-label"></span>
+          <button type="button" class="icon-btn" id="calNextBtn" aria-label="다음 달">›</button>
+        </div>
+        <div class="calendar-weekdays">
+          <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+        <p class="calendar-hint">숫자는 그날 마감되는 공고 수입니다. 날짜를 누르면 목록이 나옵니다.</p>
       </div>
-      <div class="calendar-weekdays">
-        <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
-      </div>
-      <div class="calendar-grid" id="calendarGrid"></div>
+      <div id="calendarDayList" class="calendar-day-list"></div>
     </div>
-    <div id="calendarDayList" class="calendar-day-list"></div>
   </main>
 
   <!-- Screen: 설정 (기존 관심분야 선택 화면 재사용) -->
   <main class="screen" id="screen-settings" hidden>
     <h2 class="section-title">설정</h2>
 
-    <p class="lead">관심 분야로 맞춤 프로젝트 정보를 받아보세요</p>
-    <h3 class="section-subtitle">내 관심 분야</h3>
-    <div class="keyword-grid" id="keywordGrid"></div>
+    <div class="settings-block">
+      <h3 class="section-subtitle">목록에 보일 분야</h3>
+      <p class="lead">고른 분야의 공고만 공고 목록에 나옵니다. 이 기기에만 저장됩니다.</p>
+      <div class="keyword-grid" id="keywordGrid"></div>
+      <button class="ghost-btn" id="viewResultsBtn">고른 분야의 공고 보기</button>
+    </div>
 
-    <button class="primary-btn" id="telegramBtn">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21.9 4.3 2.7 11.6c-1 .4-1 1.7.1 2l4.7 1.5 1.8 5.6c.3.9 1.4 1.1 2.1.4l2.6-2.6 4.9 3.6c.8.6 2 .2 2.2-.8l3-16.9c.2-1.1-.9-2-2.2-1.6ZM8.9 14.5l9.4-7.6c.3-.2.6.1.3.4l-7.8 7.5c-.3.3-.5.7-.5 1.1l-.2 2.6-1.2-3.6c-.1-.4 0-.1 0-.4Z"/></svg>
-      텔레그램으로 알림 받기
-    </button>
-    <p class="hint">
-      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
-      선택한 분야 기준으로 신규 프로젝트 정보를 알려드립니다
-    </p>
-    <button class="ghost-btn" id="viewResultsBtn">선택한 분야로 보기 →</button>
+    <div class="settings-block">
+      <h3 class="section-subtitle">텔레그램 알림</h3>
+      <p class="lead">매일 아침 수집이 끝나면 새로 잡힌 장비 공고를 텔레그램으로 보냅니다.</p>
+      <button class="primary-btn" id="telegramBtn">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21.9 4.3 2.7 11.6c-1 .4-1 1.7.1 2l4.7 1.5 1.8 5.6c.3.9 1.4 1.1 2.1.4l2.6-2.6 4.9 3.6c.8.6 2 .2 2.2-.8l3-16.9c.2-1.1-.9-2-2.2-1.6ZM8.9 14.5l9.4-7.6c.3-.2.6.1.3.4l-7.8 7.5c-.3.3-.5.7-.5 1.1l-.2 2.6-1.2-3.6c-.1-.4 0-.1 0-.4Z"/></svg>
+        알림 연결 상태 확인
+      </button>
+      <p class="hint">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
+        알림은 분야와 관계없이 새 장비 공고를 모두 보냅니다
+      </p>
+    </div>
 
-    <p class="updated" id="updatedAt">마지막 업데이트 불러오는 중...</p>
+    <p class="updated" id="updatedAt">마지막 수집 시각을 불러오는 중입니다</p>
   </main>
 
-  <nav class="bottom-nav" aria-label="주요 화면 이동">
+  <nav class="bottom-nav" aria-label="화면 이동">
     <button type="button" class="bottom-nav-item" data-tab="home">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H10v-5.5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1V20h3.5a1 1 0 0 0 1-1v-9"/></svg>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 12 17.5 6.5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg>
       <span>홈</span>
     </button>
     <button type="button" class="bottom-nav-item" data-tab="tenders">
@@ -203,7 +229,7 @@
       <span>일정</span>
     </button>
     <button type="button" class="bottom-nav-item" data-tab="settings">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5c.1-.5.1-1 0-1.5l1.6-1.2-1.5-2.6-1.9.6a5.7 5.7 0 0 0-1.3-.75L16 6h-4l-.3 2.05c-.47.18-.9.44-1.3.75l-1.9-.6-1.5 2.6 1.6 1.2c-.1.5-.1 1 0 1.5l-1.6 1.2 1.5 2.6 1.9-.6c.4.31.83.57 1.3.75L12 18h4l.3-2.05c.47-.18.9-.44 1.3-.75l1.9.6 1.5-2.6-1.6-1.2Z"/></svg>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 12h3M11 12h9M4 17h12M20 17h0"/><circle cx="16" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="18" cy="17" r="2"/></svg>
       <span>설정</span>
     </button>
   </nav>
