@@ -80,6 +80,32 @@ COLLECTORS = [
 KEEP_EXPIRED_SOURCES = {"KOTRA", "EBNEW", "MOFCOM"}
 
 
+from check_ui_language import USER_FIELDS
+
+# 일본어 중점(U+30FB). 가나 블록(U+3040-30FF) 안에 있어 한국어 화면 검사가
+# "가나 잔여"로 오판하지만 글자가 아니라 구두점이다. 번역이 다 끝난 제목에도
+# "2027・2028"처럼 그대로 남는다.
+_KATAKANA_MIDDLE_DOT = "・"
+
+
+def normalize_user_text(item):
+    """화면에 나가는 필드의 일본어 중점을 한국어에서 쓰는 가운뎃점(·)으로 바꾼다.
+
+    이걸 그냥 두면 사고가 난다. 한국어 화면 검사는 저장된 데이터를 읽어
+    가나가 남아 있으면 워크플로를 실패시키는데, 그 검사가 **다음 실행의 맨
+    앞**에서 돈다. 그래서 중점이 든 제목이 한 번 저장되면 이후 모든 실행이
+    수집·Telegram·커밋 전에 멈추고, 데이터는 영영 안 바뀌어 스스로 빠져나오지
+    못한다. 실제로 2026-11-04부터 16일간 정기 실행이 전부 실패했다.
+
+    원문 보존 필드(originalTitle 등)는 USER_FIELDS에 없으므로 건드리지 않는다.
+    """
+    for field in USER_FIELDS:
+        value = item.get(field)
+        if isinstance(value, str) and _KATAKANA_MIDDLE_DOT in value:
+            item[field] = value.replace(_KATAKANA_MIDDLE_DOT, "·")
+    return item
+
+
 def load_existing_data():
     """이전 실행 결과 전체(items + sourceHealth)를 읽는다. sourceHealth는
     수집원별 마지막 정상 수집 시각/연속 실패 횟수를 실행 간에 이어받기
@@ -439,6 +465,7 @@ def main():
     # 본다(equipmentStatus: 장비 / 검토 필요 / 제외). 데이터는 지우지 않고
     # 상태만 남긴다 — 지우면 id가 사라져 나중에 다시 신규로 잡히기 때문이다.
     for item in all_items:
+        normalize_user_text(item)
         equipment_filter.annotate(item)
     stamp_first_seen(all_items, existing_items)
     all_items.sort(key=sort_key)

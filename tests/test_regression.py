@@ -1781,6 +1781,88 @@ class KancDeadlineParsingTest(unittest.TestCase):
         self.assertIsNone(kanc.extract_due_date("마감 표기 없음", "2026-08-01"))
 
 
+class KatakanaMiddleDotTest(unittest.TestCase):
+    """AI. 일본어 중점(・) 한 글자가 수집 전체를 16일간 멈춘 사고 — 2026-11.
+
+    한국어 화면 검사는 U+3040-30FF를 가나로 본다. 그런데 그 안에 글자가 아닌
+    구두점 U+30FB(・)가 들어 있다. JETRO 제목 "2027・2028 Cleaning ..."의
+    중점이 번역을 거치고도 그대로 남아 데이터에 저장됐고, 그 검사가 다음 실행의
+    맨 앞에서 저장 데이터를 읽어 실패했다.
+
+    실패하면 수집·Telegram·커밋이 모두 건너뛰어지므로 데이터가 바뀔 수 없다.
+    스스로 빠져나오지 못하는 상태가 되어 2026-11-04부터 정기 실행이 전부
+    실패했고, 그동안 알림이 한 통도 오지 않았다.
+    """
+
+    DOT = "・"
+
+    def _item(self, **fields):
+        item = {"id": "jetro1", "title": "제목", "org": "기관",
+                "description": "설명", "originalTitle": "Original", "originalOrg": "Org"}
+        item.update(fields)
+        return item
+
+    def test_dot_is_replaced_in_user_fields(self):
+        item = FA.normalize_user_text(self._item(
+            title=f"2027{self.DOT}2028 청소 서비스",
+            description=f"품목: 2027{self.DOT}2028 청소"))
+        self.assertEqual(item["title"], "2027·2028 청소 서비스")
+        self.assertEqual(item["description"], "품목: 2027·2028 청소")
+
+    def test_every_user_field_is_covered(self):
+        """화면 검사가 보는 필드 전부 — 하나라도 빠지면 같은 사고가 난다."""
+        for field in UILANG.USER_FIELDS:
+            with self.subTest(field=field):
+                item = FA.normalize_user_text(self._item(**{field: f"가{self.DOT}나"}))
+                self.assertEqual(item[field], "가·나")
+
+    def test_original_text_is_left_alone(self):
+        """원문 보존 필드는 건드리지 않는다."""
+        item = FA.normalize_user_text(self._item(
+            originalTitle=f"2027{self.DOT}2028 Cleaning",
+            originalOrg=f"A{self.DOT}B"))
+        self.assertEqual(item["originalTitle"], f"2027{self.DOT}2028 Cleaning")
+        self.assertEqual(item["originalOrg"], f"A{self.DOT}B")
+
+    def test_clean_item_is_untouched(self):
+        before = self._item(title="2027·2028 청소")
+        after = FA.normalize_user_text(dict(before))
+        self.assertEqual(before, after)
+
+    def test_non_string_values_are_skipped(self):
+        item = FA.normalize_user_text(self._item(budget=None, keywords=["가"],
+                                                 region=None))
+        self.assertIsNone(item["budget"])
+        self.assertEqual(item["keywords"], ["가"])
+
+    def test_real_kana_still_fails_the_check(self):
+        """중점만 봐주는 것이다 — 진짜 가나는 계속 잡아야 한다."""
+        self.assertTrue(UILANG.KANA_RE.search("清掃サービス"))
+        self.assertTrue(UILANG.KANA_RE.search("ひらがな"))
+
+    def test_normalized_text_passes_the_language_check(self):
+        item = FA.normalize_user_text(self._item(title=f"2027{self.DOT}2028 청소"))
+        self.assertIsNone(UILANG.KANA_RE.search(item["title"]))
+        self.assertIsNone(UILANG.CJK_RE.search(item["title"]))
+
+    def test_stored_data_has_no_middle_dot(self):
+        """저장된 데이터에 남아 있으면 다음 실행이 멈춘다."""
+        path = os.path.join(os.path.dirname(os.path.dirname(
+            os.path.abspath(__file__))), "data", "announcements.json")
+        with io.open(path, encoding="utf-8") as f:
+            items = json.load(f).get("items", [])
+        leaked = [(i["id"], field) for i in items for field in UILANG.USER_FIELDS
+                  if isinstance(i.get(field), str) and self.DOT in i[field]]
+        self.assertEqual(leaked, [])
+
+    def test_pipeline_normalizes_before_writing(self):
+        """모든 출처가 거치는 저장 직전에 호출되는지 — 호출이 빠지면 무용지물이다."""
+        source = inspect.getsource(FA.main)
+        self.assertIn("normalize_user_text(item)", source)
+        self.assertLess(source.index("normalize_user_text(item)"),
+                        source.index("equipment_filter.annotate(item)"))
+
+
 class NoticeCardMessageTest(unittest.TestCase):
     """AG. 신규 공고 알림을 상세 화면과 똑같이 적는다 — 2026-10.
 
