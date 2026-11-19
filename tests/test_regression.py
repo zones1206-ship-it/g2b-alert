@@ -1782,6 +1782,167 @@ class KancDeadlineParsingTest(unittest.TestCase):
         self.assertIsNone(kanc.extract_due_date("마감 표기 없음", "2026-08-01"))
 
 
+class NotificationCarryOverTest(unittest.TestCase):
+    """AK. 발송 상한을 넘친 공고를 다음 실행으로 넘긴다 — 2026-11.
+
+    한 번에 20건까지만 보내는데, 넘친 공고를 예전에는 그냥 버렸다. 그 공고는
+    데이터에 이미 들어가 다음 실행에서는 신규가 아니므로 알림이 영영 가지
+    않았다. 수집이 16일 멈췄다 재개된 2026-11-19에 37건 중 17건이 빠졌다.
+    """
+
+    def setUp(self):
+        self._send = NT.send_telegram
+        self._sleep = time.sleep
+        self._env = dict(os.environ)
+        time.sleep = lambda _s: None
+        os.environ["TELEGRAM_BOT_TOKEN"] = "t"
+        os.environ["TELEGRAM_CHAT_ID"] = "c"
+        self.tmp = tempfile.mkdtemp()
+        self.sent = []
+
+    def tearDown(self):
+        NT.send_telegram = self._send
+        time.sleep = self._sleep
+        os.environ.clear()
+        os.environ.update(self._env)
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def _item(self, n, status="장비"):
+        return {"id": f"n{n}", "sourceCode": "JETRO", "title": f"장비 {n}",
+                "originalTitle": f"equipment {n}", "originalOrg": "org",
+                "postedDate": "2026-11-01", "dueDate": "2999-01-01",
+                "noticeType": "정식입찰", "projectNo": f"p{n}",
+                "equipmentStatus": status}
+
+    def _write(self, name, items, pending=None):
+        data = {"updatedAt": "x", "sourceHealth": {}, "items": items}
+        if pending is not None:
+            data[NT.PENDING_KEY] = pending
+        path = os.path.join(self.tmp, name)
+        with io.open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False)
+        return path
+
+    def _read(self, path):
+        with io.open(path, encoding="utf-8") as f:
+            return json.load(f)
+
+    def _run(self, before, after, fail_ids=()):
+        def fake_send(token, chat, text):
+            for bad in fail_ids:
+                if f"#n={bad}" in text:
+                    return False
+            self.sent.append(text)
+            return True
+        NT.send_telegram = fake_send
+        argv = sys.argv
+        sys.argv = ["notify_telegram.py", before, after]
+        try:
+            NT.main()
+        finally:
+            sys.argv = argv
+
+    def _sent_ids(self):
+        return [re.search(r"#n=(\w+)", t).group(1) for t in self.sent]
+
+    # --- 계획 ------------------------------------------------------------
+
+    def test_overflow_is_carried_not_dropped(self):
+        """실제 사고의 숫자 그대로 — 37건이면 20건 보내고 17건을 넘긴다."""
+        after = [self._item(n) for n in range(37)]
+        to_send, pending, _ = NT.plan_notifications({"items": []}, after)
+        self.assertEqual(len(to_send), 20)
+        self.assertEqual(len(pending), 17)
+        self.assertEqual(pending, [f"n{n}" for n in range(20, 37)])
+
+    def test_under_the_limit_nothing_is_carried(self):
+        to_send, pending, _ = NT.plan_notifications(
+            {"items": []}, [self._item(n) for n in range(5)])
+        self.assertEqual(len(to_send), 5)
+        self.assertEqual(pending, [])
+
+    def test_carried_notices_go_before_new_ones(self):
+        """먼저 발견된 것이 먼저 간다."""
+        old = [self._item(1), self._item(2)]
+        before = {"items": old, NT.PENDING_KEY: ["n2"]}
+        to_send, pending, stats = NT.plan_notifications(before, old + [self._item(3)])
+        self.assertEqual([i["id"] for i in to_send], ["n2", "n3"])
+        self.assertEqual(stats["carried"], 1)
+
+    def test_carried_notice_gone_from_data_is_dropped(self):
+        """그사이 마감 등으로 데이터에서 빠진 공고는 보내지 않는다."""
+        before = {"items": [self._item(1)], NT.PENDING_KEY: ["n1", "n9"]}
+        to_send, pending, _ = NT.plan_notifications(before, [self._item(1)])
+        self.assertEqual([i["id"] for i in to_send], ["n1"])
+
+    def test_carried_notice_no_longer_equipment_is_dropped(self):
+        before = {"items": [self._item(1)], NT.PENDING_KEY: ["n1"]}
+        to_send, _, _ = NT.plan_notifications(before, [self._item(1, status="제외")])
+        self.assertEqual(to_send, [])
+
+    def test_duplicate_pending_ids_send_once(self):
+        before = {"items": [self._item(1)], NT.PENDING_KEY: ["n1", "n1"]}
+        to_send, _, _ = NT.plan_notifications(before, [self._item(1)])
+        self.assertEqual(len(to_send), 1)
+
+    def test_existing_notice_without_pending_is_not_resent(self):
+        """넘김 목록에 없는 기존 공고는 다시 보내지 않는다(재발송 방지)."""
+        old = [self._item(1)]
+        to_send, pending, _ = NT.plan_notifications({"items": old}, old)
+        self.assertEqual((to_send, pending), ([], []))
+
+    # --- 실행 전체 --------------------------------------------------------
+
+    def test_three_runs_deliver_everything_exactly_once(self):
+        """45건을 20 + 20 + 5로 나눠 보내고, 한 건도 빠지거나 겹치지 않는다."""
+        items = [self._item(n) for n in range(45)]
+        before = self._write("before.json", [])
+        for round_no in range(3):
+            after = self._write(f"after{round_no}.json", items)
+            self._run(before, after)
+            before = after  # 커밋된 데이터가 다음 실행의 이전 데이터가 된다
+        ids = self._sent_ids()
+        self.assertEqual(len(ids), 45)
+        self.assertEqual(sorted(ids), sorted(f"n{n}" for n in range(45)))
+        self.assertNotIn(NT.PENDING_KEY, self._read(before))
+
+    def test_pending_ids_are_saved_into_data_file(self):
+        after = self._write("after.json", [self._item(n) for n in range(23)])
+        self._run(self._write("before.json", []), after)
+        self.assertEqual(self._read(after)[NT.PENDING_KEY], ["n20", "n21", "n22"])
+
+    def test_failed_send_is_carried_too(self):
+        """발송에 실패한 공고도 버리지 않는다."""
+        after = self._write("after.json", [self._item(1), self._item(2)])
+        self._run(self._write("before.json", []), after, fail_ids=["n2"])
+        self.assertEqual(self._sent_ids(), ["n1"])
+        self.assertEqual(self._read(after)[NT.PENDING_KEY], ["n2"])
+
+    def test_pending_key_is_cleared_when_done(self):
+        items = [self._item(1)]
+        after = self._write("after.json", items, pending=["n1"])
+        self._run(self._write("before.json", items, pending=["n1"]), after)
+        self.assertEqual(self._sent_ids(), ["n1"])
+        self.assertNotIn(NT.PENDING_KEY, self._read(after))
+
+    def test_items_are_untouched_by_saving_pending(self):
+        """넘김 목록을 적으면서 공고 데이터를 건드리지 않는다."""
+        items = [self._item(n) for n in range(22)]
+        after = self._write("after.json", items)
+        self._run(self._write("before.json", []), after)
+        saved = self._read(after)
+        self.assertEqual(saved["items"], items)
+        self.assertEqual(saved["updatedAt"], "x")
+
+    def test_file_not_rewritten_when_nothing_pending(self):
+        after = self._write("after.json", [self._item(1)])
+        with io.open(after, encoding="utf-8") as f:
+            raw = f.read()
+        self._run(self._write("before.json", []), after)
+        with io.open(after, encoding="utf-8") as f:
+            self.assertEqual(f.read(), raw)
+
+
 class WorkflowFailureAlertTest(unittest.TestCase):
     """AJ. 정기 실행 자체가 실패하면 알린다 — 2026-11.
 

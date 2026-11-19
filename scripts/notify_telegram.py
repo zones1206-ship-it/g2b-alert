@@ -37,7 +37,7 @@ for _stream in (sys.stdout, sys.stderr):
     if hasattr(_stream, "reconfigure"):
         _stream.reconfigure(encoding="utf-8", errors="replace")
 
-MAX_MESSAGES_PER_RUN = 20  # 한 번에 너무 많이 보내는 것 방지(연동 첫날 등 예외 상황 대비)
+MAX_MESSAGES_PER_RUN = 20  # 한 번에 보내는 양의 상한. 넘친 공고는 다음 실행으로 넘긴다.
 REQUEST_DELAY_SECONDS = 0.5
 
 
@@ -226,20 +226,35 @@ def project_key(item):
             re.sub(r"\s+", "", str(project_no)).strip().lower())
 
 
-def main():
-    if len(sys.argv) != 3:
-        print("사용법: python scripts/notify_telegram.py <이전 json> <최신 json>")
-        raise SystemExit(1)
+PENDING_KEY = "pendingNotices"
 
-    before_path, after_path = sys.argv[1], sys.argv[2]
 
-    bot_token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
-    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
-    if not bot_token or not chat_id:
-        print("TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID가 설정돼 있지 않아 알림을 건너뜁니다.")
-        return
+def load_data(path):
+    """파일 전체(dict). 없거나 깨졌으면 빈 dict."""
+    if not path or not os.path.exists(path):
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except (json.JSONDecodeError, OSError):
+        return {}
 
-    before_items = load_items(before_path)
+
+def plan_notifications(before_data, after_items, limit=MAX_MESSAGES_PER_RUN):
+    """이번에 보낼 공고와 다음으로 넘길 공고를 정한다.
+
+    돌려주는 것: (보낼 공고 목록, 넘길 id 목록, 통계 dict)
+
+    한 번에 보내는 양에는 상한이 있다. 예전에는 넘친 공고를 그냥 버렸는데,
+    그 공고는 데이터에 이미 들어가 다음 실행에서는 신규가 아니므로 알림이
+    영영 가지 않았다(2026-11-19: 37건 중 17건 누락). 이제 넘친 공고의 id를
+    pendingNotices에 남겨 다음 실행에서 이어 보낸다.
+
+    밀린 공고를 새 공고보다 먼저 보낸다 — 먼저 발견된 것이 먼저 간다.
+    그사이 데이터에서 빠졌거나(마감 등) 장비가 아니게 된 공고는 버린다.
+    """
+    before_items = before_data.get("items") or []
     before_ids = {item.get("id") for item in before_items if item.get("id")}
     # 사이트가 같은 공고에 새 내부 id를 부여해 재색인하는 경우가 있다
     # (MOFCOM에서 중복 알림 3건이 실제로 발생). id뿐 아니라 "같은 공고 지문"
@@ -247,7 +262,13 @@ def main():
     # 바뀌면 지문이 달라지므로 실제 정정·재공고는 그대로 알린다.
     before_signatures = {announcement_signature(item) for item in before_items}
     before_projects = {p for p in (project_key(item) for item in before_items) if p}
-    after_items = load_items(after_path)
+
+    after_by_id = {item.get("id"): item for item in after_items if item.get("id")}
+    carried = []
+    for notice_id in before_data.get(PENDING_KEY) or []:
+        item = after_by_id.get(notice_id)
+        if item and item.get("equipmentStatus") in (None, "장비") and item not in carried:
+            carried.append(item)
 
     new_items = []
     reindexed = 0
@@ -268,31 +289,81 @@ def main():
             continue
         new_items.append(item)
 
-    if reindexed:
-        print(f"사이트 재색인으로 id만 바뀐 공고 {reindexed}건은 알리지 않습니다.")
-    if not_equipment:
-        print(f"장비 공고가 아니어서 제외한 신규 공고 {not_equipment}건"
-              f"(재료/부품/용역/공사/검토 필요).")
+    queue = carried + new_items
+    to_send = queue[:limit]
+    pending = [item["id"] for item in queue[limit:]]
+    stats = {"carried": len(carried), "new": len(new_items),
+             "reindexed": reindexed, "not_equipment": not_equipment}
+    return to_send, pending, stats
 
-    if not new_items:
-        print("신규 공고 없음 — 알림을 보내지 않습니다.")
+
+def save_pending(path, pending_ids):
+    """넘길 id를 데이터 파일에 남긴다. 워크플로의 커밋 단계가 함께 저장한다.
+
+    넘길 것이 없으면 키를 지운다. 달라진 것이 없으면 파일을 다시 쓰지 않는다.
+    """
+    data = load_data(path)
+    if not data:
+        return
+    current = data.get(PENDING_KEY) or []
+    if list(pending_ids) == list(current):
+        return
+    if pending_ids:
+        data[PENDING_KEY] = list(pending_ids)
+    else:
+        data.pop(PENDING_KEY, None)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def main():
+    if len(sys.argv) != 3:
+        print("사용법: python scripts/notify_telegram.py <이전 json> <최신 json>")
+        raise SystemExit(1)
+
+    before_path, after_path = sys.argv[1], sys.argv[2]
+
+    bot_token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
+    if not bot_token or not chat_id:
+        print("TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID가 설정돼 있지 않아 알림을 건너뜁니다.")
         return
 
-    if len(new_items) > MAX_MESSAGES_PER_RUN:
-        print(f"신규 공고 {len(new_items)}건 중 상위 {MAX_MESSAGES_PER_RUN}건만 전송합니다"
+    to_send, pending, stats = plan_notifications(
+        load_data(before_path), load_items(after_path))
+
+    if stats["reindexed"]:
+        print(f"사이트 재색인으로 id만 바뀐 공고 {stats['reindexed']}건은 알리지 않습니다.")
+    if stats["not_equipment"]:
+        print(f"장비 공고가 아니어서 제외한 신규 공고 {stats['not_equipment']}건"
+              f"(재료/부품/용역/공사/검토 필요).")
+    if stats["carried"]:
+        print(f"지난 실행에서 넘어온 공고 {stats['carried']}건을 먼저 보냅니다.")
+
+    if not to_send:
+        print("신규 공고 없음 — 알림을 보내지 않습니다.")
+        save_pending(after_path, [])
+        return
+
+    if pending:
+        print(f"보낼 공고 {len(to_send) + len(pending)}건 중 {len(to_send)}건을 "
+              f"이번에 보내고, 나머지 {len(pending)}건은 다음 실행에서 이어 보냅니다"
               f"(1회 발송량 제한).")
-        new_items = new_items[:MAX_MESSAGES_PER_RUN]
 
     sent = 0
-    failed = 0
-    for item in new_items:
+    failed_ids = []
+    for item in to_send:
         if send_telegram(bot_token, chat_id, format_message(item)):
             sent += 1
         else:
-            failed += 1
+            # 발송에 실패한 공고도 버리지 않고 다음 실행으로 넘긴다.
+            failed_ids.append(item["id"])
         time.sleep(REQUEST_DELAY_SECONDS)
 
-    print(f"신규 공고 알림 전송 완료: 성공 {sent}건, 실패 {failed}건")
+    save_pending(after_path, failed_ids + pending)
+    print(f"신규 공고 알림 전송 완료: 성공 {sent}건, 실패 {len(failed_ids)}건")
+    if failed_ids or pending:
+        print(f"다음 실행으로 넘긴 공고: {len(failed_ids) + len(pending)}건")
 
 
 if __name__ == "__main__":
