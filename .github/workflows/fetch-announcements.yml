@@ -135,3 +135,14 @@ jobs:
           done
           echo "3회 시도 후에도 push 실패"
           exit 1
+
+      # 위 단계 중 하나라도 실패하면 알린다. 수집원 장애 알림은 뒤쪽 단계라
+      # 실행이 앞에서 멈추면 거기까지 가지 못한다 — 2026-11에 회귀테스트
+      # 단계 실패가 16일간 이어졌는데 아무 알림도 없었다. 맨 끝에 두어야
+      # 어느 단계의 실패든 잡는다. 손으로 돌린 검증 실행은 알리지 않는다.
+      - name: Notify workflow failure via Telegram (정기 실행 실패 시)
+        if: failure() && github.event_name == 'schedule'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python scripts/notify_workflow_failure.py

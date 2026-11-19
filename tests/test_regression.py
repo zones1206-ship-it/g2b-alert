@@ -41,6 +41,7 @@ from collectors.common import (DetailFetchFailed,                  # noqa: E402
 import fetch_announcements as FA                                   # noqa: E402
 import notify_telegram as NT                                       # noqa: E402
 import notify_site_link as SITELINK                                # noqa: E402
+import notify_workflow_failure as WFFAIL                           # noqa: E402
 from notify_source_health import decide_actions                    # noqa: E402
 import check_data_drift as DRIFT                                   # noqa: E402
 import check_ui_language as UILANG                                 # noqa: E402
@@ -1781,6 +1782,73 @@ class KancDeadlineParsingTest(unittest.TestCase):
         self.assertIsNone(kanc.extract_due_date("마감 표기 없음", "2026-08-01"))
 
 
+class WorkflowFailureAlertTest(unittest.TestCase):
+    """AJ. 정기 실행 자체가 실패하면 알린다 — 2026-11.
+
+    16일 동안 정기 실행이 매일 실패했는데 아무도 몰랐다. 수집원 장애 알림은
+    워크플로 뒤쪽 단계라, 실행이 앞에서 멈추면 거기까지 가지 못한다.
+    """
+
+    ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    def setUp(self):
+        with io.open(os.path.join(self.ROOT, ".github", "workflows",
+                                  "fetch-announcements.yml"), encoding="utf-8") as f:
+            self.workflow = f.read()
+        self._env = dict(os.environ)
+
+    def tearDown(self):
+        os.environ.clear()
+        os.environ.update(self._env)
+
+    def _step_block(self):
+        m = re.search(r"^      - name: Notify workflow failure[^\n]*\n(?:^        .*\n|^\n)*",
+                      self.workflow, re.M)
+        self.assertIsNotNone(m, "실행 실패 알림 스텝을 찾지 못했습니다")
+        return m.group(0)
+
+    def test_runs_only_when_something_failed(self):
+        self.assertIn("failure()", self._step_block())
+
+    def test_only_on_scheduled_runs(self):
+        """손으로 돌린 검증 실행의 실패는 알리지 않는다(No.019 정책과 같다)."""
+        self.assertIn("github.event_name == 'schedule'", self._step_block())
+
+    def test_is_the_last_step(self):
+        """어느 단계가 실패해도 잡으려면 맨 끝에 있어야 한다."""
+        names = re.findall(r"^      - name: (.+)$", self.workflow, re.M)
+        self.assertTrue(names[-1].startswith("Notify workflow failure"))
+
+    def test_reuses_existing_secrets(self):
+        block = self._step_block()
+        self.assertEqual(sorted(set(re.findall(r"secrets\.(\w+)", block))),
+                         ["TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"])
+
+    def test_message_links_to_the_failed_run(self):
+        os.environ.update(GITHUB_SERVER_URL="https://github.com",
+                          GITHUB_REPOSITORY="o/r", GITHUB_RUN_ID="123")
+        msg = WFFAIL.build_message()
+        self.assertIn("실행 실패", msg)
+        self.assertTrue(msg.endswith("https://github.com/o/r/actions/runs/123"))
+
+    def test_message_without_run_info_has_no_broken_link(self):
+        for key in ("GITHUB_SERVER_URL", "GITHUB_REPOSITORY", "GITHUB_RUN_ID"):
+            os.environ.pop(key, None)
+        self.assertNotIn("http", WFFAIL.build_message())
+
+    def test_sends_exactly_once(self):
+        sent = []
+        original = WFFAIL.send_telegram
+        WFFAIL.send_telegram = lambda t, c, m: (sent.append(m), True)[1]
+        try:
+            os.environ["TELEGRAM_BOT_TOKEN"] = "t"
+            os.environ["TELEGRAM_CHAT_ID"] = "c"
+            WFFAIL.main()
+        finally:
+            WFFAIL.send_telegram = original
+        self.assertEqual(len(sent), 1)
+
+
 class KatakanaMiddleDotTest(unittest.TestCase):
     """AI. 일본어 중점(・) 한 글자가 수집 전체를 16일간 멈춘 사고 — 2026-11.
 
@@ -2094,7 +2162,8 @@ class SiteLinkNotificationTest(unittest.TestCase):
     def test_other_steps_have_no_if_condition(self):
         """이 스텝에만 if가 붙어야 한다 — 다른 스텝은 실패가 곧 중단이다."""
         conditions = re.findall(r"^        if: (.+)$", self.workflow, re.M)
-        self.assertEqual(len(conditions), 1, f"if 조건이 늘었습니다: {conditions}")
+        # 사이트 링크와 실행 실패 알림, 둘뿐이어야 한다.
+        self.assertEqual(len(conditions), 2, f"if 조건이 늘었습니다: {conditions}")
 
     # --- 어디서 보내는가 -------------------------------------------------
 
