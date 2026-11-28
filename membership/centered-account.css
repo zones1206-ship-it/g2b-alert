@@ -1,0 +1,31 @@
+
+/* A focused, single-column account page. */
+header.account-brand{display:flex;flex-direction:column;justify-content:center;gap:12px;padding:52px 20px 26px;margin:auto;text-align:center;max-width:600px}
+header.account-brand .brand{font-family:Pretendard,'Malgun Gothic',sans-serif;font-size:34px;font-weight:720;letter-spacing:-1.1px;color:#243b5a;text-decoration:none;line-height:1.3}
+header.account-brand p{font-size:15px;color:#647184;margin:0;line-height:1.6;word-break:keep-all}
+main{display:block;max-width:460px;min-height:0;margin:0 auto 30px;padding:0;border:0;box-shadow:none;overflow:visible}
+.account-card{width:100%;padding:28px 34px 30px;border-radius:12px}.language-choice{margin-bottom:16px}h2{font-size:25px;margin:0 0 8px}.subtitle{margin-bottom:22px}
+.social-label{font-size:13px;color:#48566a;margin:0 0 10px}.social-buttons{display:flex;gap:10px}.social-buttons button{flex:1;min-height:45px;background:#fff;border:1px solid #d9dfe6;border-radius:6px;font-size:14px;color:#344357;cursor:not-allowed;opacity:1;font-weight:600}.social-buttons .naver{color:#08783b;background:#eef9f2;border-color:#cbe8d5}.social-buttons .kakao{color:#4b4123;background:#fff9d9;border-color:#efe4ab}.social-pending{font-size:11px;color:#6d7886;margin:8px 0 0}.email-divider{display:flex;align-items:center;gap:12px;font-size:12px;color:#6d7886;margin:24px 0 4px}.email-divider:before,.email-divider:after{content:'';height:1px;background:#e4e8ee;flex:1}footer{max-width:500px;justify-content:center;flex-wrap:wrap;gap:10px 20px;text-align:center;font-size:11px;padding:0 20px 28px}
+@media(max-width:760px){header.account-brand{padding:32px 20px 24px}header.account-brand .brand{font-size:29px}header.account-brand p{font-size:13px}main{margin:0 auto 26px;width:calc(100% - 32px);max-width:460px}.account-card{padding:24px}.social-buttons{gap:8px}:lang(en) header.account-brand .brand{font-size:28px}}
+
+.social-buttons{justify-content:center;gap:30px}.social-buttons button.social-icon{flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0;background:transparent;border:0;min-height:72px;font-size:12px;color:#344155}.social-icon img{width:48px;height:48px;object-fit:contain;border-radius:50%}.social-icon:focus-visible{outline:2px solid #315482;outline-offset:5px}.social-icon:not(:disabled){cursor:pointer}
+/* Separate method selection from the returning-member form. */
+.account-card [hidden]{display:none!important}
+.entry-switch{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:26px;padding-top:20px;border-top:1px solid #e4e8ee;font-size:13px;color:#647184}
+.entry-switch button{border:0;background:none;color:#294b76;font-weight:700;cursor:pointer;padding:6px}
+.email-start{width:100%;min-height:50px;border:1px solid #ccd4df;border-radius:7px;background:white;color:#243b5a;font:inherit;font-weight:600;cursor:pointer;margin-top:14px}
+.account-card h2{margin-bottom:24px}
+.account-card[data-entry=signup] .social-label{display:none}
+.account-card[data-entry=signup] .social-buttons{flex-direction:column;gap:14px}
+.account-card[data-entry=signup] .social-buttons button.social-icon{position:relative;flex:auto;min-height:52px;flex-direction:row;justify-content:center;gap:12px;width:100%;border:1px solid #cfd7e1;border-radius:7px;font-size:15px;background:#fff}
+.account-card[data-entry=signup] .social-buttons button.social-icon.kakao{background:#fee500;border-color:#fee500;color:#191919}
+.account-card[data-entry=signup] .social-buttons button.social-icon.naver{background:#03c75a;border-color:#03c75a;color:#fff}
+.account-card[data-entry=signup] .social-icon img{width:26px;height:26px}
+.social-buttons button.social-icon{position:relative}
+.social-buttons button:disabled{opacity:.48;cursor:not-allowed}
+.recent-badge{position:absolute;top:-18px;left:50%;transform:translateX(-50%);background:#243b5a;color:white;border-radius:12px;padding:3px 8px;font-size:10px;line-height:1.4;white-space:nowrap;z-index:1}
+.account-card[data-entry=signup] .recent-badge{top:-10px;left:auto;right:10px;transform:none}
+.email-recent{color:#294b76;font-size:12px;font-weight:600;margin:0 0 14px}
+.account-card[data-entry=signin] .social-options{margin-top:28px}
+.account-card[data-entry=signin] .social-label{display:none}
+@media(max-width:420px){.account-card{padding:24px 20px}.entry-switch{font-size:12px}}

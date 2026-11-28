@@ -1,0 +1,25 @@
+/* Deliberate typography: consistent weights, comfortable lines, no decorative labels. */
+.intro.motion-intro{padding:30px 0 0;min-width:0;align-self:start}
+.motion-intro .motion-copy{min-height:228px}
+.motion-intro h1{font-family:Pretendard,'Malgun Gothic',sans-serif;font-weight:620;font-size:clamp(32px,3.25vw,46px);line-height:1.27;letter-spacing:-1.5px;color:#263446;margin:0 0 24px;word-break:keep-all}
+.motion-intro h1 span{display:block;animation:copy-arrive .8s cubic-bezier(.2,.65,.3,1) both}
+.motion-intro h1 span+span{animation-delay:.1s}
+.motion-intro .motion-copy p{font-size:18px;font-weight:400;line-height:1.8;letter-spacing:-.25px;color:#5a6777;white-space:pre-line;margin:0;word-break:keep-all}
+.motion-images{position:relative;width:100%;aspect-ratio:3/2;isolation:isolate;overflow:hidden;border-radius:8px;background:#f1f3f6}
+.motion-image{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transform:scale(1.025);transition:opacity 1s ease-in-out,transform 1.2s ease-in-out}
+.motion-image.active{opacity:1;transform:scale(1)}
+.motion-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:20px}
+.motion-select{display:flex;gap:24px;min-width:0}
+.motion-controls button{border:0;background:transparent;border-radius:0;padding:10px 0;min-height:44px;font-family:inherit;font-size:15px;color:#657384}
+.motion-select button{border-bottom:2px solid transparent;white-space:nowrap}
+.motion-select button[aria-pressed=true]{color:#253d5d;border-bottom-color:#304e77;font-weight:650}
+.motion-controls .motion-pause{font-size:12px;padding:8px;color:#526175}
+.motion-intro .motion-caption{font-size:11px;color:#6c7886;line-height:1.6;margin:12px 0 0}
+:lang(en) .motion-intro h1{font-size:clamp(30px,3vw,42px);letter-spacing:-1.1px}
+@keyframes copy-arrive{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1000px) and (min-width:821px){.motion-intro h1{font-size:34px}.motion-intro .motion-copy{min-height:235px}.motion-select{gap:14px}.motion-controls button{font-size:13px}}
+@media(max-width:820px){.intro.motion-intro{padding-top:16px}.motion-intro h1{font-size:34px;letter-spacing:-1px}.motion-intro .motion-copy{min-height:190px}.motion-intro .motion-copy p{font-size:16px}.motion-select{gap:20px}.motion-images{max-height:300px}.motion-intro .motion-caption{margin-bottom:18px}:lang(en) .motion-intro h1{font-size:32px}}
+@media(max-width:390px){.motion-intro h1{font-size:30px}.motion-select{gap:15px}.motion-controls button{font-size:13px}.motion-intro .motion-copy p{white-space:normal}}
+@media(prefers-reduced-motion:reduce){.motion-intro h1 span{animation:none}.motion-image{transition:none;transform:none}}
+
+.motion-intro .motion-purpose{font-size:18px;font-weight:650;color:#304e77;margin:0 0 10px;line-height:1.5}.motion-intro .motion-service-note{font-size:14px;color:#566371;line-height:1.7;margin:0 0 28px;max-width:560px}.motion-intro .motion-copy{min-height:204px}.motion-images{max-height:270px;background:transparent}.motion-image{object-fit:contain}.motion-intro h1{font-size:40px}@media(max-width:820px){.motion-intro .motion-purpose{font-size:16px}.motion-intro .motion-service-note{font-size:13px}.motion-intro h1{font-size:31px}.motion-intro .motion-copy{min-height:185px}.motion-images{max-height:230px}}
